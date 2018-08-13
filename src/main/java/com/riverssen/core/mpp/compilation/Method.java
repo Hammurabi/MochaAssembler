@@ -43,33 +43,14 @@ public class Method
         String accessor = "null";
         if (__parenttype__ != null) accessor = __parenttype__.getName();
 
-        for (Token t : token.getTokens().get(2).getTokens())
-        {
-            switch (t.getType())
-            {
-                case IF:
-                    break;
-                case INITIALIZATION:
-                    String reference = t.getTokens().get(0).toString();
+        Set<Field> args = new LinkedHashSet<>();
 
-                    if (referencemap.containsKey(reference))
-                    {
-                    } else if (parent != null && parent.containsField(reference, accessor))
-                    {
-                        parent.accessField(reference, executable, accessor);
-                    } else {
-                        System.out.println("variable '" + reference + "' doesn't exist.");
-                        System.exit(0);
-                    }
-                    break;
-                case EMPTY_DECLARATION:
-                    break;
-                case FULL_DECLARATION:
-                    break;
-                case PROCEDURAL_ACCESS:
-                    break;
-            }
-        }
+        for (Token argument : token.getTokens().get(2).getTokens())
+            args.add(new Field(space, argument));
+
+        MethodArgument argument = new MethodArgument(parent == null ? Struct.VOID : parent, args);
+
+        __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument));
     }
 
     public String getName()

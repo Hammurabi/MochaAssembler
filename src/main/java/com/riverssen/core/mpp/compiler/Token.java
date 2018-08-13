@@ -13,6 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.mpp.compilation.MethodArgument;
 import com.riverssen.core.mpp.compilation.Struct;
 import com.riverssen.core.mpp.exceptions.CompileException;
 import com.riverssen.core.mpp.instructions;
@@ -649,10 +650,19 @@ public class Token implements Serializable
 
     public List<Byte> getInstruction()
     {
+        return getInstruction(null);
+    }
+
+    public List<Byte> getInstruction(MethodArgument argument)
+    {
         Executable executable = new Executable();
 
         switch (type)
         {
+            case BRACES:
+                for (Token token : getTokens())
+                    executable.add(token.getInstruction());
+                break;
             case VALUE:
                 switch (getTokens().get(0).getType())
                 {
@@ -696,31 +706,31 @@ public class Token implements Serializable
 
             case ADDITION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction());
+                    executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_add);
                 break;
 
             case SUBTRACTION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction());
+                    executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_sub);
                 break;
 
             case MULTIPLICATION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction());
+                    executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_mul);
                 break;
 
             case SUBDIVISION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction());
+                    executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_div);
                 break;
 
             case POW:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction());
+                    executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_pow);
                 break;
 

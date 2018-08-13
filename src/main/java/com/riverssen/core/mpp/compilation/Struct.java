@@ -22,11 +22,20 @@ import java.util.Set;
 public class Struct
 {
     public static long NULL = 0;
+    public static final Struct VOID = new Struct();
 
     private String      __typename__;
     private long        __typesize__;
     private Set<Field>  __fields__;
     private Set<Method> __methods__;
+
+    public Struct()
+    {
+        this.__fields__ = new LinkedHashSet<>();
+        this.__methods__= new LinkedHashSet<>();
+        this.__typesize__   = 0;
+        this.__typename__ = "VOID";
+    }
 
     public Struct(GlobalSpace space, Token token)
     {
