@@ -60,7 +60,11 @@ public class MainCompiler
 
         if (args.length >= 2)
         {
-            File main_class = new File(args[1].substring(1, args[1].length() - 1));
+            String path = args[1];
+            if (path.startsWith("\""))
+                path = path.substring(1, args[1].length() - 1);
+
+            File main_class = new File(path);
 
             String arg = args[0];
 
