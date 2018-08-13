@@ -143,4 +143,12 @@ public class Struct
             System.exit(0);
         }
     }
+
+    public Method getMethod(String methodName)
+    {
+        for (Method method : __methods__)
+            if (method.getName().equals(methodName)) return method;
+
+        return null;
+    }
 }

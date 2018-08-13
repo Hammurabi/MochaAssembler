@@ -708,30 +708,40 @@ public class Token implements Serializable
                 for (Token token : getTokens())
                     executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_add);
+                for (Token token : getTokens())
+                    executable.add(token.getMathematicalType(argument));
                 break;
 
             case SUBTRACTION:
                 for (Token token : getTokens())
                     executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_sub);
+                for (Token token : getTokens())
+                    executable.add(token.getMathematicalType(argument));
                 break;
 
             case MULTIPLICATION:
                 for (Token token : getTokens())
                     executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_mul);
+                for (Token token : getTokens())
+                    executable.add(token.getMathematicalType(argument));
                 break;
 
             case SUBDIVISION:
                 for (Token token : getTokens())
                     executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_div);
+                for (Token token : getTokens())
+                    executable.add(token.getMathematicalType(argument));
                 break;
 
             case POW:
                 for (Token token : getTokens())
                     executable.add(token.getInstruction(argument));
                 executable.add(instructions.op_pow);
+                for (Token token : getTokens())
+                    executable.add(token.getMathematicalType(argument));
                 break;
 
             case IDENTIFIER:
@@ -741,6 +751,13 @@ public class Token implements Serializable
         }
 
         return executable.op_codes;
+    }
+
+    private int getMathematicalType(MethodArgument argument)
+    {
+        if (argument == null)
+            return 255;
+        return argument.fetchType(toString());
     }
 
     private byte[] IntegralBytes()

@@ -2,7 +2,7 @@ package com.riverssen.core.mpp;
 
 public class type
 {
-    static final short
+    public static final short
         char_ = 0,
         uchar_ = 1,
         short_ = 2,

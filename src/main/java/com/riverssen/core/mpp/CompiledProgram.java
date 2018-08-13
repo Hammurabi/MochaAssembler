@@ -73,6 +73,17 @@ public class CompiledProgram
 
                     space.getGlobalMethods().put(method.getName(), method);
                     break;
+                case METHOD_EMPTY_DECLARATION:
+                    Method method2 = new Method(space, null, t);
+
+                    if (space.getGlobalMethods().containsKey(method2.getName()))
+                    {
+                        System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __global__.");
+                        System.exit(0);
+                    }
+
+                    space.getGlobalMethods().put(method2.getName(), method2);
+                    break;
                 case CLASS_DECLARATION:
                     Struct struct = new Struct(space, t);
 
@@ -81,12 +92,16 @@ public class CompiledProgram
                         System.err.println("struct __" + struct.getName() + "__ already exists in __global__.");
                         System.exit(0);
                     }
-
-                    space.getGlobalTypes().put(struct.getName(), struct);
+                    break;
                 default:
+                    System.out.println("an error occured. '" + t.getType() + "'.");
                     System.exit(0);
+                    break;
             }
         }
+
+        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
+            System.out.println(i);
     }
 
     private void simulate_contract_a(Token root)

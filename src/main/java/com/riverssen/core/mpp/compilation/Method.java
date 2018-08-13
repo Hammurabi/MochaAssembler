@@ -50,11 +50,17 @@ public class Method
 
         MethodArgument argument = new MethodArgument(parent == null ? Struct.VOID : parent, args);
 
+        if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument));
     }
 
     public String getName()
     {
         return __methodname__;
+    }
+
+    public List<Byte> getOpCodes()
+    {
+        return __opcodes__;
     }
 }

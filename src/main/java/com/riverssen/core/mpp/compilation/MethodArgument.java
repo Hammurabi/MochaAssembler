@@ -24,4 +24,26 @@ public class MethodArgument
         this._this_ = _this_;
         this._arguments_ = _arguments_;
     }
+
+    public boolean contains(String argument)
+    {
+        for (Field field : _arguments_)
+            if (field.getName().equals(argument)) return true;
+
+        return false;
+    }
+
+    public int fetchType(String s)
+    {
+        for (Field field : _arguments_)
+            if (field.getName().equals(s)) return field.getValidType();
+        return 0;
+    }
+
+    public String fetchTypeName(String s)
+    {
+        for (Field field : _arguments_)
+            if (field.getName().equals(s)) return field.getTypeName();
+        return "null";
+    }
 }

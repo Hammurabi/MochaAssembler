@@ -16,6 +16,7 @@ import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.compiler.Modifier;
 import com.riverssen.core.mpp.compiler.Token;
 import com.riverssen.core.mpp.exceptions.CompileException;
+import com.riverssen.core.mpp.type;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -75,5 +76,37 @@ public class Field
     public long getLocation()
     {
         return __position__;
+    }
+
+    public int getValidType()
+    {
+        switch (__typename__)
+        {
+            case "char": return type.char_;
+            case "uchar": return type.uchar_;
+            case "short": return type.short_;
+            case "ushort": return type.ushort_;
+            case "int": return type.int_;
+            case "uint": return type.uint_;
+            case "float": return type.float32_;
+            case "long": return type.long_;
+            case "ulong": return type.ulong_;
+            case "double": return type.float64_;
+            case "int128": return type.int128_;
+            case "uint128": return type.uint128_;
+            case "float128": return type.float128_;
+            case "int256": return type.int256_;
+            case "uint256": return type.uint256_;
+            case "float256": return type.float256_;
+            case "string": return type.c_string;
+            case "pointer": return type.pointer_;
+        }
+
+        return 255;
+    }
+
+    public String getTypeName()
+    {
+        return __typename__;
     }
 }
