@@ -12,9 +12,6 @@
 
 package com.riverssen.core.utils;
 
-import com.riverssen.core.system.Logger;
-import com.riverssen.core.security.PubKey;
-
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.interfaces.ECPublicKey;
@@ -153,15 +150,6 @@ public class HashUtil
 //    Alias: "1.2.643.2.2.9" -> "GOST3411"
 //    Alias: "GOST-2012-512" -> "GOST3411-2012-512"
 
-    public static String compressPublicKey(PubKey key)
-    {
-        ECPublicKey key1 = (ECPublicKey) key.getPublic();
-
-        ECPoint w = key1.getW();
-
-        return null;
-    }
-
     public static byte[] base64Encode(byte data[])
     {
         return Base64.getUrlEncoder().withoutPadding().encode(data);
@@ -246,7 +234,6 @@ public class HashUtil
             return hash;
         } catch (Exception e)
         {
-            System.out.println(Logger.COLOUR_RED + e.getMessage());
             return null;
         }
     }

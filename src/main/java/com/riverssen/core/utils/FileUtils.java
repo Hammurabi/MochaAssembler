@@ -12,9 +12,6 @@
 
 package com.riverssen.core.utils;
 
-import com.riverssen.core.headers.ContextI;
-import com.riverssen.core.system.Logger;
-
 import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -43,7 +40,7 @@ public class FileUtils
     public static void createDirectoryIfDoesntExist(String directory)
     {
         File dir = new File(directory);
-        if(!dir.exists()) Logger.prt(Logger.COLOUR_BLUE, "directory '" + directory + "' doesn't exist, creating it.");
+        if(!dir.exists()) System.err.println("directory '" + directory + "' doesn't exist, creating it.");
         dir.mkdirs();
         dir.mkdir();
     }
@@ -156,13 +153,5 @@ public class FileUtils
         }
 
         return "";
-    }
-
-    public static void deleteblock(long i, ContextI context)
-    {
-        File file = new File(context.getConfig().getBlockChainDirectory() + File.separator + "block[" + i + "]");
-
-        if(file.exists())
-            file.delete();
     }
 }

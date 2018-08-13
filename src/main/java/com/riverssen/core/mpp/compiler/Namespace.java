@@ -12,8 +12,6 @@
 
 package com.riverssen.core.mpp.compiler;
 
-import com.riverssen.core.RiverCoin;
-import com.riverssen.core.headers.HashAlgorithm;
 import com.riverssen.core.mpp.exceptions.CompileException;
 import com.riverssen.core.mpp.objects.*;
 import com.riverssen.core.mpp.objects.Float;
@@ -44,26 +42,6 @@ public class Namespace extends Container implements Serializable
 
     public static void check(Token methodCall)
     {
-        if(methodCall.getTokens().get(0).toString().equals("encrypt"))
-            methodCall.setCost(new RiverCoin("0.0015").toBigInteger());
-
-        if(methodCall.getTokens().get(0).toString().equals("sha256"))
-            methodCall.setCost(new RiverCoin("0.001").toBigInteger());
-
-        if(methodCall.getTokens().get(0).toString().equals("sha3"))
-            methodCall.setCost(new RiverCoin("0.001").toBigInteger());
-
-        if(methodCall.getTokens().get(0).toString().equals("keccak"))
-            methodCall.setCost(new RiverCoin("0.001").toBigInteger());
-
-        if(methodCall.getTokens().get(0).toString().equals("sha512"))
-            methodCall.setCost(new RiverCoin("0.005").toBigInteger());
-
-        if(methodCall.getTokens().get(0).toString().equals("sha3"))
-            methodCall.setCost(new RiverCoin("0.001").toBigInteger());
-
-        if(methodCall.getTokens().get(0).toString().equals("keccak"))
-            methodCall.setCost(new RiverCoin("0.001").toBigInteger());
     }
 
     public void setGlobal()
@@ -119,7 +97,7 @@ public class Namespace extends Container implements Serializable
         });
     }
 
-    public byte[] getStateChange(HashAlgorithm algorithm) throws Exception
+    public byte[] getStateChange(Object algorithm) throws Exception
     {
         if(getGlobal() != this) throw new Exception("Namespace '" + name + "' is not root");
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -130,7 +108,7 @@ public class Namespace extends Container implements Serializable
         objectOutputStream.flush();
         objectOutputStream.close();
 
-        return algorithm.encode(stream.toByteArray());
+        return null;//algorithm.encode(stream.toByteArray());
     }
 
     @Override

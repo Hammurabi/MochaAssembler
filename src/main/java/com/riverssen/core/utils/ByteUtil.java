@@ -12,24 +12,12 @@
 
 package com.riverssen.core.utils;
 
-import com.riverssen.core.algorithms.Sha3;
-import com.riverssen.core.headers.Exportable;
-import com.riverssen.core.headers.HashAlgorithm;
-import com.riverssen.core.headers.Serialisable;
-
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 public class ByteUtil
 {
-    private static HashAlgorithm dEncoder = new Sha3();
-
-    public static HashAlgorithm defaultEncoder()
-    {
-        return dEncoder;
-    }
-
     public static byte[] encode(long serializable)
     {
         byte array[] = new byte[]{
@@ -44,15 +32,6 @@ public class ByteUtil
         };
 
         return array;
-    }
-
-    public static byte[] encode(Serialisable serialisable)
-    {
-        return null;
-    }
-
-    public static void decode(Serialisable serialisable, byte data[])
-    {
     }
 
     public static byte[] encodeHash(String hash)
@@ -169,24 +148,6 @@ public class ByteUtil
 
         stream1.flush();
         stream1.close();
-    }
-
-    public static byte[] getBytes(Exportable exportable)
-    {
-        try{
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            DataOutputStream s = new DataOutputStream(stream);
-
-            exportable.export(s);
-
-            s.flush();
-            s.close();
-
-            return stream.toByteArray();
-        } catch (Exception e)
-        {
-            return new byte[0];
-        }
     }
 
     public static byte[] trim(byte[] bytes, int i, int i1) {
