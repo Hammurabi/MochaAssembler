@@ -27,6 +27,8 @@ public class Field
     private String          __realname__;
     private Set<Modifier>   __modifiers__;
     private long            __position__;
+    private boolean         __inherent__;
+    private Token           __size__;
 
     Executable              __opcodes__;
 
@@ -34,13 +36,22 @@ public class Field
     {
         __modifiers__   = new LinkedHashSet<>();
         __opcodes__     = new Executable();
+
+        if (token.getTokens().get(0).getType().equals(Token.Type.ARRAY))
+        {
+            __inherent__ = true;
+            __size__     = token.getTokens().get(0).getTokens().get(1);
+            __typename__ = token.getTokens().get(0).getTokens().get(0).toString();
+        }
         if (token.getType().equals(Token.Type.EMPTY_DECLARATION))
         {
-            __typename__ = token.getTokens().get(0).toString();
+            if (!__inherent__)
+                __typename__ = token.getTokens().get(0).toString();
             __realname__ = token.getTokens().get(1).toString();
         } else if (token.getType().equals(Token.Type.FULL_DECLARATION))
         {
-            __typename__ = token.getTokens().get(0).toString();
+            if (!__inherent__)
+                __typename__ = token.getTokens().get(0).toString();
             __realname__ = token.getTokens().get(1).toString();
         } else {
             new CompileException("Compilation Error: Token defined as field.", token).printStackTrace();
@@ -60,6 +71,8 @@ public class Field
 
     public long size(GlobalSpace space)
     {
+        if (__inherent__)
+            return __size__.getSizeAsLong(space);
         return space.getGlobalTypes().get(__typename__).size();
     }
 

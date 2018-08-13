@@ -24,6 +24,15 @@ public class Method
     private String          __methodname__;
     private Set<Modifier>   __modifiers__;
     private ArrayList<Byte> __opcodes__;
+    private boolean         __undeclared__;
+
+    public Method(String name)
+    {
+        __parenttype__  = null;
+        __modifiers__   = new LinkedHashSet<>();
+        __opcodes__     = new ArrayList();
+        __methodname__  = name;
+    }
 
     public Method(GlobalSpace space, Struct parent, Token token)
     {
@@ -62,5 +71,15 @@ public class Method
     public List<Byte> getOpCodes()
     {
         return __opcodes__;
+    }
+
+    public Object call(Token token)
+    {
+        return null;
+    }
+
+    public boolean isDeclared()
+    {
+        return __undeclared__;
     }
 }

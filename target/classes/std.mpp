@@ -15,3 +15,7 @@ public function calloc(ulong size) : ulong
 public function delete(ulong o) : void
 public function sizeof(void o) : ulong
 public function typeof(void o) : string
+
+class PublicAddress{
+    pointer address[25] = b
+}

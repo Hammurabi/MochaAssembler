@@ -65,7 +65,7 @@ public class CompiledProgram
                 case METHOD_DECLARATION:
                     Method method = new Method(space, null, t);
 
-                    if (space.getGlobalMethods().containsKey(method.getName()))
+                    if (space.getGlobalMethods().containsKey(method.getName()) && space.getGlobalMethods().get(method.getName()).isDeclared())
                     {
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __global__.");
                         System.exit(0);

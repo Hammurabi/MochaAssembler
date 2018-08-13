@@ -37,6 +37,14 @@ public class Struct
         this.__typename__ = "VOID";
     }
 
+    public Struct(String name, int size)
+    {
+        this.__fields__ = new LinkedHashSet<>();
+        this.__methods__= new LinkedHashSet<>();
+        this.__typesize__   = size;
+        this.__typename__ = name;
+    }
+
     public Struct(GlobalSpace space, Token token)
     {
         this.__fields__ = new LinkedHashSet<>();

@@ -643,12 +643,14 @@ public class ParsedProgram
             switch (currentToken.getType())
             {
                 case BRACKETS_OPEN:
-//                    Token brackets = new Token(Token.Type.BRACKETS);
+                    Token brackets = new Token(Token.Type.BRACKETS);
                     getNext(tokens, currentToken, "");
-                    parse(tokens, root, false, true, false, false, true);
+                    parse(tokens, brackets, false, true, false, false, true);
 //                    if (nextOfType(tokens, Token.Type.MATH_OP)) parseMath(tokens, root, parenthesis);
 //                    else
 //                        root.add(brackets);
+
+                    root.add(brackets);
                     break;
                 case BRACKETS_CLOSED:
                     if (inBrackets)
@@ -743,14 +745,33 @@ public class ParsedProgram
                         Token name = getNext(tokens, currentToken, "");
 
                         Token declaration = null;
-                        if (nextOfType(tokens, Token.Type.EQUALS))
+                        if (nextOfType(tokens, Token.Type.EQUALS) || nextOfType(tokens, Token.Type.BRACKETS_OPEN))
                         {
                             skipToValid(tokens);
-                            tokens.remove(0);
-                            declaration = new Token(Token.Type.FULL_DECLARATION).add(type).add(name);
-                            Token value = new Token(Token.Type.VALUE);
-                            parse(tokens, value, false, true, false, false, false, true);
-                            declaration.add(value);
+
+                            if (nextOfType(tokens, Token.Type.EQUALS))
+                            {
+                                tokens.remove(0);
+                                declaration = new Token(Token.Type.FULL_DECLARATION).add(type).add(name);
+                                Token value = new Token(Token.Type.VALUE);
+                                parse(tokens, value, false, true, false, false, false, true);
+                                declaration.add(value);
+                            } else if (nextOfType(tokens, Token.Type.BRACKETS_OPEN))
+                            {
+                                Token _brackets = getNextInBrackets(tokens, name, "error in braces.");
+                                if (nextOfType(tokens, Token.Type.EQUALS))
+                                {
+                                    tokens.remove(0);
+                                    Token arrayToken = new Token(ARRAY);
+                                    declaration = new Token(Token.Type.FULL_DECLARATION).add(arrayToken.add(type).add(_brackets)).add(name);
+                                    Token value = new Token(Token.Type.VALUE);
+                                    parse(tokens, value, false, true, false, false, false, true);
+                                    declaration.add(value);
+                                } else {
+                                    System.err.println("an error occurred...");
+                                    System.exit(0);
+                                }
+                            }
                         } else declaration = new Token(Token.Type.EMPTY_DECLARATION).add(type).add(name);
 
                         root.add(declaration);

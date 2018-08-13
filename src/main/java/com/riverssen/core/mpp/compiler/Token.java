@@ -13,6 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.mpp.compilation.GlobalSpace;
 import com.riverssen.core.mpp.compilation.MethodArgument;
 import com.riverssen.core.mpp.compilation.Struct;
 import com.riverssen.core.mpp.exceptions.CompileException;
@@ -111,6 +112,15 @@ public class Token implements Serializable
     {
         this.value = new StringBuilder(name);
         return this;
+    }
+
+    public long getSizeAsLong(GlobalSpace space)
+    {
+        if (getType().equals(Type.METHOD_CALL))
+            return (Long)space.getGlobalMethods().get(getTokens().get(0).toString()).call(getTokens().get(1));
+        else if (getType().equals(Type.NUMBER))
+            return Long.parseLong(toString());
+        return -1;
     }
 
     public static enum          Type implements Serializable {

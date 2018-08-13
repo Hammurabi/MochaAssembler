@@ -12,6 +12,8 @@
 
 package com.riverssen.core.mpp.compilation;
 
+import com.riverssen.core.mpp.compiler.Token;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,28 @@ public class GlobalSpace
         __globaltypes__ = new HashMap<>();
         __globalmethods__ = new HashMap<>();
         __globalfields__ = new HashMap<>();
+        __globaltypes__.put("pointer", new Struct("__pointer__", 8));
+        __globaltypes__.put("string", new Struct("__string__", 8));
+        __globaltypes__.put("ARRAY", new Struct("__array__", 8));
+        __globalmethods__.put("sizeof", new Method("sizeof") {
+            @Override
+            public Object call(Token token)
+            {
+                if (token.getTokens().size() != 1)
+                {
+                    System.err.println("sizeof(x) does not take more than one argument of (type-identifier).");
+                    System.exit(0);
+                }
+
+                if (!token.getTokens().get(0).getType().equals(Token.Type.IDENTIFIER))
+                {
+                    System.err.println("sizeof(x) does not take more than one argument of (type-identifier).");
+                    System.exit(0);
+                }
+
+                return __globaltypes__.get(token.getTokens().get(0).toString()).size();
+            }
+        });
     }
 
     public Map<String, Struct> getGlobalTypes()
