@@ -10,21 +10,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.riverssen.core.mpp.utils;
+package com.riverssen.core.utils;
 
 import com.riverssen.core.system.Logger;
 import com.riverssen.core.security.PubKey;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.security.Provider;
-import java.security.Security;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
-import java.util.Set;
 
 public class HashUtil
 {

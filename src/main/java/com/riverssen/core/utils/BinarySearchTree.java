@@ -10,30 +10,32 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.riverssen.core.mpp.utils;
+package com.riverssen.core.utils;
+import com.riverssen.core.headers.Encodeable;
 
-public class Handler<I>
+public class BinarySearchTree<T extends Encodeable>
 {
-    private volatile I i;
+    BinaryElement<T> root;
 
-    public Handler(I i)
+    public void add(T t)
     {
-        this.i = i;
     }
 
-    public I get()
+    public boolean contains(T t)
     {
-        return i;
+        return false;
     }
 
-    public void set(I i)
+    private class BinaryElement<T extends Encodeable> implements Encodeable
     {
-        this.i = i;
-    }
+        BinaryElement left;
+        BinaryElement right;
+        T             value;
 
-    @Override
-    public String toString()
-    {
-        return i + "";
+        @Override
+        public byte[] getBytes()
+        {
+            return new byte[0];
+        }
     }
 }

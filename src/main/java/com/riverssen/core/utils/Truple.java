@@ -10,32 +10,52 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.riverssen.core.mpp.utils;
-import com.riverssen.core.headers.Encodeable;
+package com.riverssen.core.utils;
 
-public class BinarySearchTree<T extends Encodeable>
+public class Truple<I, J, C>
 {
-    BinaryElement<T> root;
+    private I i;
+    private J j;
+    private C c;
 
-    public void add(T t)
+    public Truple(I i, J j, C c)
     {
+        this.i = i;
+        this.j = j;
+        this.c = c;
     }
 
-    public boolean contains(T t)
+    public synchronized I getI()
     {
-        return false;
+        return i;
     }
 
-    private class BinaryElement<T extends Encodeable> implements Encodeable
+    public synchronized void setI(I i)
     {
-        BinaryElement left;
-        BinaryElement right;
-        T             value;
+        this.i = i;
+    }
 
-        @Override
-        public byte[] getBytes()
-        {
-            return new byte[0];
-        }
+    public synchronized J getJ()
+    {
+        return j;
+    }
+
+    public synchronized void setJ(J j)
+    {
+        this.j = j;
+    }
+
+    @Override
+    public String toString()
+    {
+        return i + " " + j + " " + c;
+    }
+
+    public C getC() {
+        return c;
+    }
+
+    public void setC(C c) {
+        this.c = c;
     }
 }

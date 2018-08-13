@@ -1,4 +1,4 @@
-package com.riverssen.core.mpp.utils;
+package com.riverssen.core.utils;
 
 public class Base58 {
 

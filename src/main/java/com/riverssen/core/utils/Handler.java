@@ -10,18 +10,30 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.riverssen.core.mpp.utils;
+package com.riverssen.core.utils;
 
-public class TimeUtil
+public class Handler<I>
 {
-    public static String getPretty(String format)
+    private volatile I i;
+
+    public Handler(I i)
     {
-        long milliseconds = System.currentTimeMillis();
+        this.i = i;
+    }
 
-        int seconds = (int) (milliseconds / 1000) % 60 ;
-        int minutes = (int) ((milliseconds / (1000*60)) % 60);
-        int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+    public I get()
+    {
+        return i;
+    }
 
-        return format.replaceAll("H", hours + "").replaceAll("M", minutes + "").replaceAll("S", seconds + "");
+    public void set(I i)
+    {
+        this.i = i;
+    }
+
+    @Override
+    public String toString()
+    {
+        return i + "";
     }
 }

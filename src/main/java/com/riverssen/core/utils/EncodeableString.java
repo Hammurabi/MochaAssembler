@@ -10,63 +10,21 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.riverssen.core.mpp.utils;
+package com.riverssen.core.utils;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import com.riverssen.core.headers.Encodeable;
 
-public class LinkedList<T>
+public class EncodeableString implements Encodeable
 {
-    private Set<T>      set;
-    private Element<T>  root;
+    private final String string;
 
-    public int size()
+    public EncodeableString(String string)
     {
-        return set.size();
+        this.string = string;
     }
 
-    private class Element<T>
-    {
-        private T           t;
-        private Element<T>  next;
-
-        private Element(T t)
-        {
-            this.t = t;
-        }
-
-        private void add(Element<T> element)
-        {
-            if(next == null) next = element;
-            else next.add(element);
-        }
-    }
-
-    public LinkedList()
-    {
-        set = Collections.synchronizedSet(new HashSet<>());
-    }
-
-    public void add(T element)
-    {
-        if(set.contains(element)) return;
-
-        if(root == null)
-            root = new Element<>(element);
-        else root.add(new Element<>(element));
-
-        set.add(element);
-    }
-
-    public boolean contains(T element)
-    {
-        return set.contains(element);
-    }
-
-    public void removeEldestEntry()
-    {
-        set.remove(root.t);
-        root = root.next;
+    @Override
+    public byte[] getBytes() {
+        return string.getBytes();
     }
 }

@@ -10,21 +10,18 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.riverssen.core.mpp.utils;
+package com.riverssen.core.utils;
 
-import com.riverssen.core.headers.Encodeable;
-
-public class EncodeableString implements Encodeable
+public class TimeUtil
 {
-    private final String string;
-
-    public EncodeableString(String string)
+    public static String getPretty(String format)
     {
-        this.string = string;
-    }
+        long milliseconds = System.currentTimeMillis();
 
-    @Override
-    public byte[] getBytes() {
-        return string.getBytes();
+        int seconds = (int) (milliseconds / 1000) % 60 ;
+        int minutes = (int) ((milliseconds / (1000*60)) % 60);
+        int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+
+        return format.replaceAll("H", hours + "").replaceAll("M", minutes + "").replaceAll("S", seconds + "");
     }
 }
