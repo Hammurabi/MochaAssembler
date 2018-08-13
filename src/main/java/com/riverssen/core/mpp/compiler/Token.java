@@ -12,7 +12,6 @@
 
 package com.riverssen.core.mpp.compiler;
 
-import com.riverssen.core.RiverCoin;
 import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.compilation.Struct;
 import com.riverssen.core.mpp.exceptions.CompileException;
@@ -21,7 +20,6 @@ import com.riverssen.core.mpp.objects.*;
 import com.riverssen.core.mpp.objects.Boolean;
 import com.riverssen.core.mpp.objects.Float;
 import com.riverssen.core.mpp.objects.Integer;
-import com.riverssen.core.utils.ByteUtil;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -937,40 +935,40 @@ public class Token implements Serializable
         for(Token token : getTokens())
             cost = cost.add(token.calculateCost());
 
-        switch (type)
-        {
-            case IF:
-                cost = cost.add(new RiverCoin("0.000035").toBigInteger());
-                break;
-            case NEW:
-                cost = cost.add(new RiverCoin("0.0000035").toBigInteger());
-                break;
-            case INITIALIZATION:
-                cost = cost.add(new RiverCoin("0.00000135").toBigInteger());
-                break;
-            case FOR:
-                cost = cost.add(new RiverCoin("0.000025").toBigInteger());
-                break;
-            case CLASS_DECLARATION:
-                cost = cost.add(new RiverCoin("0.025").toBigInteger());
-                break;
-            case METHOD_CALL:
-                cost = cost.add(new RiverCoin("0.00025").toBigInteger());
-                break;
-            case EMPTY_DECLARATION:
-                cost = cost.add(new RiverCoin("0.0000025").toBigInteger());
-                break;
-            case FULL_DECLARATION:
-                cost = cost.add(new RiverCoin("0.0000075").toBigInteger());
-                break;
-            case WHILE:
-                cost = cost.add(new RiverCoin("0.000825").toBigInteger());
-                break;
-            default:
-                /** price per byte **/
-                cost = cost.add(new RiverCoin("0.0000000267028809").toBigInteger());
-                break;
-        }
+//        switch (type)
+//        {
+//            case IF:
+//                cost = cost.add(new RiverCoin("0.000035").toBigInteger());
+//                break;
+//            case NEW:
+//                cost = cost.add(new RiverCoin("0.0000035").toBigInteger());
+//                break;
+//            case INITIALIZATION:
+//                cost = cost.add(new RiverCoin("0.00000135").toBigInteger());
+//                break;
+//            case FOR:
+//                cost = cost.add(new RiverCoin("0.000025").toBigInteger());
+//                break;
+//            case CLASS_DECLARATION:
+//                cost = cost.add(new RiverCoin("0.025").toBigInteger());
+//                break;
+//            case METHOD_CALL:
+//                cost = cost.add(new RiverCoin("0.00025").toBigInteger());
+//                break;
+//            case EMPTY_DECLARATION:
+//                cost = cost.add(new RiverCoin("0.0000025").toBigInteger());
+//                break;
+//            case FULL_DECLARATION:
+//                cost = cost.add(new RiverCoin("0.0000075").toBigInteger());
+//                break;
+//            case WHILE:
+//                cost = cost.add(new RiverCoin("0.000825").toBigInteger());
+//                break;
+//            default:
+//                /** price per byte **/
+//                cost = cost.add(new RiverCoin("0.0000000267028809").toBigInteger());
+//                break;
+//        }
 
         return cost.add(cost);
     }
