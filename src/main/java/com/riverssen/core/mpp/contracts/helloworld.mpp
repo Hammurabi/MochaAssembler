@@ -39,6 +39,5 @@ class HelloWorld {
 
     public function mul() : void
     {
-        return 5 * y
     }
 }

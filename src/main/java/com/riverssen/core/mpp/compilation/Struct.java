@@ -84,7 +84,7 @@ public class Struct
                 case METHOD_DECLARATION:
                     Method method = new Method(space, this, t);
 
-                    if (__methods__.contains(method))
+                    if (__methods__.contains(method) && getMethod(method.getName()).isDeclared())
                     {
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);

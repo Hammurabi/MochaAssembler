@@ -76,11 +76,11 @@ public class CompiledProgram
                 case METHOD_EMPTY_DECLARATION:
                     Method method2 = new Method(space, null, t);
 
-                    if (space.getGlobalMethods().containsKey(method2.getName()))
-                    {
-                        System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __global__.");
-                        System.exit(0);
-                    }
+//                    if (space.getGlobalMethods().containsKey(method2.getName()))
+//                    {
+//                        System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __global__.");
+//                        System.exit(0);
+//                    }
 
                     space.getGlobalMethods().put(method2.getName(), method2);
                     break;
@@ -100,8 +100,10 @@ public class CompiledProgram
             }
         }
 
-        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
-            System.out.println(i);
+        System.out.println(space.getGlobalTypes().get("PublicAddress").size());
+
+//        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
+//            System.out.println(i);
     }
 
     private void simulate_contract_a(Token root)

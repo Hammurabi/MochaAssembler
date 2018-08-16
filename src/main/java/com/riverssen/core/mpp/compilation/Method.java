@@ -40,6 +40,7 @@ public class Method
         __modifiers__   = new LinkedHashSet<>();
         __opcodes__     = new ArrayList();
         __methodname__  = token.getTokens().get(0).toString();
+        __undeclared__  = true;
 
         int stack = -1;
         Map<String, Integer> referencemap = new HashMap<>();
@@ -60,7 +61,10 @@ public class Method
         MethodArgument argument = new MethodArgument(parent == null ? Struct.VOID : parent, args);
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
-        __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument));
+        {
+            __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument));
+            __undeclared__ = false;
+        }
     }
 
     public String getName()
@@ -80,6 +84,6 @@ public class Method
 
     public boolean isDeclared()
     {
-        return __undeclared__;
+        return !__undeclared__;
     }
 }
