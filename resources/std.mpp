@@ -18,5 +18,5 @@ public function typeof(void o) : string
 public function array_assign(void a, void b) : void
 
 class PublicAddress{
-    char address[25] = 3
+    char address[5 * sizeof(long)]
 }

@@ -117,9 +117,37 @@ public class Token implements Serializable
     public long getSizeAsLong(GlobalSpace space)
     {
         if (getType().equals(Type.METHOD_CALL))
-            return (Long)space.getGlobalMethods().get(getTokens().get(0).toString()).call(getTokens().get(1));
+            return (Long) space.getGlobalMethods().get(getTokens().get(0).toString()).call(getTokens().get(1));
         else if (getType().equals(Type.NUMBER))
             return Long.parseLong(toString());
+        else if (getType().equals(Type.ADDITION))
+        {
+            long a = getTokens().get(1).getSizeAsLong(space);
+            long b = getTokens().get(0).getSizeAsLong(space);
+
+            return a + b;
+        }
+        else if (getType().equals(Type.SUBTRACTION))
+        {
+            long a = getTokens().get(1).getSizeAsLong(space);
+            long b = getTokens().get(0).getSizeAsLong(space);
+
+            return a - b;
+        }
+        else if (getType().equals(Type.MULTIPLICATION))
+        {
+            long a = getTokens().get(1).getSizeAsLong(space);
+            long b = getTokens().get(0).getSizeAsLong(space);
+
+            return a * b;
+        }
+        else if (getType().equals(Type.SUBDIVISION))
+        {
+            long a = getTokens().get(1).getSizeAsLong(space);
+            long b = getTokens().get(0).getSizeAsLong(space);
+
+            return a / b;
+        }
         return -1;
     }
 

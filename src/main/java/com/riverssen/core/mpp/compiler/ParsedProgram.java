@@ -777,7 +777,7 @@ public class ParsedProgram
                             {
                                 skipToValid(tokens);
                                 tokens.remove(0);
-                                
+
                                 declaration = new Token(Token.Type.FULL_DECLARATION).add(type).add(name);
                                 Token value = new Token(Token.Type.VALUE);
                                 parse(tokens, value, false, true, false, false, false, true);

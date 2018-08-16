@@ -76,7 +76,8 @@ public class CompiledProgram
                 case METHOD_EMPTY_DECLARATION:
                     Method method2 = new Method(space, null, t);
 
-//                    if (space.getGlobalMethods().containsKey(method2.getName()))
+                    if (space.getGlobalMethods().containsKey(method2.getName()))
+                        break;
 //                    {
 //                        System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __global__.");
 //                        System.exit(0);
