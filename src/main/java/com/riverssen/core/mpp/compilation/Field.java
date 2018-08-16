@@ -40,7 +40,7 @@ public class Field
         if (token.getTokens().get(0).getType().equals(Token.Type.ARRAY))
         {
             __inherent__ = true;
-            __size__     = token.getTokens().get(0).getTokens().get(1);
+            __size__     = token.getTokens().get(0).getTokens().get(1).getTokens().get(0);
             __typename__ = token.getTokens().get(0).getTokens().get(0).toString();
         }
         if (token.getType().equals(Token.Type.EMPTY_DECLARATION))
