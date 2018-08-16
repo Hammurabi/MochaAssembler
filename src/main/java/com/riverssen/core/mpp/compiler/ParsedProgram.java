@@ -761,6 +761,7 @@ public class ParsedProgram
                             if (nextOfType(tokens, Token.Type.EQUALS))
                             {
                                 skipToValid(tokens);
+                                tokens.remove(0);
 
                                 Token arrayToken = new Token(ARRAY);
                                 declaration = new Token(Token.Type.FULL_DECLARATION).add(arrayToken.add(type).add(_brackets)).add(name);
@@ -774,7 +775,9 @@ public class ParsedProgram
                         } else {
                             if (nextOfType(tokens, Token.Type.EQUALS))
                             {
+                                skipToValid(tokens);
                                 tokens.remove(0);
+                                
                                 declaration = new Token(Token.Type.FULL_DECLARATION).add(type).add(name);
                                 Token value = new Token(Token.Type.VALUE);
                                 parse(tokens, value, false, true, false, false, false, true);
