@@ -44,10 +44,6 @@ public class GlobalSpace
         __globaltypes__.put("int256", new Struct("__int256_t", 32));
         __globaltypes__.put("uint256", new Struct("u_int256_t", 32));
 
-
-
-
-
         __globaltypes__.put("pointer", new Struct("__pointer__", 8));
         __globaltypes__.put("string", new Struct("__string__", 8));
         __globaltypes__.put("ARRAY", new Struct("__array__", 8));

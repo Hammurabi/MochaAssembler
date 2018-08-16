@@ -101,8 +101,6 @@ public class CompiledProgram
             }
         }
 
-        System.out.println(space.getGlobalTypes().get("PublicAddress").size());
-
 //        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
 //            System.out.println(i);
     }
