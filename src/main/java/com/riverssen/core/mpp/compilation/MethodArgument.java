@@ -25,6 +25,11 @@ public class MethodArgument
         this._arguments_ = _arguments_;
     }
 
+    public boolean addArgument(Field field)
+    {
+        return _arguments_.add(field);
+    }
+
     public boolean contains(String argument)
     {
         for (Field field : _arguments_)

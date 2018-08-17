@@ -13,6 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.mpp.compilation.Field;
 import com.riverssen.core.mpp.compilation.GlobalSpace;
 import com.riverssen.core.mpp.compilation.MethodArgument;
 import com.riverssen.core.mpp.compilation.Struct;
@@ -697,6 +698,22 @@ public class Token implements Serializable
 
         switch (type)
         {
+            case EMPTY_DECLARATION:
+                Field field = new Field(null, this);
+
+                if (! argument.addArgument(field))
+                {
+                    System.err.println("compilation error: '" + this.toString() + "' already exists in function.");
+                    System.exit(0);
+                } break;
+            case FULL_DECLARATION:
+                Field fullField = new Field(null, this);
+
+                if (! argument.addArgument(fullField))
+                {
+                    System.err.println("compilation error: '" + this.toString() + "' already exists in function.");
+                    System.exit(0);
+                } break;
             case BRACES:
                 for (Token token : getTokens())
                     executable.add(token.getInstruction());

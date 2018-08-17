@@ -12,6 +12,10 @@
 
 package com.riverssen.core.mpp;
 
+import com.riverssen.core.mpp.compilation.Field;
+import com.riverssen.core.mpp.compilation.GlobalSpace;
+import com.riverssen.core.mpp.compilation.StackTrace;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +23,14 @@ import java.util.List;
 public class Executable
 {
     public List<Byte>          op_codes;
+    public List<String>        op_strns;
+    public GlobalSpace         space;
 //    public List<List<Byte>>    funcs;
 
     public Executable()
     {
         op_codes = new ArrayList<>();
+        op_strns = new ArrayList<>();
     }
 
     public void add(int code)
@@ -73,6 +80,17 @@ public class Executable
         _int_.flip();
 
         return _int_.array();
+    }
+
+    public void push_(Field field, StackTrace trace)
+    {
+        if (field.getValidType() < 255)
+        {
+        }
+        else {
+            add(instructions.push);
+            add(convertLong(field.size(space)));
+        }
     }
 
 //    public Executable(final byte op_codes[])

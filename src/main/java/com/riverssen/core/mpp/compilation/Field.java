@@ -16,6 +16,7 @@ import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.compiler.Modifier;
 import com.riverssen.core.mpp.compiler.Token;
 import com.riverssen.core.mpp.exceptions.CompileException;
+import com.riverssen.core.mpp.instructions;
 import com.riverssen.core.mpp.type;
 
 import java.util.LinkedHashSet;
@@ -29,6 +30,7 @@ public class Field
     private long            __position__;
     private boolean         __inherent__;
     private Token           __size__;
+    private Token           __value__;
 
     Executable              __opcodes__;
 
@@ -36,6 +38,7 @@ public class Field
     {
         __modifiers__   = new LinkedHashSet<>();
         __opcodes__     = new Executable();
+        __value__       = null;
 
         if (token.getTokens().get(0).getType().equals(Token.Type.ARRAY))
         {
@@ -53,15 +56,21 @@ public class Field
             if (!__inherent__)
                 __typename__ = token.getTokens().get(0).toString();
             __realname__ = token.getTokens().get(1).toString();
+            __value__    = token.getTokens().get(2);
         } else {
             new CompileException("Compilation Error: Token defined as field.", token).printStackTrace();
             System.exit(0);
         }
     }
 
-    public void __new__(Executable executable)
+    public void __new__(Executable executable, GlobalSpace space)
     {
         executable.add(__opcodes__.op_codes);
+    }
+
+    public void __newonstack__(Executable executable, StackTrace trace)
+    {
+        executable.push_(this, trace);
     }
 
     public void setLocation(long typesize__)

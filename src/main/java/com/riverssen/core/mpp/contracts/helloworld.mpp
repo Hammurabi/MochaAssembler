@@ -39,5 +39,6 @@ class HelloWorld {
 
     public function mul() : void
     {
+        int y = 0
     }
 }
