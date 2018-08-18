@@ -21,6 +21,7 @@ import java.io.*;
 
 public class MainCompiler
 {
+    /** import std.mpp **/
     private static String stdlib()
             throws IOException
     {

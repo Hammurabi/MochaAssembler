@@ -16,7 +16,6 @@ import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.compiler.Modifier;
 import com.riverssen.core.mpp.compiler.Token;
 import com.riverssen.core.mpp.exceptions.CompileException;
-import com.riverssen.core.mpp.instructions;
 import com.riverssen.core.mpp.type;
 
 import java.util.LinkedHashSet;
@@ -130,5 +129,20 @@ public class Field
     public String getTypeName()
     {
         return __typename__;
+    }
+
+    public void instantiate(Executable executable, StackTrace trace)
+    {
+        if (__value__ != null)
+        {
+            if (__value__.getTokens().get(0).getType().equals(Token.Type.NEW))
+            {
+                if (__value__.getTokens().get(0).toString().equals("METHOD_CALL"))
+                {
+                } else {
+                }
+            }
+        } else {
+        }
     }
 }

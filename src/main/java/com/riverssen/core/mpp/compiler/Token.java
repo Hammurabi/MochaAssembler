@@ -13,10 +13,8 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.mpp.compilation.*;
 import com.riverssen.core.mpp.compilation.Field;
-import com.riverssen.core.mpp.compilation.GlobalSpace;
-import com.riverssen.core.mpp.compilation.MethodArgument;
-import com.riverssen.core.mpp.compilation.Struct;
 import com.riverssen.core.mpp.exceptions.CompileException;
 import com.riverssen.core.mpp.instructions;
 import com.riverssen.core.mpp.objects.*;
@@ -689,10 +687,10 @@ public class Token implements Serializable
 
     public List<Byte> getInstruction()
     {
-        return getInstruction(null);
+        return getInstruction(new MethodArgument(Struct.VOID, new LinkedHashSet<>()), new GlobalSpace());
     }
 
-    public List<Byte> getInstruction(MethodArgument argument)
+    public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space)
     {
         Executable executable = new Executable();
 
@@ -703,6 +701,7 @@ public class Token implements Serializable
 
                 if (! argument.addArgument(field))
                 {
+                    field.instantiate(executable, new StackTrace(space));
                     System.err.println("compilation error: '" + this.toString() + "' already exists in function.");
                     System.exit(0);
                 } break;
@@ -711,6 +710,7 @@ public class Token implements Serializable
 
                 if (! argument.addArgument(fullField))
                 {
+                    fullField.instantiate(executable, new StackTrace(space));
                     System.err.println("compilation error: '" + this.toString() + "' already exists in function.");
                     System.exit(0);
                 } break;
@@ -740,7 +740,6 @@ public class Token implements Serializable
                         break;
                 }
                 break;
-
             case STRING:
                 String push_s_v = toString();
                 push_s_v = push_s_v.substring(1, push_s_v.length() - 1);
@@ -761,7 +760,7 @@ public class Token implements Serializable
 
             case ADDITION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument));
+                    executable.add(token.getInstruction(argument, space));
                 executable.add(instructions.op_add);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -769,7 +768,7 @@ public class Token implements Serializable
 
             case SUBTRACTION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument));
+                    executable.add(token.getInstruction(argument, space));
                 executable.add(instructions.op_sub);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -777,7 +776,7 @@ public class Token implements Serializable
 
             case MULTIPLICATION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument));
+                    executable.add(token.getInstruction(argument, space));
                 executable.add(instructions.op_mul);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -785,7 +784,7 @@ public class Token implements Serializable
 
             case SUBDIVISION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument));
+                    executable.add(token.getInstruction(argument, space));
                 executable.add(instructions.op_div);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -793,7 +792,7 @@ public class Token implements Serializable
 
             case POW:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument));
+                    executable.add(token.getInstruction(argument, space));
                 executable.add(instructions.op_pow);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));

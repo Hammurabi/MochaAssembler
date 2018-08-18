@@ -15,8 +15,64 @@ public function calloc(ulong size) : ulong
 public function delete(ulong o) : void
 public function sizeof(void o) : ulong
 public function typeof(void o) : string
-public function array_assign(void a, void b) : void
+public function memcpy(void dst, void src, ulong size) : void
+
+//template <typename A>
+//class sp_t{
+//    A _ptr_[1]
+//
+//    public function sp_t(A val) : void
+//    {
+//        this._ptr_[0] = val
+//    }
+//
+//    public function get() : A
+//    {
+//        return _ptr_[0]
+//    }
+//}
 
 class PublicAddress{
-    char address[25 * sizeof(char)]
+    void address[25]
+
+    public function PublicAddress(string a) : void
+    {
+        memcpy(address, a, 25)
+    }
 }
+
+//namespace std
+//{
+//    template <typename A>
+//    class bst_node{
+//        A           value
+//        bst_node<A> right_child = nullptr
+//        bst_node<A> left_child = nullptr
+//
+//        bst_node(A value)
+//        {
+//            this.value = value
+//        }
+//    }
+//
+//    template <typename A>
+//    class bst{
+//        bst_node<A> root
+//
+//        public function add(A a) : void
+//        {
+//            if (root != null)
+//                root.add(a)
+//            else root = new bst_node(a)
+//        }
+//    }
+//
+//    template <typename A, typename B>
+//    class map{
+//    }
+//
+//    //template<ulong L>
+//    //class Key{
+//    //    void key[L];
+//    //}
+//}

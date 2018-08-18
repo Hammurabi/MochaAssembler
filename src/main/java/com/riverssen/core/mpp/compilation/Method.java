@@ -62,7 +62,7 @@ public class Method
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         {
-            __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument));
+            __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument, space));
             __undeclared__ = false;
         }
     }
