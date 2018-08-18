@@ -14,8 +14,8 @@
 //
 //import com.riverssen.core.RiverCoin;
 //import com.riverssen.core.mpp.compiler.*;
-//import com.riverssen.core.mpp.objects.RSAPK;
-//import com.riverssen.core.mpp.objects.StringObject;
+//import com.riverssen.core.mpp.interpreter.objects.RSAPK;
+//import com.riverssen.core.mpp.interpreter.objects.StringObject;
 //import com.riverssen.core.security.Wallet;
 //import com.riverssen.core.utils.Base58;
 //import com.riverssen.core.utils.ByteUtil;
@@ -77,7 +77,7 @@
 //        global.get("HelloWorld").setField("msg", new Message(wallet.getPublicKey().getAddress()));
 //        global.get("HelloWorld").callMethod("setMessage", new StringObject("My name jeff."));
 //
-//        KeyPair keyPair = com.riverssen.core.mpp.objects.RSA.buildKeyPair();
+//        KeyPair keyPair = com.riverssen.core.mpp.interpreter.objects.RSA.buildKeyPair();
 //
 //        System.out.println(global.get("HelloWorld").callMethod("getMessage"));
 //        global.get("Messenger").callMethod("Messenger");

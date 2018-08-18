@@ -797,8 +797,8 @@ public class ParsedProgram
                     {
                         Token methodCall = new Token(Token.Type.METHOD_CALL).add(type).add(getNextInParenthesis(tokens, currentToken, "Method calls should end with parenthesis."));
 
-                        if(!root.getType().equals(PROCEDURAL_ACCESS))
-                            Namespace.check(methodCall);
+//                        if(!root.getType().equals(PROCEDURAL_ACCESS))
+//                            Namespace.check(methodCall);
 
                         if(tokens.size() > 0 && tokens.get(0).getType().equals(PROCEDURAL_ACCESS))
                         {

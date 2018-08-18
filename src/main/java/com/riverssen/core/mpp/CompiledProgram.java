@@ -12,10 +12,10 @@
 
 package com.riverssen.core.mpp;
 
-import com.riverssen.core.mpp.compilation.Field;
-import com.riverssen.core.mpp.compilation.GlobalSpace;
-import com.riverssen.core.mpp.compilation.Method;
-import com.riverssen.core.mpp.compilation.Struct;
+import com.riverssen.core.mpp.compiler.Field;
+import com.riverssen.core.mpp.compiler.GlobalSpace;
+import com.riverssen.core.mpp.compiler.Method;
+import com.riverssen.core.mpp.compiler.Struct;
 import com.riverssen.core.mpp.compiler.ParsedProgram;
 import com.riverssen.core.mpp.compiler.Token;
 import com.riverssen.core.utils.Tuple;

@@ -14,7 +14,6 @@ package com.riverssen.core.mpp;
 
 import com.riverssen.core.mpp.compiler.LexedProgram;
 import com.riverssen.core.mpp.compiler.ParsedProgram;
-import com.riverssen.core.mpp.contracts.Contracts;
 import com.riverssen.core.mpp.exceptions.ParseException;
 
 import java.io.*;
@@ -27,7 +26,7 @@ public class MainCompiler
     {
         String utf_program = "";
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(Contracts.class.getClassLoader().getResource("std.mpp").openStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(MainCompiler.class.getClassLoader().getResource("std.mpp").openStream()));
 
         String line = "";
 

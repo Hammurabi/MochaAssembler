@@ -12,9 +12,9 @@
 
 package com.riverssen.core.mpp;
 
-import com.riverssen.core.mpp.compilation.Field;
-import com.riverssen.core.mpp.compilation.GlobalSpace;
-import com.riverssen.core.mpp.compilation.StackTrace;
+import com.riverssen.core.mpp.compiler.Field;
+import com.riverssen.core.mpp.compiler.GlobalSpace;
+import com.riverssen.core.mpp.compiler.StackTrace;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

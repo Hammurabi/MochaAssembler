@@ -1,4 +1,4 @@
-package com.riverssen.core.mpp.compilation;
+package com.riverssen.core.mpp.compiler;
 
 import java.util.ArrayList;
 import java.util.List;

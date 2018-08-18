@@ -13,13 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
-import com.riverssen.core.mpp.compilation.*;
-import com.riverssen.core.mpp.compilation.Field;
-import com.riverssen.core.mpp.exceptions.CompileException;
 import com.riverssen.core.mpp.instructions;
-import com.riverssen.core.mpp.objects.*;
-import com.riverssen.core.mpp.objects.Boolean;
-import com.riverssen.core.mpp.objects.Float;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -409,222 +403,222 @@ public class Token implements Serializable
         }
     }
 
-    public Container interpret(Container context, Container self, Container fcontext, Container fself, boolean proc, Container ...args) throws CompileException
-    {
-        return this.interpret(context, self, fcontext, fself, Container.EMPTY, proc, false, args);
-    }
-
-    public Container interpret(Container context, Container self, Container fcontext, Container fself, boolean proc, boolean mproc, Container ...args) throws CompileException
-    {
-        return this.interpret(context, self, fcontext, fself, Container.EMPTY, proc, mproc, args);
-
-    }
-
-    public Container interpret(Container context, Container self, Container fcontext, Container fself, Container initType, boolean proc, boolean mproc, Container ...args) throws CompileException
-    {
-        return this.interpret("null", context, self, fcontext, fself, initType, proc, mproc, args);
-    }
-
-    public Container interpret(String accessorType, Container context, Container self, Container fcontext, Container fself, Container initType, boolean proc, boolean mproc, Container ...args) throws CompileException
-    {
-        switch (type)
-        {
-            case MATH_OP:
-                    Container b = getTokens().get(0).interpret(context, self, fcontext, fself, initType, proc, mproc, args);
-                    Container a = getTokens().get(1).interpret(context, self, fcontext, fself, initType, proc, mproc, args);
-
-                    switch (toString().charAt(0))
-                    {
-                        case '*':
-                            return a.multiplication(b);
-                        case '+':
-                            return a.addition(b);
-                        case '-':
-                            return a.submission(b);
-                        case '/':
-                            return a.subdivision(b);
-                        case '%':
-                            return a.modulo(b);
-                        case '^':
-                            return a.power(b);
-                    }
-
-                    return Container.EMPTY;
-            case BRACKETS:
-                return getTokens().get(0).interpret(context, self, fcontext, fself, proc, args).bracketGet(getTokens().get(1).interpret(context, self, fcontext, fself, proc, args));
-            case NEW:
-                if(getTokens().size() > 0)
-                {
-                    Container arguments[] = new Container[getTokens().get(1).getTokens().size()];
-                    for(int i = 0; i < arguments.length; i ++)
-                        arguments[i] = getTokens().get(1).getTokens().get(i).interpret(context, self, fcontext, fself, proc, args);
-
-                    String methodName = getTokens().get(0).toString();
-
-                    if(context.get(methodName) != null) return context.callMethod(toString(), arguments);
-                    else if(self.get(methodName) != null) return self.callMethod(toString(), arguments);
-                    else if(context.getGlobal().get(methodName) != null) return context.getGlobal().callMethod(methodName, arguments);
-                    else throw new CompileException("method '" + methodName + "' not defined.", this);
-                }
-
-                if(context.get(toString()) != null) return context.callMethod(toString());
-                else if(self.get(toString()) != null) return self.callMethod(toString());
-                else if(context.getGlobal().get(toString()) != null) return context.getGlobal().callMethod(toString());
-                else throw new CompileException("identifier 'new " + toString() + "' not defined.", this);
-            case FULL_DECLARATION:
-                String type = getTokens().get(0).toString();
-                String name = getTokens().get(1).toString();
-                Token value = getTokens().get(2);
-
-                Container initType0 = null;
-
-                try{
-                    initType0 = fself.getGlobal().get(type.toString());
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-//                if (initType0 == null)
-//                    throw new CompileException("Type '" + type + "' doesn't exist.", this);
-
-                if (context.get(name) != null) throw new CompileException("object '" + name + "' already defined.", this);
-
-                Container returnedValue = value.interpret(context, self, fcontext, fself, initType0, proc, mproc, args);
-
-                context.setField(name, returnedValue);
-                break;
-            case INITIALIZATION:
-                String name_ = getTokens().get(0).toString();
-                Token value_ = getTokens().get(1);
-
-                if(context.get(name_) != null)
-                {
-                    Container initType0_ = null;
-                    try{fself.getGlobal().get(context.get(name_).getType());} catch (Exception e)
-                    {
-                        initType0_ = Container.VOID;
-                    }
-                    Container returnedValue_ = value_.interpret(context, self, fcontext, fself, initType0_, proc, mproc, args);
-
-                    context.setField(name_, returnedValue_);
-                }
-                else {
-                    Container initType0_ = null;
-                    try{fself.getGlobal().get(self.get(name_).getType());} catch (Exception e)
-                    {
-                        initType0_ = Container.VOID;
-                    }
-                    Container returnedValue_ = value_.interpret(context, self, fcontext, fself, initType0_, proc, mproc, args);
-
-                    self.setField(name_, returnedValue_);
-                }
-                break;
-            case PROCEDURAL_ACCESS:
-                Container returnee   = getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);//self;
-                String accessor_type = returnee.name;
-//                Container rvlue = getRoot().get(0).interpret(context, self, args);
-
-//                if(context.get(getRoot().get(0).toString()) != null) returnee = context.get(getRoot().get(0).toString());
-//                else if(self.get(getRoot().get(0).toString()) != null) returnee = self.get(getRoot().get(0).toString());
-
-//                else throw new CompileException("identifier '" + getRoot().get(0).toString() + "' not defined.", this);
-
-                if(getTokens().get(1).getType().equals(Type.INITIALIZATION))
-                {
-                    String name__ = getTokens().get(0).toString();
-                    Token value__ = getTokens().get(1);
-
-                    if (returnee.get(name__) != null){
-                        Container initType0_ = null;
-                        try{initType0_ = fself.getGlobal().get(returnee.get(name__).getType());} catch (Exception e)
-                        {
-                            initType0_ = Container.VOID;
-                        }
-                        Container returnedValue__ = value__.interpret(accessor_type, context, self, fcontext, fself, initType0_, true, false, args);
-
-                        returnee.setField(name__, returnedValue__);
-                    }
-                    else {
-                        Container initType0_ = null;
-                        try{fself.getGlobal().get(self.get(name__).getType());} catch (Exception e)
-                        {
-                            initType0_ = Container.VOID;
-                        }
-                        Container returnedValue__ = value__.interpret(accessor_type, context, self, fcontext, fself, initType0_, true, false, args);
-
-                        self.setField(name__, returnedValue__);
-                    }
-                } else
-                return getTokens().get(1).interpret(accessor_type, returnee, Container.EMPTY, fcontext, fself, initType, true, false, args);
-            case VALUE:
-                    return getTokens().get(0).interpret(context, self, fcontext, fself, initType, proc, mproc, args);
-            case INPUT:
-                    return getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
-            case NUMBER:
-                if(initType == null) return new uint256(toString());
-                    return initType.newInstance(Long.valueOf(toString()));
-            case DECIMAL:
-                    return new Float(Double.valueOf(toString()));
-            case IDENTIFIER:
-                    if(context.get(toString()) != null) return context.get(toString());
-                    else if(self.get(toString()) != null) return self.get(toString());
-                    else throw new CompileException("identifier '" + toString() + "' not defined.", this);
-            case METHOD_CALL:
-                        if(proc)
-                        {
-                            if(getTokens().size() == 0) throw new CompileException("method '" + this.toString() + "' not defined.", this);
-                            Container arguments[] = new Container[getTokens().get(1).getTokens().size()];
-                            for(int i = 0; i < arguments.length; i ++)
-                                arguments[i] = getTokens().get(1).getTokens().get(i).interpret(fcontext, fself, fcontext, fself, proc, mproc, args);
-
-                            String methodName = getTokens().get(0).toString();
-
-                            if(context.get(methodName) != null) return context.callMethod(methodName, arguments);
-                            else throw new CompileException("method '" + methodName + "' not defined in '" + context + "'.", this);
-                        }
-                        else {
-                            if(getTokens().size() == 0) throw new CompileException("method '" + this.toString() + "' not defined.", this);
-                            Container arguments[] = new Container[getTokens().get(1).getTokens().size()];
-                            for(int i = 0; i < arguments.length; i ++)
-                                arguments[i] = getTokens().get(1).getTokens().get(i).interpret(fcontext, fself, fcontext, fself, proc, mproc, args);
-
-                            String methodName = getTokens().get(0).toString();
-
-                            if(fcontext.get(methodName) != null) return fcontext.callMethod(methodName, arguments);
-                            else if(fself.get(methodName) != null) return fself.callMethod(methodName, arguments);
-                            else if(fcontext.getGlobal().get(methodName) != null) return fcontext.getGlobal().callMethod(methodName, arguments);
-                            else throw new CompileException("method '" + methodName + "' not defined.", this);
-                        }
-            case ASSERT:
-                Container a_ = getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
-                Container b_ = getTokens().get(1).interpret(context, self, fcontext, fself, proc, args);
-                return new Boolean(a_.equals(b_));
-            case STRING: return new StringObject(toString().substring(1, toString().length() - 1));
-            case IF:
-                Container conditions = getTokens().get(0).getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
-                if((boolean)conditions.asJavaObject() == true)
-                {
-                    Token token = getTokens().get(1);
-                    LoopContainer container = new LoopContainer(context);
-
-                    if(token.getType().equals(Type.BRACES))
-                    {
-                        for (Token tkn : token.getTokens())
-                            tkn.interpret(container, self, fcontext, fself, proc, args);
-                    } else token.interpret(container, self, fcontext, fself, proc, args);
-                }
-                break;
-            case PARENTHESIS:
-                    Container retval = Container.EMPTY;
-                    for(Token token : getTokens()) retval = token.interpret(context, self, fcontext, fself, proc, args);
-
-                    return retval;
-            case RETURN:
-                return getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
-        }
-        return null;
-    }
+//    public Container interpret(Container context, Container self, Container fcontext, Container fself, boolean proc, Container ...args) throws CompileException
+//    {
+//        return this.interpret(context, self, fcontext, fself, Container.EMPTY, proc, false, args);
+//    }
+//
+//    public Container interpret(Container context, Container self, Container fcontext, Container fself, boolean proc, boolean mproc, Container ...args) throws CompileException
+//    {
+//        return this.interpret(context, self, fcontext, fself, Container.EMPTY, proc, mproc, args);
+//
+//    }
+//
+//    public Container interpret(Container context, Container self, Container fcontext, Container fself, Container initType, boolean proc, boolean mproc, Container ...args) throws CompileException
+//    {
+//        return this.interpret("null", context, self, fcontext, fself, initType, proc, mproc, args);
+//    }
+//
+//    public Container interpret(String accessorType, Container context, Container self, Container fcontext, Container fself, Container initType, boolean proc, boolean mproc, Container ...args) throws CompileException
+//    {
+//        switch (type)
+//        {
+//            case MATH_OP:
+//                    Container b = getTokens().get(0).interpret(context, self, fcontext, fself, initType, proc, mproc, args);
+//                    Container a = getTokens().get(1).interpret(context, self, fcontext, fself, initType, proc, mproc, args);
+//
+//                    switch (toString().charAt(0))
+//                    {
+//                        case '*':
+//                            return a.multiplication(b);
+//                        case '+':
+//                            return a.addition(b);
+//                        case '-':
+//                            return a.submission(b);
+//                        case '/':
+//                            return a.subdivision(b);
+//                        case '%':
+//                            return a.modulo(b);
+//                        case '^':
+//                            return a.power(b);
+//                    }
+//
+//                    return Container.EMPTY;
+//            case BRACKETS:
+//                return getTokens().get(0).interpret(context, self, fcontext, fself, proc, args).bracketGet(getTokens().get(1).interpret(context, self, fcontext, fself, proc, args));
+//            case NEW:
+//                if(getTokens().size() > 0)
+//                {
+//                    Container arguments[] = new Container[getTokens().get(1).getTokens().size()];
+//                    for(int i = 0; i < arguments.length; i ++)
+//                        arguments[i] = getTokens().get(1).getTokens().get(i).interpret(context, self, fcontext, fself, proc, args);
+//
+//                    String methodName = getTokens().get(0).toString();
+//
+//                    if(context.get(methodName) != null) return context.callMethod(toString(), arguments);
+//                    else if(self.get(methodName) != null) return self.callMethod(toString(), arguments);
+//                    else if(context.getGlobal().get(methodName) != null) return context.getGlobal().callMethod(methodName, arguments);
+//                    else throw new CompileException("method '" + methodName + "' not defined.", this);
+//                }
+//
+//                if(context.get(toString()) != null) return context.callMethod(toString());
+//                else if(self.get(toString()) != null) return self.callMethod(toString());
+//                else if(context.getGlobal().get(toString()) != null) return context.getGlobal().callMethod(toString());
+//                else throw new CompileException("identifier 'new " + toString() + "' not defined.", this);
+//            case FULL_DECLARATION:
+//                String type = getTokens().get(0).toString();
+//                String name = getTokens().get(1).toString();
+//                Token value = getTokens().get(2);
+//
+//                Container initType0 = null;
+//
+//                try{
+//                    initType0 = fself.getGlobal().get(type.toString());
+//                } catch (Exception e)
+//                {
+//                    e.printStackTrace();
+//                }
+//
+////                if (initType0 == null)
+////                    throw new CompileException("Type '" + type + "' doesn't exist.", this);
+//
+//                if (context.get(name) != null) throw new CompileException("object '" + name + "' already defined.", this);
+//
+//                Container returnedValue = value.interpret(context, self, fcontext, fself, initType0, proc, mproc, args);
+//
+//                context.setField(name, returnedValue);
+//                break;
+//            case INITIALIZATION:
+//                String name_ = getTokens().get(0).toString();
+//                Token value_ = getTokens().get(1);
+//
+//                if(context.get(name_) != null)
+//                {
+//                    Container initType0_ = null;
+//                    try{fself.getGlobal().get(context.get(name_).getType());} catch (Exception e)
+//                    {
+//                        initType0_ = Container.VOID;
+//                    }
+//                    Container returnedValue_ = value_.interpret(context, self, fcontext, fself, initType0_, proc, mproc, args);
+//
+//                    context.setField(name_, returnedValue_);
+//                }
+//                else {
+//                    Container initType0_ = null;
+//                    try{fself.getGlobal().get(self.get(name_).getType());} catch (Exception e)
+//                    {
+//                        initType0_ = Container.VOID;
+//                    }
+//                    Container returnedValue_ = value_.interpret(context, self, fcontext, fself, initType0_, proc, mproc, args);
+//
+//                    self.setField(name_, returnedValue_);
+//                }
+//                break;
+//            case PROCEDURAL_ACCESS:
+//                Container returnee   = getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);//self;
+//                String accessor_type = returnee.name;
+////                Container rvlue = getRoot().get(0).interpret(context, self, args);
+//
+////                if(context.get(getRoot().get(0).toString()) != null) returnee = context.get(getRoot().get(0).toString());
+////                else if(self.get(getRoot().get(0).toString()) != null) returnee = self.get(getRoot().get(0).toString());
+//
+////                else throw new CompileException("identifier '" + getRoot().get(0).toString() + "' not defined.", this);
+//
+//                if(getTokens().get(1).getType().equals(Type.INITIALIZATION))
+//                {
+//                    String name__ = getTokens().get(0).toString();
+//                    Token value__ = getTokens().get(1);
+//
+//                    if (returnee.get(name__) != null){
+//                        Container initType0_ = null;
+//                        try{initType0_ = fself.getGlobal().get(returnee.get(name__).getType());} catch (Exception e)
+//                        {
+//                            initType0_ = Container.VOID;
+//                        }
+//                        Container returnedValue__ = value__.interpret(accessor_type, context, self, fcontext, fself, initType0_, true, false, args);
+//
+//                        returnee.setField(name__, returnedValue__);
+//                    }
+//                    else {
+//                        Container initType0_ = null;
+//                        try{fself.getGlobal().get(self.get(name__).getType());} catch (Exception e)
+//                        {
+//                            initType0_ = Container.VOID;
+//                        }
+//                        Container returnedValue__ = value__.interpret(accessor_type, context, self, fcontext, fself, initType0_, true, false, args);
+//
+//                        self.setField(name__, returnedValue__);
+//                    }
+//                } else
+//                return getTokens().get(1).interpret(accessor_type, returnee, Container.EMPTY, fcontext, fself, initType, true, false, args);
+//            case VALUE:
+//                    return getTokens().get(0).interpret(context, self, fcontext, fself, initType, proc, mproc, args);
+//            case INPUT:
+//                    return getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
+//            case NUMBER:
+//                if(initType == null) return new uint256(toString());
+//                    return initType.newInstance(Long.valueOf(toString()));
+//            case DECIMAL:
+//                    return new Float(Double.valueOf(toString()));
+//            case IDENTIFIER:
+//                    if(context.get(toString()) != null) return context.get(toString());
+//                    else if(self.get(toString()) != null) return self.get(toString());
+//                    else throw new CompileException("identifier '" + toString() + "' not defined.", this);
+//            case METHOD_CALL:
+//                        if(proc)
+//                        {
+//                            if(getTokens().size() == 0) throw new CompileException("method '" + this.toString() + "' not defined.", this);
+//                            Container arguments[] = new Container[getTokens().get(1).getTokens().size()];
+//                            for(int i = 0; i < arguments.length; i ++)
+//                                arguments[i] = getTokens().get(1).getTokens().get(i).interpret(fcontext, fself, fcontext, fself, proc, mproc, args);
+//
+//                            String methodName = getTokens().get(0).toString();
+//
+//                            if(context.get(methodName) != null) return context.callMethod(methodName, arguments);
+//                            else throw new CompileException("method '" + methodName + "' not defined in '" + context + "'.", this);
+//                        }
+//                        else {
+//                            if(getTokens().size() == 0) throw new CompileException("method '" + this.toString() + "' not defined.", this);
+//                            Container arguments[] = new Container[getTokens().get(1).getTokens().size()];
+//                            for(int i = 0; i < arguments.length; i ++)
+//                                arguments[i] = getTokens().get(1).getTokens().get(i).interpret(fcontext, fself, fcontext, fself, proc, mproc, args);
+//
+//                            String methodName = getTokens().get(0).toString();
+//
+//                            if(fcontext.get(methodName) != null) return fcontext.callMethod(methodName, arguments);
+//                            else if(fself.get(methodName) != null) return fself.callMethod(methodName, arguments);
+//                            else if(fcontext.getGlobal().get(methodName) != null) return fcontext.getGlobal().callMethod(methodName, arguments);
+//                            else throw new CompileException("method '" + methodName + "' not defined.", this);
+//                        }
+//            case ASSERT:
+//                Container a_ = getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
+//                Container b_ = getTokens().get(1).interpret(context, self, fcontext, fself, proc, args);
+//                return new Boolean(a_.equals(b_));
+//            case STRING: return new StringObject(toString().substring(1, toString().length() - 1));
+//            case IF:
+//                Container conditions = getTokens().get(0).getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
+//                if((boolean)conditions.asJavaObject() == true)
+//                {
+//                    Token token = getTokens().get(1);
+//                    LoopContainer container = new LoopContainer(context);
+//
+//                    if(token.getType().equals(Type.BRACES))
+//                    {
+//                        for (Token tkn : token.getTokens())
+//                            tkn.interpret(container, self, fcontext, fself, proc, args);
+//                    } else token.interpret(container, self, fcontext, fself, proc, args);
+//                }
+//                break;
+//            case PARENTHESIS:
+//                    Container retval = Container.EMPTY;
+//                    for(Token token : getTokens()) retval = token.interpret(context, self, fcontext, fself, proc, args);
+//
+//                    return retval;
+//            case RETURN:
+//                return getTokens().get(0).interpret(context, self, fcontext, fself, proc, args);
+//        }
+//        return null;
+//    }
 
     public Token clone()
     {

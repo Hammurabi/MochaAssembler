@@ -12,44 +12,43 @@
 
 package com.riverssen.core.mpp.compiler;
 
-import com.riverssen.core.mpp.Opcode;
+import java.util.Set;
 
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
-
-public class OpcodeParser
+public class MethodArgument
 {
-    Opcode list[];
+    public Struct _this_;
+    public Set<Field> _arguments_;
 
-    public OpcodeParser(byte opcode[]) throws BufferUnderflowException
+    public MethodArgument(Struct _this_, Set<Field> _arguments_)
     {
-        ByteBuffer opcodes = ByteBuffer.allocate(opcode.length);
-        opcodes.put(opcode);
-        opcodes.flip();
-
-//        while(opcodes.remaining() > 0)
-//        {
-//            int b = opcodes.get();
-//
-//            switch (b)
-//            {
-//                case push:  new Push(opcodes);
-//                case pop:   new Pop(opcodes);
-//                case print: new Print(opcodes);
-//
-//                /** math **/
-//                case add:   new Add(opcodes);
-//                case sub:   new Sub(opcodes);
-//                case mul:   new Mul(opcodes);
-//                case div:   new Div(opcodes);
-//                case mod:   new Mod(opcodes);
-//                case get:   new Get(opcodes);
-//            }
-//        }
+        this._this_ = _this_;
+        this._arguments_ = _arguments_;
     }
 
-    public Opcode[] getOpcode()
+    public boolean addArgument(Field field)
     {
-        return list;
+        return _arguments_.add(field);
+    }
+
+    public boolean contains(String argument)
+    {
+        for (Field field : _arguments_)
+            if (field.getName().equals(argument)) return true;
+
+        return false;
+    }
+
+    public int fetchType(String s)
+    {
+        for (Field field : _arguments_)
+            if (field.getName().equals(s)) return field.getValidType();
+        return 0;
+    }
+
+    public String fetchTypeName(String s)
+    {
+        for (Field field : _arguments_)
+            if (field.getName().equals(s)) return field.getTypeName();
+        return "null";
     }
 }

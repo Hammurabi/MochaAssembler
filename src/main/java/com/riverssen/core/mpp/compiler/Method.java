@@ -12,205 +12,88 @@
 
 package com.riverssen.core.mpp.compiler;
 
-import com.riverssen.core.mpp.exceptions.CompileException;
-import com.riverssen.core.mpp.Opcode;
+import com.riverssen.core.mpp.Executable;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.*;
 
-public class Method extends Container implements Serializable
+public class Method
 {
-    private static final Stack<Container> stack = new Stack<>();
-    private Set<String> arguments;
-    private String      returnType;
-    private int         offset;
-    private Token       body;
-
-    public Method(Token token) throws CompileException
-    {
-        this.name       = token.getTokens().get(0).toString();
-        this.arguments  = new LinkedHashSet<>();
-        for(Token tok : token.getTokens().get(2).getTokens())
-            this.arguments.add(tok.getTokens().get(1).toString());
-        this.returnType = token.getTokens().get(1).toString();
-
-        this.body       = token.getTokens().get(3);
-    }
+    private Struct          __parenttype__;
+    private String          __methodname__;
+    private Set<Modifier>   __modifiers__;
+    private ArrayList<Byte> __opcodes__;
+    private boolean         __undeclared__;
+    private String          __returntype__;
 
     public Method(String name)
     {
-        this.name       = name;
+        __parenttype__  = null;
+        __modifiers__   = new LinkedHashSet<>();
+        __opcodes__     = new ArrayList();
+        __methodname__  = name;
+        __returntype__  = null;
     }
 
-    public Method(String name, Opcode opcode[])
+    /**
+     * @param space     The Global Space
+     * @param parent    The Parent Class/Structure Of This Method
+     * @param token     The Method Token
+     */
+    public Method(GlobalSpace space, Struct parent, Token token)
     {
-        this.name   = name;
-    }
+        __parenttype__  = parent;
+        __modifiers__   = new LinkedHashSet<>();
+        __opcodes__     = new ArrayList();
+        __methodname__  = token.getTokens().get(0).toString();
+        __undeclared__  = true;
 
-    protected   void    setOffset(int offset)
-    {
-        this.offset = offset;
-    }
+        int stack = -1;
+        Map<String, Integer> referencemap = new HashMap<>();
 
-    public      int     getOffset()
-    {
-        return this.offset;
+        if (parent != null)
+            referencemap.put("this", ++ stack);
+
+        Executable executable = new Executable();
+
+        String accessor = "null";
+        if (__parenttype__ != null) accessor = __parenttype__.getName();
+
+        Set<Field> args = new LinkedHashSet<>();
+
+        for (Token argument : token.getTokens().get(2).getTokens())
+            args.add(new Field(space, argument));
+
+        MethodArgument argument = new MethodArgument(parent == null ? Struct.VOID : parent, args);
+
+        if (token.getType().equals(Token.Type.METHOD_DECLARATION))
+        {
+            __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument, space));
+            __undeclared__ = false;
+        }
     }
 
     public String getReturnType()
     {
-        return returnType;
+        return __returntype__;
     }
 
-    private static ByteBuffer createBufferFromTokens(Token token) throws CompileException
+    public String getName()
     {
-        HashMap<String, java.lang.Integer> stack = new HashMap<>();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        DataOutputStream      stream1= new DataOutputStream(stream);
-
-        try{
-            for(Token tok : token.getTokens())
-            {
-                switch (tok.getType())
-                {
-                    case FULL_DECLARATION:
-                            String name  = tok.getTokens().get(0).toString();
-                            String type  = tok.getTokens().get(1).toString();
-                            Token  value = tok.getTokens().get(2);
-
-                            if(stack.containsKey(name)) throw new CompileException("object '" + name + "' already defined", tok);
-                            stack.put(name, stack.size());
-
-//                            stream1.writeShort(PUSH_FLOAT);
-                            if(type.equals("int"))
-                            {
-                                if(value.getTokens().get(0).getType().equals(Token.Type.INPUT))
-                                {
-//                                    if(!value.getRoot().get(0).getRoot().get(0).getType().equals(Token.Type.NUMBER)) throw new CompileException("initialization exception: cannot cast from ")
-//                                    stream1.writeShort(PUSH_INT);
-                                    stream1.writeLong(Long.parseLong(value.getTokens().get(0).getTokens().get(0)
-                                            .toString()));
-                                }
-                            }
-                        break;
-                }
-            }
-
-            stream1.flush();
-            stream1.close();
-        } catch (Exception e)
-        {
-            throw new CompileException("failed to compile function", token);
-        }
-        return ByteBuffer.wrap(stream.toByteArray());
+        return __methodname__;
     }
 
-    @Override
-    public Container call(Container self, Container... args)
+    public List<Byte> getOpCodes()
     {
-        setField("this", self);
-        setField("self", self);
-
-        int i = 0;
-
-        for(String string : arguments)
-            setField(string, args[i ++]);
-
-        Container value = VOID;
-
-        for(Token token : body.getTokens())
-        {
-            try
-            {
-                value = token.interpret(this, self, this, self, false, args);
-            } catch (CompileException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        return value;
-
-//        stack.clear();
-//        stack.push(self);
-//        for(Container arg : args)
-//            stack.push(arg);
-//
-//        Container a = null;
-//        Container b = null;
-//
-//        while (opcodes.remaining() > 0)
-//        {
-//            switch (opcodes.getShort())
-//            {
-//                case PUSH_INT:
-//                    stack.push(new Integer(opcodes.getLong()));
-//                    break;
-//                case PUSH_UINT:
-//                    stack.push(new Uint(opcodes.getLong()));
-//                    break;
-//                case PUSH_UINT256:
-//                    byte bi[] = new byte[32];
-//                    opcodes.get(bi);
-//                    stack.push(new uint256(new BigInteger(bi)));
-//                    break;
-//                case PUSH_FLOAT:
-//                    stack.push(new Float(opcodes.getDouble()));
-//                    break;
-//
-//                case ADD:
-//                    b = stack.pop();
-//                    a = stack.pop();
-//                    stack.push(a.addition(b));
-//                    break;
-//                case SUB:
-//                    b = stack.pop();
-//                    a = stack.pop();
-//                    stack.push(a.submission(b));
-//                    break;
-//                case MLT:
-//                    b = stack.pop();
-//                    a = stack.pop();
-//                    stack.push(a.multiplication(b));
-//                    break;
-//                case DIV:
-//                    b = stack.pop();
-//                    a = stack.pop();
-//                    stack.push(a.subdivision(b));
-//                    break;
-//                case POW:
-//                    b = stack.pop();
-//                    a = stack.pop();
-//                    stack.push(a.power(b));
-//                    break;
-//                case ASSERT:
-//                    b = stack.pop();
-//                    a = stack.pop();
-//                    stack.push(new Boolean(a.equals(b)));
-//                    break;
-//            }
-//        }
+        return __opcodes__;
     }
 
-    @Override
-    public void write(DataOutputStream stream)
+    public Object call(Token token)
     {
-
+        return null;
     }
 
-    @Override
-    public void read(DataInputStream stream)
+    public boolean isDeclared()
     {
-
-    }
-
-    @Override
-    public String toString()
-    {
-        return "method: " + name + " " + returnType + " {}";
+        return !__undeclared__;
     }
 }

@@ -12,100 +12,135 @@
 
 package com.riverssen.core.mpp.compiler;
 
+import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.exceptions.CompileException;
+import com.riverssen.core.mpp.type;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class Field extends Container implements Serializable
+public class Field
 {
-    private String          fieldType;
-    private Set<Modifier>   fieldModifiers;
-    private int             offset;
+    private String          __typename__;
+    private String          __realname__;
+    private Set<Modifier>   __modifiers__;
+    private long            __position__;
+    private boolean         __inherent__;
+    private Token           __size__;
+    private Token           __value__;
 
-    public Field(String name, String type)
+    Executable              __opcodes__;
+
+    public Field(GlobalSpace space, Token token)
     {
-        this(name, type, null);
+        __modifiers__   = new LinkedHashSet<>();
+        __opcodes__     = new Executable();
+        __value__       = null;
+
+        if (token.getTokens().get(0).getType().equals(Token.Type.ARRAY))
+        {
+            __inherent__ = true;
+            __size__     = token.getTokens().get(0).getTokens().get(1).getTokens().get(0);
+            __typename__ = token.getTokens().get(0).getTokens().get(0).toString();
+        }
+        if (token.getType().equals(Token.Type.EMPTY_DECLARATION))
+        {
+            if (!__inherent__)
+                __typename__ = token.getTokens().get(0).toString();
+            __realname__ = token.getTokens().get(1).toString();
+        } else if (token.getType().equals(Token.Type.FULL_DECLARATION))
+        {
+            if (!__inherent__)
+                __typename__ = token.getTokens().get(0).toString();
+            __realname__ = token.getTokens().get(1).toString();
+            __value__    = token.getTokens().get(2);
+        } else {
+            new CompileException("Compilation Error: Token defined as field.", token).printStackTrace();
+            System.exit(0);
+        }
     }
 
-    public Field(String name, String type, Collection<Modifier> modifiers)
+    public void __new__(Executable executable, GlobalSpace space)
     {
-        this.name = name;
-        this.fieldType = type;
-        this.fieldModifiers = new LinkedHashSet<>();
-
-        if (modifiers != null) this.fieldModifiers.addAll(modifiers);
+        executable.add(__opcodes__.op_codes);
     }
 
-    public Field(Token tok)
+    public void __newonstack__(Executable executable, StackTrace trace)
     {
-        this.name           = tok.getTokens().get(1).toString();
-        this.fieldType      = tok.getTokens().get(0).toString();
-
-        this.fieldModifiers = new LinkedHashSet<>();
-        this.fieldModifiers.addAll(tok.getModifiers());
+        executable.push_(this, trace);
     }
 
-    public Field addModifier(Modifier modifier)
+    public void setLocation(long typesize__)
     {
-        this.fieldModifiers.add(modifier);
-        return this;
+        this.__position__ = typesize__;
     }
 
-    @Override
-    public Container call(Container self, Container... args)
+    public long size(GlobalSpace space)
     {
-        return super.call(self, args);
+        if (__inherent__)
+            return __size__.getSizeAsLong(space);
+        return space.getGlobalTypes().get(__typename__).size();
     }
 
-    @Override
-    public void write(DataOutputStream stream)
+    public String getName()
     {
+        return __realname__;
     }
 
-    @Override
-    public void read(DataInputStream stream)
+    public boolean isPublic()
     {
+        return __modifiers__.contains(Modifier.PUBLIC);
     }
 
-    @Override
-    public int hashCode()
+    public long getLocation()
     {
-        return getName().hashCode();
+        return __position__;
     }
 
-    protected void setOffset(int offset)
+    public int getValidType()
     {
-        this.offset = offset;
+        switch (__typename__)
+        {
+            case "char": return type.char_;
+            case "uchar": return type.uchar_;
+            case "short": return type.short_;
+            case "ushort": return type.ushort_;
+            case "int": return type.int_;
+            case "uint": return type.uint_;
+            case "float": return type.float32_;
+            case "long": return type.long_;
+            case "ulong": return type.ulong_;
+            case "double": return type.float64_;
+            case "int128": return type.int128_;
+            case "uint128": return type.uint128_;
+            case "float128": return type.float128_;
+            case "int256": return type.int256_;
+            case "uint256": return type.uint256_;
+            case "float256": return type.float256_;
+            case "string": return type.c_string;
+            case "pointer": return type.pointer_;
+        }
+
+        return 255;
     }
 
-    public int getOffset()
+    public String getTypeName()
     {
-        return this.offset;
+        return __typename__;
     }
 
-    public String getType()
+    public void instantiate(Executable executable, StackTrace trace)
     {
-        return this.fieldType;
-    }
-
-    @Override
-    public String toString()
-    {
-        return super.toString();
-    }
-
-    public Collection<Modifier> getModifiers()
-    {
-        return this.fieldModifiers;
-    }
-
-    public String getFieldType()
-    {
-        return fieldType;
+        if (__value__ != null)
+        {
+            if (__value__.getTokens().get(0).getType().equals(Token.Type.NEW))
+            {
+                if (__value__.getTokens().get(0).toString().equals("METHOD_CALL"))
+                {
+                } else {
+                }
+            }
+        } else {
+        }
     }
 }
