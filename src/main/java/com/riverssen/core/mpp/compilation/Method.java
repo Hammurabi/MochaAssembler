@@ -25,6 +25,7 @@ public class Method
     private Set<Modifier>   __modifiers__;
     private ArrayList<Byte> __opcodes__;
     private boolean         __undeclared__;
+    private String          __returntype__;
 
     public Method(String name)
     {
@@ -32,8 +33,14 @@ public class Method
         __modifiers__   = new LinkedHashSet<>();
         __opcodes__     = new ArrayList();
         __methodname__  = name;
+        __returntype__  = null;
     }
 
+    /**
+     * @param space     The Global Space
+     * @param parent    The Parent Class/Structure Of This Method
+     * @param token     The Method Token
+     */
     public Method(GlobalSpace space, Struct parent, Token token)
     {
         __parenttype__  = parent;
@@ -65,6 +72,11 @@ public class Method
             __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument, space));
             __undeclared__ = false;
         }
+    }
+
+    public String getReturnType()
+    {
+        return __returntype__;
     }
 
     public String getName()
