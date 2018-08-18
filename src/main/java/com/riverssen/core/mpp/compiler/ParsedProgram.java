@@ -786,8 +786,6 @@ public class ParsedProgram
                                 declaration = new Token(Token.Type.EMPTY_DECLARATION).add(type).add(name);
                         }
 
-                        System.out.println(name.toString());
-
                         if (name.toString().equals("address"))
                             System.out.println(declaration.humanReadable(0));
 

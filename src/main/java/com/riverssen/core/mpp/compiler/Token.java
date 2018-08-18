@@ -20,7 +20,6 @@ import com.riverssen.core.mpp.instructions;
 import com.riverssen.core.mpp.objects.*;
 import com.riverssen.core.mpp.objects.Boolean;
 import com.riverssen.core.mpp.objects.Float;
-import com.riverssen.core.mpp.objects.Integer;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -212,7 +211,10 @@ public class Token implements Serializable
         ARRAY,
         WHILE,
         DECIMAL,
-        RETURN
+        RETURN,
+        TYPEDEF,
+        TEMPLATE,
+        TYPENAME;
     };
 
     public Token(String value, int line, int offset, int whitespace)
