@@ -50,7 +50,7 @@ public class CompiledProgram
                         System.err.println("field __" + t.getTokens().get(1).toString() + "__ already exists in __global__.");
                         System.exit(0);
                     }
-                    Field field = new Field(space, t);
+                    Field field = new Field(space, t, null);
                     space.getGlobalFields().put(t.getTokens().get(1).toString(), field);
                     break;
                 case FULL_DECLARATION:
@@ -59,7 +59,7 @@ public class CompiledProgram
                         System.err.println("field __" + t.getTokens().get(1).toString() + "__ already exists in __global__.");
                         System.exit(0);
                     }
-                    Field _field_ = new Field(space, t);
+                    Field _field_ = new Field(space, t, null);
                     space.getGlobalFields().put(t.getTokens().get(1).toString(), _field_);
                     break;
                 case METHOD_DECLARATION:
@@ -95,13 +95,13 @@ public class CompiledProgram
                     }
                     break;
                 default:
-                    System.out.println("an error occured. '" + t.getType() + "'.");
+                    System.out.println("An error occured in compiler setup. '" + t.getType() + "'.");
                     System.exit(0);
                     break;
             }
         }
 
-        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
+        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("kill").getOpCodes())
             System.out.println(i);
     }
 

@@ -152,6 +152,16 @@ public class Token implements Serializable
         return -1;
     }
 
+    public boolean isOperator()
+    {
+        String operators[] = {"+","-","*","/","&","|","||","^","%","!","=","==","&&","!="};
+
+        for (String operator : operators)
+            if (toString().equals(operator)) return true;
+
+        return false;
+    }
+
     public static enum          Type implements Serializable {
         NAMESPACE,
         KEYWORD,
@@ -217,7 +227,8 @@ public class Token implements Serializable
         RETURN,
         TYPEDEF,
         TEMPLATE,
-        TYPENAME;
+        TYPENAME,
+        OPERATOR;
     };
 
     public Token(String value, int line, int offset, int whitespace)
@@ -690,6 +701,33 @@ public class Token implements Serializable
             token.fix();
     }
 
+    class Accessor{
+        Struct parent;
+        Accessor child;
+
+        public Accessor(Struct parent)
+        {
+            this.parent = parent;
+        }
+
+        public void add(Struct accessor)
+        {
+            if (child == null)
+                child = new Accessor(accessor);
+            else child.add(accessor);
+        }
+
+        public Struct getResultType()
+        {
+            Accessor accessor = this;
+
+            while (accessor.child != null)
+                accessor = accessor.child;
+
+            return accessor.parent;
+        }
+    }
+
     public List<Byte> getInstruction()
     {
         return getInstruction(new MethodArgument(null, new LinkedHashSet<>()), new GlobalSpace());
@@ -702,11 +740,51 @@ public class Token implements Serializable
 
     public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space, boolean procedural)
     {
+        return this.getInstruction(argument, space, procedural, null);
+    }
+
+    public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space, boolean procedural, Accessor accessor)
+    {
         Executable executable = new Executable();
 
         switch (type)
         {
+            case IF:
+                    executable.add(instructions.if_);
+                        executable.add(getTokens().get(0).getInstruction(argument, space, false));
+                break;
+            case PARENTHESIS:
+                    for (Token token : getTokens())
+                        executable.add(token.getInstruction(argument, space, false));
+                break;
+            case PROCEDURAL_ACCESS:
+                    executable.add(instructions.memory_read);
+                    Token a = getTokens().get(0);
+                    Token b = getTokens().get(1);
+
+                    Accessor accessor1;
+
+                    if (a.getType().equals(Type.IDENTIFIER))
+                    {
+                        accessor1 = new Accessor(null);
+                    } else if (a.getType().equals(Type.METHOD_CALL))
+                    {
+                    }
+
+                    executable.add(b.getInstruction(argument, space, true, accessor = new Accessor(null)));
+//                    for (Token token : getTokens())
+//                        executable.add(token.getInstruction(argument, space, true));
+                break;
+            case ASSERT:
+                for (Token token : getTokens())
+                    executable.add(token.getInstruction(argument, space, false));
+                executable.add(instructions.equal_);
+                for (Token token : getTokens())
+                    executable.add(token.getMathematicalType(argument));
+                break;
             case METHOD_CALL:
+                    String __method_name__ = getTokens().get(0).toString();
+
                     if (procedural)
                     {
                         Method method = space.getGlobalMethods().get(getTokens().get(0).toString());
@@ -717,7 +795,7 @@ public class Token implements Serializable
                         }
 
                         for (Token token : getChild(Type.PARENTHESIS).getTokens())
-                            executable.add(token.getInstruction(argument, space));
+                            executable.add(token.getInstruction(argument, space, procedural));
 
                         /** call a method **/
                         executable.add(instructions.call_);
@@ -726,7 +804,14 @@ public class Token implements Serializable
                         executable.add(executable.convertLong(method.getLocation()));
                     } else
                     {
-                        Method method = space.getGlobalMethods().get(getTokens().get(0).toString());
+                        Method method = space.getGlobalMethods().get(__method_name__);
+
+                        if (argument._this_ != null && argument._this_.containsMethod(__method_name__))
+                        {
+                            executable.add(executable.convertLong(0));
+                            method = argument._this_.getMethod(__method_name__);
+                        }
+
                         if (method == null)
                         {
                             new CompileException("method '" + getTokens().get(0).toString() + "' does not exist.", this).printStackTrace();
@@ -734,7 +819,7 @@ public class Token implements Serializable
                         }
 
                         for (Token token : getChild(Type.PARENTHESIS).getTokens())
-                            executable.add(token.getInstruction(argument, space));
+                            executable.add(token.getInstruction(argument, space, procedural));
 
                         /** call a method **/
                         executable.add(instructions.call_);
@@ -744,7 +829,7 @@ public class Token implements Serializable
                     }
                 break;
             case EMPTY_DECLARATION:
-                Field field = new Field(null, this);
+                Field field = new Field(null, this, null);
 
                 if (! argument.addArgument(field))
                 {
@@ -753,7 +838,7 @@ public class Token implements Serializable
                     System.exit(0);
                 } break;
             case FULL_DECLARATION:
-                Field fullField = new Field(null, this);
+                Field fullField = new Field(null, this, null);
 
                 if (! argument.addArgument(fullField))
                 {
@@ -763,7 +848,7 @@ public class Token implements Serializable
                 } break;
             case BRACES:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction());
+                    executable.add(token.getInstruction(argument, space, procedural));
                 break;
             case VALUE:
                 switch (getTokens().get(0).getType())
@@ -807,7 +892,7 @@ public class Token implements Serializable
 
             case ADDITION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument, space));
+                    executable.add(token.getInstruction(argument, space, false));
                 executable.add(instructions.op_add);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -815,7 +900,7 @@ public class Token implements Serializable
 
             case SUBTRACTION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument, space));
+                    executable.add(token.getInstruction(argument, space, false));
                 executable.add(instructions.op_sub);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -823,7 +908,7 @@ public class Token implements Serializable
 
             case MULTIPLICATION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument, space));
+                    executable.add(token.getInstruction(argument, space, false));
                 executable.add(instructions.op_mul);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -831,7 +916,7 @@ public class Token implements Serializable
 
             case SUBDIVISION:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument, space));
+                    executable.add(token.getInstruction(argument, space, false));
                 executable.add(instructions.op_div);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
@@ -839,15 +924,16 @@ public class Token implements Serializable
 
             case POW:
                 for (Token token : getTokens())
-                    executable.add(token.getInstruction(argument, space));
+                    executable.add(token.getInstruction(argument, space, false));
                 executable.add(instructions.op_pow);
                 for (Token token : getTokens())
                     executable.add(token.getMathematicalType(argument));
                 break;
 
             case IDENTIFIER:
-                executable.add(instructions.stack_load);
-                executable.add(executable.convertLong(0));
+                    if (procedural)
+                        accessor.add(argument.getVariable(toString(), space));
+                    else argument.loadVariable(toString(), executable, space);
                 break;
         }
 
@@ -1045,7 +1131,8 @@ public class Token implements Serializable
 
     public String humanReadable(int i)
     {
-        String s = (whitespace(i) + type + " " + value + " " + getInstructionsAsString()) + "\n";
+        String s = (whitespace(i) + type + " " + value + "\n");// + " " + getInstructionsAsString()) + "\n";
+
         for(Token token : children)
             s += token.humanReadable(i + 1) + "\n";
         return s;

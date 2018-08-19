@@ -121,7 +121,7 @@ public class instructions
 
     stack_read = 73, // undefined operator
     stack_load = 74, // push stack_get(i)
-    memory_read = 75, // undefined operator
+    memory_read = 75, // push memory_get(i + op[index++])
     memory_load = 76, // push memory_get(i)
     memory_write = 77, // memory.set(i, data[])
     memory_write_stack = 78, //memory.set(i, stack.pop)
@@ -149,5 +149,10 @@ public class instructions
     push = 93,
     pop = 94,
     malloc_ = 95,
-    calloc_ = 96;
+    calloc_ = 96,
+    less_ = 97,
+    more_ = 98,
+    lesseq_ = 99,
+    moreeq_ = 100,
+    equal_ = 101;
 }

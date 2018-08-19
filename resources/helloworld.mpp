@@ -33,16 +33,11 @@ class HelloWorld {
 
     public function kill() : void
     {
-        if(owner == msg.sender)
-            destroy()
+        message
     }
 
     public function mul() : void
     {
         int y = 0
-
-        int g = new aids()
-
-        mul(3, 4 *5, boob)
     }
 }

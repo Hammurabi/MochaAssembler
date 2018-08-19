@@ -13,6 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.mpp.exceptions.CompileException;
 import com.riverssen.core.mpp.instructions;
 import com.riverssen.core.mpp.type;
 
@@ -37,7 +38,19 @@ public class MethodArgument
 
     public void loadVariable(String variable_name, Executable executable, GlobalSpace space)
     {
-        if (_this_ != null && _this_.containsField(variable_name, _this_.getName()))
+        if (variable_name.equals("this"))
+        {
+            if (_this_ != null)
+            {
+                executable.add(instructions.stack_load);
+                executable.add(type.pointer_);
+                executable.add(executable.convertLong(0));
+            } else {
+                new CompileException("'this' is not a member of a static function method.", new Token(Token.Type.ROOT)).printStackTrace();
+                System.exit(0);
+            }
+        }
+        else if (_this_ != null && _this_.containsField(variable_name, _this_.getName()))
         {
             Field field = _this_.getField(variable_name, _this_.getName());
             /** load _this_ **/
@@ -58,13 +71,17 @@ public class MethodArgument
             for (Field field : _arguments_)
             {
                 if (field.getName().equals(variable_name))
-                    break;
+                {
+                    executable.add(instructions.stack_load);
+                    executable.add(executable.convertLong(position));
+                    return;
+                }
 
                 position ++;
             }
 
-            executable.add(instructions.stack_load);
-            executable.add(executable.convertLong(position));
+            new CompileException(variable_name + " not found.", new Token(Token.Type.ROOT)).printStackTrace();
+            System.exit(0);
         }
     }
 
@@ -95,5 +112,35 @@ public class MethodArgument
         for (Field field : _arguments_)
             if (field.getName().equals(s)) return field.getTypeName();
         return "null";
+    }
+
+    public Struct getVariable(String variable_name, GlobalSpace space)
+    {
+
+        if (variable_name.equals("this"))
+        {
+            if (_this_ != null)
+            {
+                return _this_;
+            } else {
+                new CompileException("'this' is not a member of a static function method.", new Token(Token.Type.ROOT)).printStackTrace();
+                System.exit(0);
+            }
+        }
+        else if (_this_ != null && _this_.containsField(variable_name, _this_.getName()))
+        {
+            Field field = _this_.getField(variable_name, _this_.getName());
+
+            return field.getTypeStruct(space);
+        } else {
+            for (Field field : _arguments_)
+                if (field.getName().equals(variable_name))
+                    return field.getTypeStruct(space);
+
+            new CompileException(variable_name + " not found.", new Token(Token.Type.ROOT)).printStackTrace();
+            System.exit(0);
+        }
+
+        return null;
     }
 }

@@ -65,14 +65,14 @@ public class Method
         Set<Field> args = new LinkedHashSet<>();
 
         for (Token argument : token.getChild(Token.Type.PARENTHESIS).getTokens())
-            args.add(new Field(space, argument));
+            args.add(new Field(space, argument, null));
 
-        MethodArgument argument = new MethodArgument((parent == null || isStatic()) ? null : parent, args);
+        MethodArgument argument = new MethodArgument((isStatic()) ? null : parent, args);
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         {
-            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
             __undeclared__ = false;
+            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
         }
     }
 
@@ -117,5 +117,11 @@ public class Method
     public long getLocation()
     {
         return __location__;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getName();
     }
 }

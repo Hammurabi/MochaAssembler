@@ -27,30 +27,37 @@ public class Struct
     private long        __typesize__;
     private Set<Field>  __fields__;
     private Set<Method> __methods__;
+    private Struct      __parent__;
+    private GlobalSpace __glblspace__;
 
     public Struct()
     {
-        this.__fields__ = new LinkedHashSet<>();
-        this.__methods__= new LinkedHashSet<>();
-        this.__typesize__   = 0;
-        this.__typename__ = "VOID";
+        this.__fields__         = new LinkedHashSet<>();
+        this.__methods__        = new LinkedHashSet<>();
+        this.__typesize__       = 0;
+        this.__typename__       = "VOID";
+        this.__glblspace__      = new GlobalSpace();
     }
 
-    public Struct(String name, int size)
+    public Struct(String name, int size, GlobalSpace space)
     {
         this.__fields__ = new LinkedHashSet<>();
         this.__methods__= new LinkedHashSet<>();
         this.__typesize__   = size;
         this.__typename__ = name;
+        this.__parent__         = VOID;
+        this.__glblspace__  = space;
     }
 
     public Struct(GlobalSpace space, Token token)
     {
-        this.__fields__ = new LinkedHashSet<>();
-        this.__methods__= new LinkedHashSet<>();
-        this.__typesize__   = 0;
-        this.__typename__ = token.getTokens().get(0).toString();
-        Set<String> fields = new LinkedHashSet<>();
+        this.__fields__         = new LinkedHashSet<>();
+        this.__methods__        = new LinkedHashSet<>();
+        this.__typesize__       = 0;
+        this.__typename__       = token.getTokens().get(0).toString();
+        this.__parent__         = space.getGlobalTypes().get("Object");
+        Set<String> fields      = new LinkedHashSet<>();
+        this.__glblspace__      = space;
 
         for (Token t : token.getTokens().get(1).getTokens())
         {
@@ -62,11 +69,16 @@ public class Struct
                         System.err.println("field __" + t.getTokens().get(1).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
                     }
-                    Field field = new Field(space, t);
+                    Field field = new Field(space, t, t.isModifier(Modifier.STATIC) ? null : this);
                     field.setLocation(__typesize__);
                     __typesize__ += field.size(space);
-                    __fields__.add(field);
-                    fields.add(t.getTokens().get(1).toString());
+                    if (t.isModifier(Modifier.STATIC))
+                        space.getGlobalFields().put(field.getName(), field);
+                    else
+                        __fields__.add(field);
+                    if (t.isModifier(Modifier.STATIC)) {}
+                    else
+                        fields.add(t.getTokens().get(1).toString());
                     break;
                 case FULL_DECLARATION:
                     if (fields.contains(t.getTokens().get(1).toString()))
@@ -74,11 +86,16 @@ public class Struct
                         System.err.println("field __" + t.getTokens().get(1).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
                     }
-                    Field _field_ = new Field(space, t);
+                    Field _field_ = new Field(space, t, t.isModifier(Modifier.STATIC) ? null : this);
                     _field_.setLocation(__typesize__);
                     __typesize__ += _field_.size(space);
-                    __fields__.add(_field_);
-                    fields.add(t.getTokens().get(1).toString());
+                    if (t.isModifier(Modifier.STATIC))
+                        space.getGlobalFields().put(_field_.getName(), _field_);
+                    else
+                        __fields__.add(_field_);
+                    if (t.isModifier(Modifier.STATIC)) {}
+                    else
+                        fields.add(t.getTokens().get(1).toString());
                     break;
                 case METHOD_DECLARATION:
                     Method method = new Method(space, this, t);
@@ -88,13 +105,26 @@ public class Struct
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
                     }
-
                     __methods__.add(method);
                     break;
-                case CLASS_DECLARATION:
-                    System.err.println("class declaration not allowed inside of a class __" + __typename__ + "__.");
-                    default:
+                case OPERATOR:
+                    Method opMethod = new Method(space, this, t);
+
+                    if (__methods__.contains(opMethod) && getMethod(opMethod.getName()).isDeclared())
+                    {
+                        System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
+                    }
+                    __methods__.add(opMethod);
+                    break;
+                case CLASS_DECLARATION:
+                    System.err.println("Class declaration not allowed inside of a class __" + __typename__ + "__.");
+                    default:
+                        System.out.println("An error occured '" + token + "'.");
+                        System.out.println(token.humanReadable(1));
+                        System.out.println("in '" + __typename__ + "'");
+                        System.exit(0);
+                        break;
             }
         }
 
@@ -121,20 +151,28 @@ public class Struct
 
     public boolean containsField(String reference, String accessor)
     {
-        boolean must_be_public = accessor.equals(__typename__);
+        boolean must_be_public = !accessor.equals(__typename__);
 
         for (Field field : __fields__)
             if (field.getName().equals(reference) && (must_be_public ? field.isPublic() : true)) return true;
-        return false;
+
+        if (__parent__ != null)
+            if (__parent__.containsField(reference, accessor)) return true;
+
+        return __glblspace__.getGlobalFields().containsKey(reference);
     }
 
     public Field getField(String reference, String accessor)
     {
-        boolean must_be_public = accessor.equals(__typename__);
+        boolean must_be_public = !accessor.equals(__typename__);
 
         for (Field field : __fields__)
             if (field.getName().equals(reference) && (must_be_public ? field.isPublic() : true)) return field;
-        return null;
+
+        if (__parent__ != null)
+            if (__parent__.containsField(reference, accessor)) return __parent__.getField(reference, accessor);
+
+        return __glblspace__.getGlobalFields().get(reference);
     }
 
     public void accessField(String name, Executable executable, String accessor)
@@ -156,11 +194,42 @@ public class Struct
         for (Method method : __methods__)
             if (method.getName().equals(methodName)) return method;
 
-        return null;
+        if (__parent__ != null)
+            if (__parent__.containsMethod(methodName)) return __parent__.getMethod(methodName);
+
+        return __glblspace__.getGlobalMethods().get(methodName);
     }
 
     public long getFieldOffset(String variable_name)
     {
         return getField(variable_name, __typename__).getLocation();
+    }
+
+    public boolean containsMethod(String methodName)
+    {
+        for (Method method : __methods__)
+            if (method.getName().equals(methodName))
+                return true;
+
+        if (__parent__ != null)
+            if (__parent__.containsMethod(methodName)) return true;
+
+        return __glblspace__.getGlobalMethods().containsKey(methodName);
+    }
+
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
+
+    public String spit()
+    {
+        String string = "" + __typename__ + "\n";
+
+        for (Field field : __fields__)
+            string += ("\tfield: " + field.getName() + " " + field.getTypeName() + " " + field.getLocation()) + "\n";
+
+        return string;
     }
 }

@@ -249,6 +249,36 @@ public class ParsedProgram
         modifiers.clear();
     }
 
+    private void parseOperator(List<Token> tokens, Token rootm, Token currentToken) throws ParseException
+    {
+        Token op_type       = getNext(tokens, currentToken,                 "operator must have a type.");
+        if (!op_type.isOperator())
+            throw new ParseException("operator must be followed by an operator type", currentToken);
+        Token parenthesis   = getNextInParenthesis(tokens, currentToken,    "operators must have arguments in parenthesis.");
+        Token symbol        = getNext(tokens, currentToken,                 "operator must have a return symbol ':'.");
+        if (symbol.toString().charAt(0) != ':') throw new ParseException(           "Return symbol incorrect", symbol);
+        Token returnType    = getNext(tokens, currentToken,                 "operator must have a return type.");
+        Token body          = getNextInBraces(tokens, currentToken,         "operator must have a body");
+
+        /** unimplemented method **/
+        if (body == null)
+            throw new ParseException("operator must have a body", currentToken);
+
+        else
+        {
+            Token function = new Token(Token.Type.OPERATOR);
+            function.getModifiers().addAll(modifiers);
+
+            function.add(op_type);
+            function.add(returnType);
+            function.add(parenthesis);
+            function.add(body);
+            rootm.add(function);
+        }
+
+        modifiers.clear();
+    }
+
     private void parseIfKeyword(List<Token> tokens, Token rootm, Token currentToken) throws ParseException
     {
         Token if_ = new Token(Token.Type.IF);
@@ -324,6 +354,10 @@ public class ParsedProgram
                 break;
             case "header":
                 parseClass(tokens, root, currentToken);
+                break;
+            case "operator":
+            case "op":
+                parseOperator(tokens, root, currentToken);
                 break;
             case "new":
                 parseNewKeyword(tokens, root, currentToken);
@@ -785,9 +819,6 @@ public class ParsedProgram
                             } else
                                 declaration = new Token(Token.Type.EMPTY_DECLARATION).add(type).add(name);
                         }
-
-                        if (name.toString().equals("address"))
-                            System.out.println(declaration.humanReadable(0));
 
                         root.add(declaration);
                         declaration.getModifiers().addAll(modifiers);

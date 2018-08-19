@@ -28,14 +28,16 @@ public class Field
     private boolean         __inherent__;
     private Token           __size__;
     private Token           __value__;
+    private Struct          __parent__;
 
     Executable              __opcodes__;
 
-    public Field(GlobalSpace space, Token token)
+    public Field(GlobalSpace space, Token token, Struct parent)
     {
         __modifiers__   = new LinkedHashSet<>();
         __opcodes__     = new Executable();
         __value__       = null;
+        __parent__      = parent;
 
         if (token.getTokens().get(0).getType().equals(Token.Type.ARRAY))
         {
@@ -155,5 +157,16 @@ public class Field
             if (m.equals(modifier)) return true;
 
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
+
+    public Struct getTypeStruct(GlobalSpace space)
+    {
+        return space.getGlobalTypes().get(getTypeName());
     }
 }

@@ -21,6 +21,7 @@ public function delete(void x) : void
 {
     free (x)
 }
+
 public function err(string s) : void
 public function out(string x) : void
 public function print(string x) : void
@@ -29,7 +30,7 @@ public function print(string x) : void
 }
 
 public function exit(uint x) : void
-public functiom wait(ulong x) : ulong
+public function wait(ulong x) : ulong
 public function sleep(ulong x) : ulong
 {
     return wait(x)
@@ -41,29 +42,80 @@ class Object{
     {
         free (this)
     }
+
     public operator+ (Object o) : Object
     {
-        exception("math op '+' not allowed in" + typeof(this))
+        exception("math op '+' not allowed.")
     }
+
     public operator- (Object o) : Object
     {
-        exception("math op '-' not allowed in" + typeof(this))
+        exception("math op '-' not allowed.")
     }
+
     public operator* (Object o) : Object
     {
-        exception("math op '*' not allowed in" + typeof(this))
+        exception("math op '*' not allowed.")
     }
+
     public operator/ (Object o) : Object
     {
-        exception("math op '/' not allowed in" + typeof(this))
+        exception("math op '/' not allowed.")
     }
+
     public operator^ (Object o) : Object
     {
-        exception("math op '^' not allowed in" + typeof(this))
+        exception("math op '^' not allowed.")
     }
-    public operator% (Object o) : Object
+
+    public operator+= (Object o) : Object
     {
-        exception("math op '%' not allowed in" + typeof(this))
+        exception("math op '+=' not allowed.")
+    }
+
+    public operator-= (Object o) : Object
+    {
+        exception("math op '-=' not allowed.")
+    }
+
+    public operator*= (Object o) : Object
+    {
+        exception("math op '*=' not allowed.")
+    }
+
+    public operator/= (Object o) : Object
+    {
+        exception("math op '/=' not allowed.")
+    }
+
+    public operator^= (Object o) : Object
+    {
+        exception("math op '^=' not allowed.")
+    }
+
+    public operator++ (Object o) : Object
+    {
+        exception("math op '++' not allowed.")
+    }
+
+    public operator-- (Object o) : Object
+    {
+        exception("math op '--' not allowed.")
+    }
+
+    public operator== (Object o) : Object
+    {
+        exception("logical op '==' not allowed.")
+    }
+
+    public operator& (Object o) : Object
+    {
+        exception("logical op '&' not allowed.")
+    }
+
+    public operator&& (Object o) : Object
+    {
+        exception("logical op '&&' not allowed.")
     }
 }
 
@@ -90,6 +142,23 @@ class PublicAddress{
         memcpy(address, a, 25)
     }
 }
+
+class Datetime
+{
+    private ulong time
+
+    public function Datetime(ulong t) : void
+    {
+        time = t
+    }
+}
+
+class Message{
+    PublicAddress sender
+    Datetime      time
+}
+
+Message msg = new Message
 
 //namespace std
 //{
@@ -126,3 +195,5 @@ class PublicAddress{
 //    //    void key[L];
 //    //}
 //}
+
+#reset
