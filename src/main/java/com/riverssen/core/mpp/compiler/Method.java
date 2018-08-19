@@ -64,7 +64,7 @@ public class Method
         for (Token argument : token.getChild(Token.Type.PARENTHESIS).getTokens())
             args.add(new Field(space, argument));
 
-        MethodArgument argument = new MethodArgument((parent == null || isStatic()) ? Struct.VOID : parent, args);
+        MethodArgument argument = new MethodArgument((parent == null || isStatic()) ? null : parent, args);
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         {

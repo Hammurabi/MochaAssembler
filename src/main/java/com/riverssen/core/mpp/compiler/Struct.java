@@ -158,4 +158,9 @@ public class Struct
 
         return null;
     }
+
+    public long getFieldOffset(String variable_name)
+    {
+        return getField(variable_name, __typename__).getLocation();
+    }
 }

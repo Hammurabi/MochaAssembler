@@ -13,6 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.mpp.instructions;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -33,9 +34,36 @@ public class MethodArgument
         return _arguments_.add(field);
     }
 
-    public void loadVariable(String variable_name, Executable executable)
+    public void loadVariable(String variable_name, Executable executable, GlobalSpace space)
     {
+        if (_this_.containsField(variable_name, _this_.getName()))
+        {
+            Field field = _this_.getField(variable_name, _this_.getName());
+            /** load _this_ **/
+            executable.add(instructions.stack_load);
+            executable.add(executable.convertLong(0));
+            /** load object from memory **/
+            executable.add(instructions.memory_load);
+            /** size of object **/
+            executable.add(executable.convertLong(field.size(space)));
 
+            /** position of object in relation to _this_ pointer **/
+            executable.add(executable.convertLong(_this_.getFieldOffset(variable_name)));
+        } else {
+            int position = 1;
+            Field field_ = null;
+
+            for (Field field : _arguments_)
+            {
+                if (field.getName().equals(variable_name))
+                    break;
+
+                position ++;
+            }
+
+            executable.add(instructions.stack_load);
+            executable.add(executable.convertLong(position));
+        }
     }
 
     public boolean contains(String argument)

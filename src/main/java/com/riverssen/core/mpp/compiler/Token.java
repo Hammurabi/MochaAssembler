@@ -691,7 +691,7 @@ public class Token implements Serializable
 
     public List<Byte> getInstruction()
     {
-        return getInstruction(new MethodArgument(Struct.VOID, new LinkedHashSet<>()), new GlobalSpace());
+        return getInstruction(new MethodArgument(null, new LinkedHashSet<>()), new GlobalSpace());
     }
 
     public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space)
