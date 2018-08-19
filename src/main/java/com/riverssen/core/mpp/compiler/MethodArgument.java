@@ -12,6 +12,7 @@
 
 package com.riverssen.core.mpp.compiler;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class MethodArgument
@@ -22,7 +23,7 @@ public class MethodArgument
     public MethodArgument(Struct _this_, Set<Field> _arguments_)
     {
         this._this_ = _this_;
-        this._arguments_ = _arguments_;
+        this._arguments_ = new LinkedHashSet<>(_arguments_);
     }
 
     public boolean addArgument(Field field)

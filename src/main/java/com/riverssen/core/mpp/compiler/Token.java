@@ -100,6 +100,14 @@ public class Token implements Serializable
         return token;
     }
 
+    public Token getChild(Type type)
+    {
+        for(Token token : getTokens())
+            if (token.getType().equals(type)) return token;
+
+        return null;
+    }
+
     public Token setName(String name)
     {
         this.value = new StringBuilder(name);

@@ -13,6 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 
 import java.util.*;
 
@@ -60,14 +61,14 @@ public class Method
 
         Set<Field> args = new LinkedHashSet<>();
 
-        for (Token argument : token.getTokens().get(2).getTokens())
+        for (Token argument : token.getChild(Token.Type.PARENTHESIS).getTokens())
             args.add(new Field(space, argument));
 
-        MethodArgument argument = new MethodArgument(parent == null ? Struct.VOID : parent, args);
+        MethodArgument argument = new MethodArgument((parent == null || isStatic()) ? Struct.VOID : parent, args);
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         {
-            __opcodes__.addAll(token.getTokens().get(3).getInstruction(argument, space));
+            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
             __undeclared__ = false;
         }
     }
@@ -95,5 +96,18 @@ public class Method
     public boolean isDeclared()
     {
         return !__undeclared__;
+    }
+
+    public boolean isStatic()
+    {
+        return __parenttype__ == null || containsModifier(Modifier.STATIC);
+    }
+
+    public boolean containsModifier(Modifier modifier)
+    {
+        for (Modifier m : __modifiers__)
+            if (m.equals(modifier)) return true;
+
+        return false;
     }
 }
