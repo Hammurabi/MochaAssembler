@@ -979,7 +979,7 @@ public class Token implements Serializable
 
     private boolean isKeyword()
     {
-        final String keywords[] = {"function", "fun", "new", "class", "static", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
+        final String keywords[] = {"function", "fun", "new", "class", "static", "ref", "reference", "ptr", "pointer", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
         for(String string : keywords) if(toString().equals(string)) return true;
         return false;
     }

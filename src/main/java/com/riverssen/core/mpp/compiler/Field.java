@@ -143,4 +143,17 @@ public class Field
         } else {
         }
     }
+
+    public boolean isStatic()
+    {
+        return containsModifier(Modifier.STATIC);
+    }
+
+    public boolean containsModifier(Modifier modifier)
+    {
+        for (Modifier m : __modifiers__)
+            if (m.equals(modifier)) return true;
+
+        return false;
+    }
 }

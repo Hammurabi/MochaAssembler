@@ -22,5 +22,7 @@ public class type
         float128_ = 16,
         float256_ = 17,
         c_string = 18,
-        pointer_ = 19;
+        pointer_ = 19,
+        instance = 20,
+        reference = 21; // a reference to a stack position. (copy by reference).
 }

@@ -14,6 +14,7 @@ package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.instructions;
+import com.riverssen.core.mpp.type;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class MethodArgument
             Field field = _this_.getField(variable_name, _this_.getName());
             /** load _this_ **/
             executable.add(instructions.stack_load);
+            executable.add(type.pointer_);
             executable.add(executable.convertLong(0));
             /** load object from memory **/
             executable.add(instructions.memory_load);
