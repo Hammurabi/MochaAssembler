@@ -13,6 +13,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.mpp.exceptions.CompileException;
 import com.riverssen.core.mpp.instructions;
 
 import java.io.Serializable;
@@ -709,6 +710,11 @@ public class Token implements Serializable
                     if (procedural)
                     {
                         Method method = space.getGlobalMethods().get(getTokens().get(0).toString());
+                        if (method == null)
+                        {
+                            new CompileException("method '" + getTokens().get(0).toString() + "' does not exist.", this).printStackTrace();
+                            System.exit(0);
+                        }
 
                         for (Token token : getChild(Type.PARENTHESIS).getTokens())
                             executable.add(token.getInstruction(argument, space));
@@ -721,6 +727,11 @@ public class Token implements Serializable
                     } else
                     {
                         Method method = space.getGlobalMethods().get(getTokens().get(0).toString());
+                        if (method == null)
+                        {
+                            new CompileException("method '" + getTokens().get(0).toString() + "' does not exist.", this).printStackTrace();
+                            System.exit(0);
+                        }
 
                         for (Token token : getChild(Type.PARENTHESIS).getTokens())
                             executable.add(token.getInstruction(argument, space));
@@ -1011,7 +1022,7 @@ public class Token implements Serializable
 
     private boolean isKeyword()
     {
-        final String keywords[] = {"function", "fun", "new", "class", "static", "ref", "reference", "ptr", "pointer", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
+        final String keywords[] = {"operator", "op", "function", "fun", "new", "class", "static", "ref", "reference", "ptr", "pointer", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
         for(String string : keywords) if(toString().equals(string)) return true;
         return false;
     }

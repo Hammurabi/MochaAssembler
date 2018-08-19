@@ -16,6 +16,56 @@ public function delete(ulong o) : void
 public function sizeof(void o) : ulong
 public function typeof(void o) : string
 public function memcpy(void dst, void src, ulong size) : void
+public function free(void x) : void
+public function delete(void x) : void
+{
+    free (x)
+}
+public function err(string s) : void
+public function out(string x) : void
+public function print(string x) : void
+{
+    out(x)
+}
+
+public function exit(uint x) : void
+public functiom wait(ulong x) : ulong
+public function sleep(ulong x) : ulong
+{
+    return wait(x)
+}
+public function exception(string s) : void
+
+class Object{
+    public function destroy() : void
+    {
+        free (this)
+    }
+    public operator+ (Object o) : Object
+    {
+        exception("math op '+' not allowed in" + typeof(this))
+    }
+    public operator- (Object o) : Object
+    {
+        exception("math op '-' not allowed in" + typeof(this))
+    }
+    public operator* (Object o) : Object
+    {
+        exception("math op '*' not allowed in" + typeof(this))
+    }
+    public operator/ (Object o) : Object
+    {
+        exception("math op '/' not allowed in" + typeof(this))
+    }
+    public operator^ (Object o) : Object
+    {
+        exception("math op '^' not allowed in" + typeof(this))
+    }
+    public operator% (Object o) : Object
+    {
+        exception("math op '%' not allowed in" + typeof(this))
+    }
+}
 
 //template <typename A>
 //class sp_t{

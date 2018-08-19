@@ -52,7 +52,8 @@ public class GlobalSpace
         __globaltypes__.put("pointer",  new Struct("__pointer__", 8));
         __globaltypes__.put("string",   new Struct("__string__", 8));
         __globaltypes__.put("ARRAY",    new Struct("__array__", 8));
-        __globalmethods__.put("sizeof", new Method("sizeof", this) {
+        __globalmethods__.put("sizeof", new Method("sizeof", this)
+        {
             @Override
             public Object call(Token token)
             {
@@ -69,6 +70,12 @@ public class GlobalSpace
                 }
 
                 return __globaltypes__.get(token.getTokens().get(0).toString()).size();
+            }
+        });
+        __globalmethods__.put("memcpy", new Method("memcpy", this)
+        {
+            {
+                getOpCodes().add((byte)0);
             }
         });
     }
