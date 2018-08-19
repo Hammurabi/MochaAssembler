@@ -42,5 +42,7 @@ class HelloWorld {
         int y = 0
 
         int g = new aids()
+
+        mul(3, 4 *5, boob)
     }
 }

@@ -696,7 +696,7 @@ public class Token implements Serializable
 
     public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space)
     {
-        this.getInstruction(argument, space, false);
+        return this.getInstruction(argument, space, false);
     }
 
     public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space, boolean procedural)
@@ -706,6 +706,31 @@ public class Token implements Serializable
         switch (type)
         {
             case METHOD_CALL:
+                    if (procedural)
+                    {
+                        Method method = space.getGlobalMethods().get(getTokens().get(0).toString());
+
+                        for (Token token : getChild(Type.PARENTHESIS).getTokens())
+                            executable.add(token.getInstruction(argument, space));
+
+                        /** call a method **/
+                        executable.add(instructions.call_);
+                        /** tell the vm how many arguments are pushed to stack + 1 (this) **/
+                        executable.add(executable.convertLong(getChild(Type.PARENTHESIS).getTokens().size() + 1));
+                        executable.add(executable.convertLong(method.getLocation()));
+                    } else
+                    {
+                        Method method = space.getGlobalMethods().get(getTokens().get(0).toString());
+
+                        for (Token token : getChild(Type.PARENTHESIS).getTokens())
+                            executable.add(token.getInstruction(argument, space));
+
+                        /** call a method **/
+                        executable.add(instructions.call_);
+                        /** tell the vm how many arguments are pushed to stack **/
+                        executable.add(executable.convertLong(getChild(Type.PARENTHESIS).getTokens().size()));
+                        executable.add(executable.convertLong(method.getLocation()));
+                    }
                 break;
             case EMPTY_DECLARATION:
                 Field field = new Field(null, this);

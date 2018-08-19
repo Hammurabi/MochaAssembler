@@ -25,14 +25,16 @@ public class Method
     private ArrayList<Byte> __opcodes__;
     private boolean         __undeclared__;
     private String          __returntype__;
+    private long            __location__;
 
-    public Method(String name)
+    public Method(String name, GlobalSpace space)
     {
         __parenttype__  = null;
         __modifiers__   = new LinkedHashSet<>();
         __opcodes__     = new ArrayList();
         __methodname__  = name;
         __returntype__  = null;
+        __location__    = space.addMethod(this);
     }
 
     /**
@@ -47,6 +49,7 @@ public class Method
         __opcodes__     = new ArrayList();
         __methodname__  = token.getTokens().get(0).toString();
         __undeclared__  = true;
+        __location__    = space.addMethod(this);
 
         int stack = -1;
         Map<String, Integer> referencemap = new HashMap<>();
@@ -109,5 +112,10 @@ public class Method
             if (m.equals(modifier)) return true;
 
         return false;
+    }
+
+    public long getLocation()
+    {
+        return __location__;
     }
 }

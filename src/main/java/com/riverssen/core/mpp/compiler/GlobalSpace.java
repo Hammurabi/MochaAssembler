@@ -12,7 +12,9 @@
 
 package com.riverssen.core.mpp.compiler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GlobalSpace
@@ -20,12 +22,15 @@ public class GlobalSpace
     private Map<String, Struct>     __globaltypes__;
     private Map<String, Method>     __globalmethods__;
     private Map<String, Field>      __globalfields__;
+    private long                    __allmethods__;
+    private List<Method>            __allthemethods__;
 
     public GlobalSpace()
     {
         __globaltypes__ =               new HashMap<>();
         __globalmethods__ =             new HashMap<>();
         __globalfields__ =              new HashMap<>();
+        __allthemethods__ =             new ArrayList<>();
 
         __globaltypes__.put("char",     new Struct("__int8_t", 1));
         __globaltypes__.put("uchar",    new Struct("u_int8_t", 1));
@@ -47,7 +52,7 @@ public class GlobalSpace
         __globaltypes__.put("pointer",  new Struct("__pointer__", 8));
         __globaltypes__.put("string",   new Struct("__string__", 8));
         __globaltypes__.put("ARRAY",    new Struct("__array__", 8));
-        __globalmethods__.put("sizeof", new Method("sizeof") {
+        __globalmethods__.put("sizeof", new Method("sizeof", this) {
             @Override
             public Object call(Token token)
             {
@@ -81,5 +86,11 @@ public class GlobalSpace
     public Map<String, Field> getGlobalFields()
     {
         return __globalfields__;
+    }
+
+    public long addMethod(Method method)
+    {
+        __allthemethods__.add(method);
+        return __allmethods__ ++;
     }
 }
