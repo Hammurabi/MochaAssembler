@@ -12,6 +12,8 @@
 
 package com.riverssen.core.mpp.compiler;
 
+import com.riverssen.core.mpp.Executable;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -31,8 +33,15 @@ public class MethodArgument
         return _arguments_.add(field);
     }
 
+    public void loadVariable(String variable_name, Executable executable)
+    {
+
+    }
+
     public boolean contains(String argument)
     {
+        if (_this_ != null && _this_.containsField(argument, _this_.getName())) return true;
+
         for (Field field : _arguments_)
             if (field.getName().equals(argument)) return true;
 
@@ -41,6 +50,8 @@ public class MethodArgument
 
     public int fetchType(String s)
     {
+        //TODO: Check _this_
+
         for (Field field : _arguments_)
             if (field.getName().equals(s)) return field.getValidType();
         return 0;
@@ -48,6 +59,9 @@ public class MethodArgument
 
     public String fetchTypeName(String s)
     {
+        if (_this_.containsField(s, _this_.getName()))
+            return _this_.getField(s, _this_.getName()).getTypeName();
+
         for (Field field : _arguments_)
             if (field.getName().equals(s)) return field.getTypeName();
         return "null";
