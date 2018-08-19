@@ -69,6 +69,12 @@ public class Struct
                         System.err.println("field __" + t.getTokens().get(1).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
                     }
+
+                    if (t.isModifier(Modifier.REFERENCE))
+                    {
+                        System.err.println("classes cannot hold references as fields. In__" + __typename__ + "__.");
+                        System.exit(0);
+                    }
                     Field field = new Field(space, t, t.isModifier(Modifier.STATIC) ? null : this);
                     field.setLocation(__typesize__);
                     __typesize__ += field.size(space);
@@ -84,6 +90,12 @@ public class Struct
                     if (fields.contains(t.getTokens().get(1).toString()))
                     {
                         System.err.println("field __" + t.getTokens().get(1).toString() + "__ already exists in __" + __typename__ + "__.");
+                        System.exit(0);
+                    }
+
+                    if (t.isModifier(Modifier.REFERENCE))
+                    {
+                        System.err.println("classes cannot hold references as fields. In__" + __typename__ + "__.");
                         System.exit(0);
                     }
                     Field _field_ = new Field(space, t, t.isModifier(Modifier.STATIC) ? null : this);

@@ -38,6 +38,7 @@ public class LexedProgram
         boolean isString = false;
 
         Token token = null;
+        Token prevs = null;
         int line = 1;
         int whitespace = 0;
         int offset = 0;
@@ -53,14 +54,29 @@ public class LexedProgram
                 line++;
                 allChars.add(token);
                 allChars.add(new Token(Token.Type.END));
+                if (token!=null&&token.toString().equals("reset") && prevs != null && prevs.toString().equals("#"))
+                {
+                    line = 1;
+                    allChars.remove(prevs);
+                    allChars.remove(token);
+                }
+                prevs = token;
                 token = null;
                 offset = 0;
+                whitespace = 0;
                 continue;
             } else if (current == WTS && !(token != null && (token.toString().startsWith("\"") || token.toString().startsWith("\'"))))
             {
                 whitespace++;
                 allChars.add(token);
                 offset ++;
+                if (token != null && token.toString().equals("reset") && prevs != null && prevs.toString().equals("#"))
+                {
+                    line = 1;
+                    allChars.remove(prevs);
+                    allChars.remove(token);
+                }
+                prevs = token;
                 token = null;
                 continue;
             } else if (current == TAB && !(token != null && (token.toString().startsWith("\"") || token.toString().startsWith("\'"))))
@@ -68,6 +84,13 @@ public class LexedProgram
                 whitespace += 4;
                 offset += 4;
                 allChars.add(token);
+                if (token != null && token.toString().equals("reset") && prevs != null && prevs.toString().equals("#"))
+                {
+                    line = 1;
+                    allChars.remove(prevs);
+                    allChars.remove(token);
+                }
+                prevs = token;
                 token = null;
                 continue;
             }
@@ -91,6 +114,7 @@ public class LexedProgram
                     {
                         token.append(current);
                         allChars.add(token);
+                        prevs = token;
                         token = null;
                     } else token.append(current);
                 } else token.append(current);
@@ -102,6 +126,7 @@ public class LexedProgram
                 allChars.add(token);
                 token = new Token("" + current, line, offset, whitespace);
                 allChars.add(token);
+                prevs = token;
                 token = null;
             } else token.append(current);
 

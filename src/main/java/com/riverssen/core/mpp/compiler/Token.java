@@ -23,9 +23,9 @@ import java.util.*;
 public class Token implements Serializable
 {
     private StringBuilder       value;
-    private int                 line;
-    private int                 offset;
-    private int                 whitespace;
+    private int                 line = -1;
+    private int                 offset = -1;
+    private int                 whitespace = -1;
     private Type                type;
     private List<Token>         children;
     private Set<Modifier>       modifiers = new LinkedHashSet<>();
@@ -228,7 +228,8 @@ public class Token implements Serializable
         TYPEDEF,
         TEMPLATE,
         TYPENAME,
-        OPERATOR;
+        OPERATOR,
+        ALLIGATORMOUTH;
     };
 
     public Token(String value, int line, int offset, int whitespace)
@@ -276,6 +277,14 @@ public class Token implements Serializable
     {
         this.children.add(token);
         token.parent = this;
+
+        if (line == -1)
+        {
+            line = token.line;
+            offset = token.offset;
+            whitespace = token.whitespace;
+        }
+
         return this;
     }
 
@@ -1131,7 +1140,7 @@ public class Token implements Serializable
 
     public String humanReadable(int i)
     {
-        String s = (whitespace(i) + type + " " + value + "\n");// + " " + getInstructionsAsString()) + "\n";
+        String s = (whitespace(i) + type + " " + value + " (" + line + " " + offset + " " + whitespace + ")\n");// + " " + getInstructionsAsString()) + "\n";
 
         for(Token token : children)
             s += token.humanReadable(i + 1) + "\n";

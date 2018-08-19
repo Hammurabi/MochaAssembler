@@ -68,31 +68,6 @@ class Object{
         exception("math op '^' not allowed.")
     }
 
-    public operator+= (Object o) : Object
-    {
-        exception("math op '+=' not allowed.")
-    }
-
-    public operator-= (Object o) : Object
-    {
-        exception("math op '-=' not allowed.")
-    }
-
-    public operator*= (Object o) : Object
-    {
-        exception("math op '*=' not allowed.")
-    }
-
-    public operator/= (Object o) : Object
-    {
-        exception("math op '/=' not allowed.")
-    }
-
-    public operator^= (Object o) : Object
-    {
-        exception("math op '^=' not allowed.")
-    }
-
     public operator++ (Object o) : Object
     {
         exception("math op '++' not allowed.")
@@ -119,20 +94,20 @@ class Object{
     }
 }
 
-//template <typename A>
-//class sp_t{
-//    A _ptr_[1]
-//
-//    public function sp_t(A val) : void
-//    {
-//        this._ptr_[0] = val
-//    }
-//
-//    public function get() : A
-//    {
-//        return _ptr_[0]
-//    }
-//}
+template <typename A>
+class sp_t{
+    private ptr A _ptr_
+
+    public function sp_t(A val) : void
+    {
+        this._ptr_[0] = val
+    }
+
+    public function get() : A
+    {
+        return _ptr_[0]
+    }
+}
 
 class PublicAddress{
     void address[25]
@@ -195,3 +170,5 @@ Message msg = new Message
 //    //    void key[L];
 //    //}
 //}
+
+#reset

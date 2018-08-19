@@ -343,6 +343,9 @@ public class ParsedProgram
 
         switch (currentToken.toString())
         {
+            case "template":
+                parseTemplate(tokens, root, currentToken);
+                break;
             case "function":
                 parseFunction(tokens, root, currentToken);
                 break;
@@ -390,6 +393,38 @@ public class ParsedProgram
                 modifiers.push(Modifier.CONST);
                 break;
         }
+    }
+
+    private void parseTemplate(List<Token> tokens, Token rootm, Token currentToken) throws ParseException
+    {
+        Token parenthesis = getNextInAlligatorMouths(tokens, currentToken, "function must have arguments in parenthesis.");
+        Token symbol = getNext(tokens, currentToken, "function must have a return symbol ':'.");
+        if (symbol.toString().charAt(0) != ':') throw new ParseException("Return symbol incorrect", symbol);
+        Token returnType = getNext(tokens, currentToken, "function must have a return type.");
+        Token body = getNextInBraces(tokens, currentToken, "function must have a body");
+
+        {
+            Token function = new Token(Token.Type.METHOD_DECLARATION);
+            function.getModifiers().addAll(modifiers);
+
+            function.add(parenthesis);
+            function.add(body);
+            rootm.add(function);
+        }
+
+        modifiers.clear();
+    }
+
+    private Token getNextInAlligatorMouths(List<Token> tokens, Token offset, String errmsg) throws ParseException
+    {
+        if (tokens.size() >= 3 && nextOfType(tokens, Token.Type.LESS_THAN))
+        {
+            skipToValid(tokens);
+            Token parenthesis = new Token(Token.Type.ALLIGATORMOUTH);
+            parse(tokens, parenthesis, true);
+
+            return parenthesis.getTokens().get(0);
+        } else throw new ParseException(errmsg, offset);
     }
 
     private Token strip(Token token)
@@ -677,6 +712,11 @@ public class ParsedProgram
 
     private void parse(List<Token> tokens, Token root, boolean onlyOnce, boolean parseMath, boolean inParenthesis, boolean inBraces, boolean inBrackets, boolean newLineAware, boolean ignoreParenthesis) throws ParseException
     {
+        this.parse(tokens, root, onlyOnce, parseMath, inParenthesis, inBraces, inBrackets, newLineAware, ignoreParenthesis, false);
+    }
+
+    private void parse(List<Token> tokens, Token root, boolean onlyOnce, boolean parseMath, boolean inParenthesis, boolean inBraces, boolean inBrackets, boolean newLineAware, boolean ignoreParenthesis, boolean inAlligatorMouths) throws ParseException
+    {
         while (tokens.size() > 0)
         {
             Token currentToken = tokens.get(0);
@@ -938,6 +978,20 @@ public class ParsedProgram
                     } else root.add(type);
                     break;
                 default:
+                if (currentToken.getType().equals(LESS_THAN))
+                {
+                    Token alligator = new Token(ALLIGATORMOUTH);
+
+                    if (nextAfterOfType(tokens, MORE_THAN))
+                    {
+                    }
+                } else if (currentToken.getType().equals(MORE_THAN))
+                {
+                    if (inAlligatorMouths)
+                    {
+
+                    } else throw new ParseException("Redundant '>'", currentToken);
+                }
                     throw new ParseException("Token unidentified. '" + currentToken.toString() + "(" + currentToken.getType() + ")'", currentToken);
             }
 
