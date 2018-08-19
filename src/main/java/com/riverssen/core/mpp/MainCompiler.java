@@ -46,7 +46,7 @@ public class MainCompiler
                 "-compile <path to main-class>",
                 "-tree <path to main-class>",
                 "---arguments---",
-                "--v_x --appended at end of command to define language version (e.g --v_1_0a--"
+                "--v_x --appended at end of command to define language version. (e.g --v_1_0a--)."
         };
 
         if (args == null || args.length == 0)

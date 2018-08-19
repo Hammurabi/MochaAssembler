@@ -37,7 +37,7 @@ public class MethodArgument
 
     public void loadVariable(String variable_name, Executable executable, GlobalSpace space)
     {
-        if (_this_.containsField(variable_name, _this_.getName()))
+        if (_this_ != null && _this_.containsField(variable_name, _this_.getName()))
         {
             Field field = _this_.getField(variable_name, _this_.getName());
             /** load _this_ **/
@@ -52,7 +52,7 @@ public class MethodArgument
             /** position of object in relation to _this_ pointer **/
             executable.add(executable.convertLong(_this_.getFieldOffset(variable_name)));
         } else {
-            int position = 1;
+            int position = _this_ != null ? 1 : 0;
             Field field_ = null;
 
             for (Field field : _arguments_)

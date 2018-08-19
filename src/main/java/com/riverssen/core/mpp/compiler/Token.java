@@ -696,10 +696,17 @@ public class Token implements Serializable
 
     public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space)
     {
+        this.getInstruction(argument, space, false);
+    }
+
+    public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space, boolean procedural)
+    {
         Executable executable = new Executable();
 
         switch (type)
         {
+            case METHOD_CALL:
+                break;
             case EMPTY_DECLARATION:
                 Field field = new Field(null, this);
 
