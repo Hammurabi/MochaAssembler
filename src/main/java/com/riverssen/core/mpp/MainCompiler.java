@@ -12,8 +12,10 @@
 
 package com.riverssen.core.mpp;
 
+import com.riverssen.core.mpp.compiler.DynamicLibraryLoader;
 import com.riverssen.core.mpp.compiler.LexedProgram;
 import com.riverssen.core.mpp.compiler.ParsedProgram;
+import com.riverssen.core.mpp.compiler.PreprocessedProgram;
 import com.riverssen.core.mpp.exceptions.ParseException;
 
 import java.io.*;
@@ -119,6 +121,8 @@ public class MainCompiler
                     utf_program += line + "\n";
 
                 reader.close();
+
+                PreprocessedProgram preprocessedProgram = new PreprocessedProgram(utf_program, main_class.getParentFile(), new DynamicLibraryLoader(main_class.getParentFile()));
 
                 LexedProgram lexedProgram = new LexedProgram(utf_program);
 
