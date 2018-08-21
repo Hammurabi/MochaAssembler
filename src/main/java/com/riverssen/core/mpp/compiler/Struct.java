@@ -123,6 +123,7 @@ public class Struct
                     else
                         fields.add(t.getTokens().get(1).toString());
                     break;
+                case METHOD_EMPTY_DECLARATION:
                 case METHOD_DECLARATION:
                     Method method = new Method(space, this, t);
 
@@ -146,8 +147,8 @@ public class Struct
                 case CLASS_DECLARATION:
                     System.err.println("Class declaration not allowed inside of a class __" + __typename__ + "__.");
                 default:
-                    System.out.println("An error occured '" + token + "'.");
-                    System.out.println(token.humanReadable(1));
+                    System.out.println("An error occured '" + t + "'.");
+                    System.out.println(t.humanReadable(1));
                     System.out.println("in '" + __typename__ + "'");
                     System.exit(0);
                     break;

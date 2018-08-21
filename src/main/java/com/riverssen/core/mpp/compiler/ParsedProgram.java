@@ -22,10 +22,12 @@ public class ParsedProgram
 {
     private Token tokens;
     private Stack<Modifier> modifiers;
+    private String lines[];
 
-    public ParsedProgram(LexedProgram program) throws ParseException
+    public ParsedProgram(LexedProgram program, String lines[]) throws ParseException
     {
         List<Token> tokens = new ArrayList<>();
+        this.lines = lines;
         modifiers          = new Stack<>();
         for (Token token : program.getTokens())
             if (token != null && !token.toString().isEmpty())
@@ -48,7 +50,7 @@ public class ParsedProgram
             Token currentToken = tokens.get(0);
             tokens.remove(0);
             return currentToken;
-        } else throw new ParseException(errmsg, offset);
+        } else throw new ParseException(errmsg, offset, lines);
     }
 
     private Token getNextToken(List<Token> tokens, Token offset, String errmsg) throws ParseException
@@ -65,7 +67,7 @@ public class ParsedProgram
         {
             e.printStackTrace();
         }
-        throw new ParseException(errmsg, offset);
+        throw new ParseException(errmsg, offset, lines);
     }
 
     private Token getNextValid(List<Token> tokens)
@@ -114,7 +116,7 @@ public class ParsedProgram
             parse(tokens, parenthesis, true);
 
             return parenthesis.getTokens().get(0);
-        } else throw new ParseException(errmsg, offset);
+        } else throw new ParseException(errmsg, offset, lines);
     }
 
     private Token getNextInBrackets(List<Token> tokens, Token offset, String errmsg) throws ParseException
@@ -126,16 +128,16 @@ public class ParsedProgram
             parse(tokens, parenthesis, true);
 
             return parenthesis.getTokens().get(0);
-        } else throw new ParseException(errmsg, offset);
+        } else throw new ParseException(errmsg, offset, lines);
     }
 
     private void parseClass(List<Token> tokens, Token rootm, Token currentToken) throws ParseException
     {
         if(modifiers.size() > 0)
         {
-            if(modifiers.contains(Modifier.PRIVATE)) throw new ParseException("classes cannot be private", currentToken);
-            else if(modifiers.contains(Modifier.PROTECTED)) throw new ParseException("classes cannot be protected", currentToken);
-            else if(modifiers.contains(Modifier.CONST)) throw new ParseException("classes cannot be const", currentToken);
+            if(modifiers.contains(Modifier.PRIVATE)) throw new ParseException("classes cannot be private", currentToken, lines);
+            else if(modifiers.contains(Modifier.PROTECTED)) throw new ParseException("classes cannot be protected", currentToken, lines);
+            else if(modifiers.contains(Modifier.CONST)) throw new ParseException("classes cannot be const", currentToken, lines);
         }
 
         Token name = getNext(tokens, currentToken, "function must have a name.");
@@ -186,7 +188,7 @@ public class ParsedProgram
     private void parseNamespace(List<Token> tokens, Token rootm, Token currentToken) throws ParseException
     {
         if(modifiers.size() > 0)
-            throw new ParseException("namespaces cannot have modifiers: " + modifiers, currentToken);
+            throw new ParseException("namespaces cannot have modifiers: " + modifiers, currentToken, lines);
 
         Token name = getNext(tokens, currentToken, "function must have a name.");
 
@@ -215,7 +217,7 @@ public class ParsedProgram
         {
             namespace.add(body);
             namespace.setType(Token.Type.NAMESPACE);
-        } else throw new ParseException("namespaces cannot be empty", currentToken);
+        } else throw new ParseException("namespaces cannot be empty", currentToken, lines);
         if (extension.getTokens().size() > 0) namespace.add(extension);
 
         rootm.add(namespace);
@@ -228,7 +230,7 @@ public class ParsedProgram
         Token name = getNext(tokens, currentToken, "function must have a name.");
         Token parenthesis = getNextInParenthesis(tokens, currentToken, "function must have arguments in parenthesis.");
         Token symbol = getNext(tokens, currentToken, "function must have a return symbol ':'.");
-        if (symbol.toString().charAt(0) != ':') throw new ParseException("Return symbol incorrect", symbol);
+        if (symbol.toString().charAt(0) != ':') throw new ParseException("Return symbol incorrect", symbol, lines);
         Token returnType = getNext(tokens, currentToken, "function must have a return type.");
         Token body = getNextInBraces(tokens, currentToken, "function must have a body");
 
@@ -262,16 +264,16 @@ public class ParsedProgram
     {
         Token op_type       = getNext(tokens, currentToken,                 "operator must have a type.");
         if (!op_type.isOperator())
-            throw new ParseException("operator must be followed by an operator type", currentToken);
+            throw new ParseException("operator must be followed by an operator type", currentToken, lines);
         Token parenthesis   = getNextInParenthesis(tokens, currentToken,    "operators must have arguments in parenthesis.");
         Token symbol        = getNext(tokens, currentToken,                 "operator must have a return symbol ':'.");
-        if (symbol.toString().charAt(0) != ':') throw new ParseException(           "Return symbol incorrect", symbol);
+        if (symbol.toString().charAt(0) != ':') throw new ParseException(           "Return symbol incorrect", symbol, lines);
         Token returnType    = getNext(tokens, currentToken,                 "operator must have a return type.");
         Token body          = getNextInBraces(tokens, currentToken,         "operator must have a body");
 
         /** unimplemented method **/
         if (body == null)
-            throw new ParseException("operator must have a body", currentToken);
+            throw new ParseException("operator must have a body", currentToken, lines);
 
         else
         {
@@ -306,7 +308,7 @@ public class ParsedProgram
     {
         Token for_ = new Token(Token.Type.FOR);
         Token parenthesis = getNextInParenthesis(tokens, currentToken, "if statement must have arguments in parenthesis.");
-        if (parenthesis.getTokens().size() != 3) throw new ParseException("For loops take 3 arguments.", currentToken);
+        if (parenthesis.getTokens().size() != 3) throw new ParseException("For loops take 3 arguments.", currentToken, lines);
         skipToValid(tokens);
         Token body = getNextInBraces(tokens, currentToken, "function must have a body");
 
@@ -336,9 +338,9 @@ public class ParsedProgram
         Token neW = new Token(Token.Type.NEW);
         parse(tokens, neW, true);
 
-        if (neW.getTokens().isEmpty()) throw new ParseException("new must be followed by a function", neW);
+        if (neW.getTokens().isEmpty()) throw new ParseException("new must be followed by a function", neW, lines);
 
-        if (neW.getTokens().get(0).getType() != Token.Type.METHOD_CALL && neW.getTokens().get(0).getType() != Token.Type.IDENTIFIER) throw new ParseException("new must be followed by a function or typename " + neW, neW);
+        if (neW.getTokens().get(0).getType() != Token.Type.METHOD_CALL && neW.getTokens().get(0).getType() != Token.Type.IDENTIFIER) throw new ParseException("new must be followed by a function or typename " + neW, neW, lines);
 
         neW.getTokens().get(0).setType(NEW);
 
@@ -410,7 +412,7 @@ public class ParsedProgram
     private void parseTemplate(List<Token> tokens, Token rootm, Token currentToken) throws ParseException
     {
         if (modifiers.size() > 0)
-            throw new ParseException("template cannot have modifiers.", currentToken);
+            throw new ParseException("template cannot have modifiers.", currentToken, lines);
         Token parenthesis = getNextInParenthesis(tokens, currentToken, "template must have arguments in parenthesis.");
 
             Token function = currentToken;
@@ -433,7 +435,7 @@ public class ParsedProgram
             parse(tokens, parenthesis, true);
 
             return parenthesis.getTokens().get(0);
-        } else throw new ParseException(errmsg, offset);
+        } else throw new ParseException(errmsg, offset, lines);
     }
 
     private Token strip(Token token)
@@ -555,7 +557,7 @@ public class ParsedProgram
         {
             e.printStackTrace();
         }
-        throw new ParseException(errmsg, offset);
+        throw new ParseException(errmsg, offset, lines);
     }
 
     static int prec(Token ch)
@@ -747,7 +749,7 @@ public class ParsedProgram
                     {
                         tokens.remove(0);
                         return;
-                    } else throw new ParseException("Redundant ']'", currentToken);
+                    } else throw new ParseException("Redundant ']'", currentToken, lines);
                 case RETURN:
                     tokens.remove(0);
                     parse(tokens, currentToken, true);
@@ -771,7 +773,7 @@ public class ParsedProgram
                     {
                         tokens.remove(0);
                         return;
-                    } else throw new ParseException("Redundant ')'", currentToken);
+                    } else throw new ParseException("Redundant ')'", currentToken, lines);
                 case BRACES_OPEN:
                     Token braces = new Token(Token.Type.BRACES);
                     getNext(tokens, currentToken, "");
@@ -784,7 +786,7 @@ public class ParsedProgram
                     {
                         tokens.remove(0);
                         return;
-                    } else throw new ParseException("Redundant '}'", currentToken);
+                    } else throw new ParseException("Redundant '}'", currentToken, lines);
                 case NUMBER:
                     Token A = getNext(tokens, currentToken, "");
                     if (tokens.size() > 0 && tokens.get(0).isMathOp() && parseMath)
@@ -807,7 +809,7 @@ public class ParsedProgram
                     {
                         tokens.remove(0);
                         break;
-                    } else throw new ParseException("Token unidentified. '" + currentToken.toString() + "(" + currentToken.getType() + ")'", currentToken);
+                    } else throw new ParseException("Token unidentified. '" + currentToken.toString() + "(" + currentToken.getType() + ")'", currentToken, lines);
                 case END:
                     tokens.remove(0);
                     if (newLineAware) return;
@@ -1001,9 +1003,9 @@ public class ParsedProgram
                     if (inAlligatorMouths)
                     {
                         tokens.remove(0);
-                    } else throw new ParseException("Redundant '>'", currentToken);
+                    } else throw new ParseException("Redundant '>'", currentToken, lines);
                 }
-                    throw new ParseException("Token unidentified. '" + currentToken.toString() + "(" + currentToken.getType() + ")'", currentToken);
+                    throw new ParseException("Token unidentified. '" + currentToken.toString() + "(" + currentToken.getType() + ")'", currentToken, lines);
             }
 
             if (onlyOnce) return;

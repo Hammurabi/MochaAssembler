@@ -27,7 +27,7 @@ public class PreprocessedProgram
     {
         String test = "";
 
-        Map<String, String> defines = new HashMap<>(master);
+        Map<String, String> defines = master;
 
         for (int i = start + 1; i < lines.length; i ++)
         {
@@ -50,7 +50,7 @@ public class PreprocessedProgram
                     defines.remove(line.replaceAll("\\#(define)\\s*", ""));
                 }
                 test += "\n";
-            } else if (line.matches("\\#(define)(\\s+[A-z](\\w*)*\\s+[A-z](\\w*)*)"))
+            } else if (line.matches("\\#(define)(\\s+[A-z](\\w*)*\\s+(\\w*)*)"))
             {
                 if (allow)
                 {

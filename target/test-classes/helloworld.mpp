@@ -42,3 +42,12 @@ class HelloWorld {
         int y = 0
     }
 }
+
+#ifndef pr
+
+#define t r
+fff
+
+#endif
+
+t
