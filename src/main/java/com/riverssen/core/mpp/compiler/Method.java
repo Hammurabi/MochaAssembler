@@ -124,4 +124,9 @@ public class Method
     {
         return getName();
     }
+
+    public Struct getReturnType(GlobalSpace space)
+    {
+        return space.getGlobalTypes().get(__returntype__);
+    }
 }

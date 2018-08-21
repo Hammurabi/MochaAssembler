@@ -711,30 +711,109 @@ public class Token implements Serializable
             token.fix();
     }
 
-    class Accessor{
-        Struct parent;
+    interface Accessor{
+        public void add(Struct accessor);
+        public void add(Method accessor);
+        public Struct getResultType(GlobalSpace space);
+        public Accessor getChild();
+        public Struct value(GlobalSpace space);
+    }
+
+    class MethodAccessor implements Accessor{
+        Method parent;
         Accessor child;
 
-        public Accessor(Struct parent)
+        public MethodAccessor(Method parent)
         {
             this.parent = parent;
         }
 
+        @Override
         public void add(Struct accessor)
         {
             if (child == null)
-                child = new Accessor(accessor);
+                child = new StructAccessor(accessor);
             else child.add(accessor);
         }
 
-        public Struct getResultType()
+        @Override
+        public void add(Method accessor)
+        {
+            if (child == null)
+                child = new MethodAccessor(accessor);
+            else child.add(accessor);
+        }
+
+        @Override
+        public Struct getResultType(GlobalSpace space)
         {
             Accessor accessor = this;
 
-            while (accessor.child != null)
-                accessor = accessor.child;
+            while (accessor.getChild() != null)
+                accessor = accessor.getChild();
 
-            return accessor.parent;
+            return accessor.value(space);
+        }
+
+        @Override
+        public Accessor getChild()
+        {
+            return child;
+        }
+
+        @Override
+        public Struct value(GlobalSpace space)
+        {
+            return parent.getReturnType(space);
+        }
+    }
+
+    class StructAccessor implements Accessor{
+        Struct parent;
+        Accessor child;
+
+        public StructAccessor(Struct parent)
+        {
+            this.parent = parent;
+        }
+
+        @Override
+        public void add(Struct accessor)
+        {
+            if (child == null)
+                child = new StructAccessor(accessor);
+            else child.add(accessor);
+        }
+
+        @Override
+        public void add(Method accessor)
+        {
+            if (child == null)
+                child = new MethodAccessor(accessor);
+            else child.add(accessor);
+        }
+
+        @Override
+        public Struct getResultType(GlobalSpace space)
+        {
+            Accessor accessor = this;
+
+            while (accessor.getChild() != null)
+                accessor = accessor.getChild();
+
+            return accessor.value(space);
+        }
+
+        @Override
+        public Accessor getChild()
+        {
+            return child;
+        }
+
+        @Override
+        public Struct value(GlobalSpace space)
+        {
+            return parent;
         }
     }
 
@@ -776,12 +855,16 @@ public class Token implements Serializable
 
                     if (a.getType().equals(Type.IDENTIFIER))
                     {
-                        accessor1 = new Accessor(null);
+                        accessor1 = new StructAccessor(argument.getVariable(a.toString(), space));
                     } else if (a.getType().equals(Type.METHOD_CALL))
                     {
+                        if (argument._this_ != null)
+                            accessor1 = new MethodAccessor(argument._this_.getMethod(a.getTokens().get(1).toString()));
+                        else
+                            accessor1 = new MethodAccessor(space.getGlobalMethods().get(a.getTokens().get(1).toString()));
                     }
 
-                    executable.add(b.getInstruction(argument, space, true, accessor = new Accessor(null)));
+                    executable.add(b.getInstruction(argument, space, true, accessor));
 //                    for (Token token : getTokens())
 //                        executable.add(token.getInstruction(argument, space, true));
                 break;
