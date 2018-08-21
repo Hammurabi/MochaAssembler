@@ -1,0 +1,8 @@
+#ifndef MOCHAXX_CRYPTO_LIB_H
+#define MOCHAXX_CRYPTO_LIB_H
+
+public function sha_256() : char[32]
+public function sha_512() : char[64]
+public function md_160() : char[20]
+
+#endif //MOCHAXX_CRYPTO_LIB_H

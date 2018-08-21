@@ -28,6 +28,7 @@ public class Struct
     private Set<Method> __methods__;
     private Struct      __parent__;
     private GlobalSpace __glblspace__;
+    private Set<String> __templates__;
 
     public Struct()
     {
@@ -36,6 +37,7 @@ public class Struct
         this.__typesize__       = 0;
         this.__typename__       = "VOID";
         this.__glblspace__      = new GlobalSpace();
+        this.__templates__      = new LinkedHashSet<>();
     }
 
     public Struct(String name, int size, GlobalSpace space)
@@ -46,6 +48,7 @@ public class Struct
         this.__typename__       = name;
         this.__parent__         = VOID;
         this.__glblspace__      = space;
+        this.__templates__      = new LinkedHashSet<>();
     }
 
     public Struct(GlobalSpace space, Token token)
@@ -56,6 +59,7 @@ public class Struct
         this.__typename__       = token.getTokens().get(0).toString();
         this.__parent__         = space.getGlobalTypes().get("Object");
         this.__glblspace__      = space;
+        this.__templates__      = new LinkedHashSet<>();
 
         if (token.getType().equals(Token.Type.CLASS_DECLARATION)) nclass(token, token.getTokens().get(1), space);
         else if (token.getType().equals(Token.Type.TEMPLATE_CLASS_DECLARATION))

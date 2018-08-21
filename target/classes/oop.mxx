@@ -65,5 +65,23 @@ class Object{
     }
 }
 
+template (typename T)
+class array{
+    private ulong _size_
+    private ptr T _ptr_
+    private ulong _index_
+
+    public function array(ulong s, ptr T p) : void
+    {
+        _size_ = s
+        _ptr_  = p
+        _index_ = 0;
+    }
+
+    public function add(T t) : void
+    {
+    }
+}
+
 #endif
 #reset

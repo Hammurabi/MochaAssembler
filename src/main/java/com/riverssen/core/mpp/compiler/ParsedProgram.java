@@ -53,6 +53,19 @@ public class ParsedProgram
         } else throw new ParseException(errmsg, offset, lines);
     }
 
+    private Token getNextNotInNewLine(List<Token> tokens, Token offset, String errmsg) throws ParseException
+    {
+        if (tokens.size() > 0)
+        {
+            Token currentToken = tokens.get(0);
+            tokens.remove(0);
+
+            if (currentToken.getType().equals(END)) throw new ParseException(errmsg, offset, lines);
+
+            return currentToken;
+        } else throw new ParseException(errmsg, offset, lines);
+    }
+
     private Token getNextToken(List<Token> tokens, Token offset, String errmsg) throws ParseException
     {
         try
@@ -230,8 +243,8 @@ public class ParsedProgram
         Token name = getNext(tokens, currentToken, "function must have a name.");
         Token parenthesis = getNextInParenthesis(tokens, currentToken, "function must have arguments in parenthesis.");
         Token symbol = getNext(tokens, currentToken, "function must have a return symbol ':'.");
-        if (symbol.toString().charAt(0) != ':') throw new ParseException("Return symbol incorrect", symbol, lines);
-        Token returnType = getNext(tokens, currentToken, "function must have a return type.");
+        if (symbol.toString().charAt(0) != ':') throw new ParseException("Return symbol incorrect", currentToken, lines);
+        Token returnType = getNextNotInNewLine(tokens, currentToken, "function must have a return type.");
         Token body = getNextInBraces(tokens, currentToken, "function must have a body");
 
         /** unimplemented method **/
