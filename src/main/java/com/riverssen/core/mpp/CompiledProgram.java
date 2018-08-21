@@ -94,6 +94,15 @@ public class CompiledProgram
                         System.exit(0);
                     }
                     break;
+                case TEMPLATE_CLASS_DECLARATION:
+                    Struct tstruct = new Struct(space, t);
+
+                    if (space.getGlobalMethods().containsKey(tstruct.getName()))
+                    {
+                        System.err.println("struct __" + tstruct.getName() + "__ already exists in __global__.");
+                        System.exit(0);
+                    }
+                    break;
                 default:
                     System.out.println("An error occured in compiler setup. '" + t.getType() + "'.");
                     System.exit(0);

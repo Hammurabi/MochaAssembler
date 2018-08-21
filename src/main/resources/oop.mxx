@@ -1,0 +1,68 @@
+#ifndef MOCHA_OOP_DEFINITIONS_H
+#define MOCHA_OOP_DEFINITIONS_H
+
+class Object{
+    public function destroy() : void
+    {
+        free (this)
+    }
+
+    public operator+ (Object o) : Object
+    {
+        exception("math op '+' not allowed.")
+    }
+
+    public operator- (Object o) : Object
+    {
+        exception("math op '-' not allowed.")
+    }
+
+    public operator* (Object o) : Object
+    {
+        exception("math op '*' not allowed.")
+    }
+
+    public operator/ (Object o) : Object
+    {
+        exception("math op '/' not allowed.")
+    }
+
+    public operator^ (Object o) : Object
+    {
+        exception("math op '^' not allowed.")
+    }
+
+    public operator++ (Object o) : Object
+    {
+        exception("math op '++' not allowed.")
+    }
+
+    public operator-- (Object o) : Object
+    {
+        exception("math op '--' not allowed.")
+    }
+
+    public operator== (Object o) : bool
+    {
+        return array_equal(this, toptr(object), len())
+    }
+
+    public operator& (Object o) : Object
+    {
+        exception("logical op '&' not allowed.")
+    }
+
+    public operator&& (Object o) : Object
+    {
+        exception("logical op '&&' not allowed.")
+    }
+
+    public function len() : ulong
+
+    public function equals(ref Object object) : Object
+    {
+        return dereference(this) == object;
+    }
+}
+
+#endif

@@ -169,7 +169,16 @@ public class ParsedProgram
         }
         if (extension.getTokens().size() > 0) clasz.add(extension);
 
+        if (isTemplate)
+        {
+            Token templateClass = new Token(TEMPLATE_CLASS_DECLARATION);
+            templateClass.add(template);
+            templateClass.getTokens().addAll(clasz.getTokens());
+            rootm.add(templateClass);
+        } else
         rootm.add(clasz);
+
+        isTemplate = false;
 
         modifiers.clear();
     }
@@ -395,22 +404,22 @@ public class ParsedProgram
         }
     }
 
+    private boolean isTemplate = false;
+    private Token   template;
+
     private void parseTemplate(List<Token> tokens, Token rootm, Token currentToken) throws ParseException
     {
-        Token parenthesis = getNextInAlligatorMouths(tokens, currentToken, "function must have arguments in parenthesis.");
-        Token symbol = getNext(tokens, currentToken, "function must have a return symbol ':'.");
-        if (symbol.toString().charAt(0) != ':') throw new ParseException("Return symbol incorrect", symbol);
-        Token returnType = getNext(tokens, currentToken, "function must have a return type.");
-        Token body = getNextInBraces(tokens, currentToken, "function must have a body");
+        if (modifiers.size() > 0)
+            throw new ParseException("template cannot have modifiers.", currentToken);
+        Token parenthesis = getNextInParenthesis(tokens, currentToken, "template must have arguments in parenthesis.");
 
-        {
-            Token function = new Token(Token.Type.METHOD_DECLARATION);
+            Token function = currentToken;
             function.getModifiers().addAll(modifiers);
 
             function.add(parenthesis);
-            function.add(body);
-            rootm.add(function);
-        }
+
+            isTemplate = true;
+            template = function;
 
         modifiers.clear();
     }
@@ -803,6 +812,7 @@ public class ParsedProgram
                     tokens.remove(0);
                     if (newLineAware) return;
                     break;
+                case TEMPLATE:
                 case KEYWORD:
                     parseKeyword(tokens, root);
                     break;
@@ -981,15 +991,16 @@ public class ParsedProgram
                 if (currentToken.getType().equals(LESS_THAN))
                 {
                     Token alligator = new Token(ALLIGATORMOUTH);
+                    tokens.remove(0);
 
-                    if (nextAfterOfType(tokens, MORE_THAN))
-                    {
-                    }
+                    parse(tokens, alligator, true, false, false, false, false, false, false, true);
+
+                    root.add(alligator);
                 } else if (currentToken.getType().equals(MORE_THAN))
                 {
                     if (inAlligatorMouths)
                     {
-
+                        tokens.remove(0);
                     } else throw new ParseException("Redundant '>'", currentToken);
                 }
                     throw new ParseException("Token unidentified. '" + currentToken.toString() + "(" + currentToken.getType() + ")'", currentToken);

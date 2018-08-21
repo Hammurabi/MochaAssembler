@@ -33,7 +33,7 @@ public function err(string s) : void
 public function out(string x) : void
 public function print(string x) : void
 {
-    out(x)
+    out (x)
 }
 
 public function exit(uint x) : void
@@ -47,94 +47,6 @@ public function array_equal(void a, void b) : bool
 public function dereference(ptr Object a) : void
 public function toptr(ref Object a) : ulong
 
-class Object{
-    public function destroy() : void
-    {
-        free (this)
-    }
-
-    public operator+ (Object o) : Object
-    {
-        exception("math op '+' not allowed.")
-    }
-
-    public operator- (Object o) : Object
-    {
-        exception("math op '-' not allowed.")
-    }
-
-    public operator* (Object o) : Object
-    {
-        exception("math op '*' not allowed.")
-    }
-
-    public operator/ (Object o) : Object
-    {
-        exception("math op '/' not allowed.")
-    }
-
-    public operator^ (Object o) : Object
-    {
-        exception("math op '^' not allowed.")
-    }
-
-    public operator++ (Object o) : Object
-    {
-        exception("math op '++' not allowed.")
-    }
-
-    public operator-- (Object o) : Object
-    {
-        exception("math op '--' not allowed.")
-    }
-
-    public operator== (Object o) : bool
-    {
-        return array_equal(this, toptr(object), len())
-    }
-
-    public operator& (Object o) : Object
-    {
-        exception("logical op '&' not allowed.")
-    }
-
-    public operator&& (Object o) : Object
-    {
-        exception("logical op '&&' not allowed.")
-    }
-
-    public function len() : ulong
-
-    public function equals(ref Object object) : Object
-    {
-        return dereference(this) == object;
-    }
-}
-
-template <typename A>
-class sp_t{
-    private ptr A _ptr_
-
-    public function sp_t(A val) : void
-    {
-        this._ptr_[0] = val
-    }
-
-    public function get() : A
-    {
-        return _ptr_[0]
-    }
-}
-
-class PublicAddress{
-    void address[25]
-
-    public function PublicAddress(string a) : void
-    {
-        memcpy(address, a, 25)
-    }
-}
-
 class Datetime
 {
     private ulong time
@@ -144,13 +56,6 @@ class Datetime
         time = t
     }
 }
-
-class Message{
-    PublicAddress sender
-    Datetime      time
-}
-
-Message msg = new Message
 
 //namespace std
 //{

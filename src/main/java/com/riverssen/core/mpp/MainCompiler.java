@@ -20,20 +20,26 @@ import java.io.*;
 
 public class MainCompiler
 {
-    /** import std.mpp **/
     private static String stdlib()
             throws IOException
     {
         String utf_program = "";
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(MainCompiler.class.getClassLoader().getResource("std.mpp").openStream()));
+        String includes[] = {
+                "std", "rivercoin", "oop", "types"
+        };
 
-        String line = "";
+        for (String include : includes)
+        {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(MainCompiler.class.getClassLoader().getResource(include + ".mxx").openStream()));
 
-        while ((line = reader.readLine()) != null)
-            utf_program += line + "\n";
+            String line = "";
 
-        reader.close();
+            while ((line = reader.readLine()) != null)
+                utf_program += line + "\n";
+
+            reader.close();
+        }
 
         return utf_program;
     }

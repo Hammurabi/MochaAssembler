@@ -189,6 +189,7 @@ public class Token implements Serializable
         METHOD_DECLARATION,
         METHOD_EMPTY_DECLARATION,
         CLASS_DECLARATION,
+        TEMPLATE_CLASS_DECLARATION,
         EMPTY_CLASS_DECLARATION,
         PARENTHESIS,
         BRACES,
@@ -1100,7 +1101,11 @@ public class Token implements Serializable
                 else if (toString().equals("extends"))
                     type = Type.EXTEND;
                 else if (toString().matches("([_]*[A-z]+\\d*)+")) {
-                    if(isKeyword()) type = Type.KEYWORD;
+                    if(isKeyword())
+                    {
+                        if (toString().equals("template")) type = Type.TEMPLATE;
+                        else type = Type.KEYWORD;
+                    }
                     else
                     type = Type.IDENTIFIER;
                 }
@@ -1117,7 +1122,7 @@ public class Token implements Serializable
 
     private boolean isKeyword()
     {
-        final String keywords[] = {"operator", "op", "function", "fun", "new", "class", "static", "ref", "reference", "ptr", "pointer", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
+        final String keywords[] = {"operator", "op", "function", "template", "fun", "new", "class", "static", "ref", "reference", "ptr", "pointer", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
         for(String string : keywords) if(toString().equals(string)) return true;
         return false;
     }

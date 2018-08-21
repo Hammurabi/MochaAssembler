@@ -56,10 +56,24 @@ public class Struct
         this.__typesize__       = 0;
         this.__typename__       = token.getTokens().get(0).toString();
         this.__parent__         = space.getGlobalTypes().get("Object");
-        Set<String> fields      = new LinkedHashSet<>();
         this.__glblspace__      = space;
 
-        for (Token t : token.getTokens().get(1).getTokens())
+        if (token.getType().equals(Token.Type.CLASS_DECLARATION)) nclass(token, token.getTokens().get(1), space);
+        else if (token.getType().equals(Token.Type.TEMPLATE_CLASS_DECLARATION))
+        {
+        } else {
+            System.err.println("unknown class type: " + token + ".");
+            System.exit(0);
+        }
+
+        space.getGlobalTypes().put(__typename__, this);
+    }
+
+    private void nclass(Token token, Token body, GlobalSpace space)
+    {
+        Set<String> fields      = new LinkedHashSet<>();
+
+        for (Token t : body.getTokens())
         {
             switch (t.getType())
             {
@@ -131,16 +145,14 @@ public class Struct
                     break;
                 case CLASS_DECLARATION:
                     System.err.println("Class declaration not allowed inside of a class __" + __typename__ + "__.");
-                    default:
-                        System.out.println("An error occured '" + token + "'.");
-                        System.out.println(token.humanReadable(1));
-                        System.out.println("in '" + __typename__ + "'");
-                        System.exit(0);
-                        break;
+                default:
+                    System.out.println("An error occured '" + token + "'.");
+                    System.out.println(token.humanReadable(1));
+                    System.out.println("in '" + __typename__ + "'");
+                    System.exit(0);
+                    break;
             }
         }
-
-        space.getGlobalTypes().put(__typename__, this);
     }
 
     public Method func_call(String name, boolean is_static)

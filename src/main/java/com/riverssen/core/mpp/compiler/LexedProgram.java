@@ -134,36 +134,36 @@ public class LexedProgram
 
     private void preprocess()
     {
-        List<Token> control = new ArrayList<>(allChars);
-        List<Token> all = new ArrayList<>(allChars);
-
-        for (int i = 0; i < all.size(); i ++)
-        {
-            Token a = all.get(i);
-
-            if (all.size() > (i + 1) && a.getType().equals(Token.Type.SYMBOL) && a.toString().equals("#"))
-            {
-                Token b = all.get(i + 1);
-
-                if (b.toString().equals("define"))
-                {
-                    String value = "";
-
-                    if (all.size() > (i + 2))
-                    {
-                        Token c = all.get(i + 2);
-
-                        if (c.getType().equals(Token.Type.END))
-                        {
-                        } else {
-                            for (int x = i + 2; x < all.size(); x ++)
-                            {
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//        List<Token> control = new ArrayList<>(allChars);
+//        List<Token> all = new ArrayList<>(allChars);
+//
+//        for (int i = 0; i < all.size(); i ++)
+//        {
+//            Token a = all.get(i);
+//
+//            if (all.size() > (i + 1) && a.getType().equals(Token.Type.SYMBOL) && a.toString().equals("#"))
+//            {
+//                Token b = all.get(i + 1);
+//
+//                if (b.toString().equals("define"))
+//                {
+//                    String value = "";
+//
+//                    if (all.size() > (i + 2))
+//                    {
+//                        Token c = all.get(i + 2);
+//
+//                        if (c.getType().equals(Token.Type.END))
+//                        {
+//                        } else {
+//                            for (int x = i + 2; x < all.size(); x ++)
+//                            {
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     public Set<Token> getTokens()

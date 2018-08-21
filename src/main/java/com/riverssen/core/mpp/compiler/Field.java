@@ -81,6 +81,11 @@ public class Field
     {
         if (__inherent__)
             return __size__.getSizeAsLong(space);
+        if (!space.getGlobalTypes().containsKey(__typename__))
+        {
+            System.err.println("field type '" + __typename__ + " " + getName() + "' doesn't exist.");
+            System.exit(0);
+        }
         return space.getGlobalTypes().get(__typename__).size();
     }
 
