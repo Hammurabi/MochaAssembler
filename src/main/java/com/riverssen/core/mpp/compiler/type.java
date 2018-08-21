@@ -1,4 +1,4 @@
-package com.riverssen.core.mpp;
+package com.riverssen.core.mpp.compiler;
 
 public class type
 {

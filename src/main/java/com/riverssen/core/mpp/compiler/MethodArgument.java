@@ -14,8 +14,6 @@ package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.exceptions.CompileException;
-import com.riverssen.core.mpp.instructions;
-import com.riverssen.core.mpp.type;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

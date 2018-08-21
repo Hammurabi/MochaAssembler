@@ -15,6 +15,7 @@ package com.riverssen.core.mpp;
 import com.riverssen.core.mpp.compiler.Field;
 import com.riverssen.core.mpp.compiler.GlobalSpace;
 import com.riverssen.core.mpp.compiler.StackTrace;
+import com.riverssen.core.mpp.compiler.instructions;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

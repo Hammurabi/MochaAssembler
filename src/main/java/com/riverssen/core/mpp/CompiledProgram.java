@@ -12,12 +12,7 @@
 
 package com.riverssen.core.mpp;
 
-import com.riverssen.core.mpp.compiler.Field;
-import com.riverssen.core.mpp.compiler.GlobalSpace;
-import com.riverssen.core.mpp.compiler.Method;
-import com.riverssen.core.mpp.compiler.Struct;
-import com.riverssen.core.mpp.compiler.ParsedProgram;
-import com.riverssen.core.mpp.compiler.Token;
+import com.riverssen.core.mpp.compiler.*;
 import com.riverssen.core.utils.Tuple;
 import java.io.File;
 import java.io.FileOutputStream;

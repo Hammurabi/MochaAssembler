@@ -14,7 +14,6 @@ package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
 import com.riverssen.core.mpp.exceptions.CompileException;
-import com.riverssen.core.mpp.instructions;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -865,8 +864,6 @@ public class Token implements Serializable
                     }
 
                     executable.add(b.getInstruction(argument, space, true, accessor));
-//                    for (Token token : getTokens())
-//                        executable.add(token.getInstruction(argument, space, true));
                 break;
             case ASSERT:
                 for (Token token : getTokens())

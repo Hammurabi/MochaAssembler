@@ -22,6 +22,7 @@ public class Method
     private Struct          __parenttype__;
     private String          __methodname__;
     private Set<Modifier>   __modifiers__;
+    private Set<Field>      __arguments__;
     private ArrayList<Byte> __opcodes__;
     private boolean         __undeclared__;
     private String          __returntype__;
@@ -35,6 +36,7 @@ public class Method
         __methodname__  = name;
         __returntype__  = null;
         __location__    = space.addMethod(this);
+        __arguments__   = new LinkedHashSet<>();
     }
 
     /**
@@ -62,12 +64,12 @@ public class Method
         String accessor = "null";
         if (__parenttype__ != null) accessor = __parenttype__.getName();
 
-        Set<Field> args = new LinkedHashSet<>();
+        __arguments__ = new LinkedHashSet<>();
 
         for (Token argument : token.getChild(Token.Type.PARENTHESIS).getTokens())
-            args.add(new Field(space, argument, null));
+            __arguments__.add(new Field(space, argument, null));
 
-        MethodArgument argument = new MethodArgument((isStatic()) ? null : parent, args);
+        MethodArgument argument = new MethodArgument((isStatic()) ? null : parent, __arguments__);
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         {
@@ -128,5 +130,23 @@ public class Method
     public Struct getReturnType(GlobalSpace space)
     {
         return space.getGlobalTypes().get(__returntype__);
+    }
+
+    public boolean matches(GlobalSpace space, Struct ... arguments)
+    {
+        if ((arguments == null || arguments.length == 0) && __arguments__.size() == 0)
+            return true;
+        else if ((arguments == null || arguments.length == 0) && __arguments__.size() > 0)
+            return false;
+        else if ((arguments == null || arguments.length != __arguments__.size()))
+            return false;
+
+        int i = 0;
+
+        for (Field field : __arguments__)
+            if (!field.getTypeStruct(space).getName().equals(arguments[i ++]))
+                return false;
+
+        return true;
     }
 }

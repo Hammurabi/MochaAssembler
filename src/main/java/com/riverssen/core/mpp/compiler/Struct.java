@@ -13,7 +13,6 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
-import com.riverssen.core.mpp.instructions;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -41,12 +40,12 @@ public class Struct
 
     public Struct(String name, int size, GlobalSpace space)
     {
-        this.__fields__ = new LinkedHashSet<>();
-        this.__methods__= new LinkedHashSet<>();
-        this.__typesize__   = size;
-        this.__typename__ = name;
+        this.__fields__         = new LinkedHashSet<>();
+        this.__methods__        = new LinkedHashSet<>();
+        this.__typesize__       = size;
+        this.__typename__       = name;
         this.__parent__         = VOID;
-        this.__glblspace__  = space;
+        this.__glblspace__      = space;
     }
 
     public Struct(GlobalSpace space, Token token)
@@ -240,6 +239,28 @@ public class Struct
             if (__parent__.containsMethod(methodName)) return true;
 
         return __glblspace__.getGlobalMethods().containsKey(methodName);
+    }
+
+    public boolean containsMethod(String methodName, GlobalSpace space, Struct... structs)
+    {
+        for (Method method : __methods__)
+            if (method.getName().equals(methodName) && method.matches(space, structs)) return true;
+
+        if (__parent__ != null)
+            if (__parent__.containsMethod(methodName, space, structs)) return true;
+
+        return __glblspace__.getGlobalMethods().containsKey(methodName) && __glblspace__.getGlobalMethods().get(methodName).matches(space, structs);
+    }
+
+    public Method getMethod(String methodName, GlobalSpace space, Struct... structs)
+    {
+        for (Method method : __methods__)
+            if (method.getName().equals(methodName)) return method;
+
+        if (__parent__ != null)
+            if (__parent__.containsMethod(methodName, space, structs)) return __parent__.getMethod(methodName);
+
+        return __glblspace__.getGlobalMethods().get(methodName);
     }
 
     @Override
