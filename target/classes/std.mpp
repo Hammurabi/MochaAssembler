@@ -10,6 +10,13 @@
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#define false 0
+#define true 1
+#define False 0
+#define True 1
+
+//typedef char bool
+
 public function malloc(ulong size) : ulong
 public function calloc(ulong size) : ulong
 public function delete(ulong o) : void
@@ -36,6 +43,9 @@ public function sleep(ulong x) : ulong
     return wait(x)
 }
 public function exception(string s) : void
+public function array_equal(void a, void b) : bool
+public function dereference(ptr Object a) : void
+public function toptr(ref Object a) : ulong
 
 class Object{
     public function destroy() : void
@@ -78,9 +88,9 @@ class Object{
         exception("math op '--' not allowed.")
     }
 
-    public operator== (Object o) : Object
+    public operator== (Object o) : bool
     {
-        exception("logical op '==' not allowed.")
+        return array_equal(this, toptr(object), len())
     }
 
     public operator& (Object o) : Object
@@ -91,6 +101,13 @@ class Object{
     public operator&& (Object o) : Object
     {
         exception("logical op '&&' not allowed.")
+    }
+
+    public function len() : ulong
+
+    public function equals(ref Object object) : Object
+    {
+        return dereference(this) == object;
     }
 }
 
