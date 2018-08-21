@@ -124,6 +124,9 @@ public class MainCompiler
 
                 PreprocessedProgram preprocessedProgram = new PreprocessedProgram(utf_program, main_class.getParentFile(), new DynamicLibraryLoader(main_class.getParentFile()));
 
+                System.out.println(preprocessedProgram.getFinalProgram());
+                System.exit(0);
+
                 LexedProgram lexedProgram = new LexedProgram(utf_program);
 
                 ParsedProgram parsedProgram = new ParsedProgram(lexedProgram);

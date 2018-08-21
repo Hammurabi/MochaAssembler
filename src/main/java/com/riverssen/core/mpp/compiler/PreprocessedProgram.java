@@ -1,5 +1,7 @@
 package com.riverssen.core.mpp.compiler;
 
+import com.riverssen.core.utils.Tuple;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,61 +14,106 @@ public class PreprocessedProgram
 
     public PreprocessedProgram(String program, File location, DynamicLibraryLoader dynamicLibraryLoader)
     {
-        removeComments(program);
-        checkIncludes(program, dynamicLibraryLoader);
+        finalProgram = program;
+        program = removeComments(program);
+        program = checkIncludes(program, dynamicLibraryLoader);
         String lines[] = program.split("\n");
-        checkIfndIfndefs(lines, 0);
+        program = checkIfndIfndefs(lines, -1, new HashMap<>(), true).getI();
+
+        finalProgram = program;
     }
 
-    private String checkIfndIfndefs(final String lines[], int start)
+    private Tuple<String, Integer> checkIfndIfndefs(final String lines[], int start, Map<String, String> master, boolean allow)
     {
         String test = "";
 
-        Map<String, String> defines = new HashMap<>();
+        Map<String, String> defines = new HashMap<>(master);
 
-        for (int i = 0; i < lines.length; i ++)
+        for (int i = start + 1; i < lines.length; i ++)
         {
             String line = lines[i];
 
             if (line.matches("\\#(define)\\s+[A-z](\\w*)*"))
             {
+                if (allow)
                 defines.put(line.replaceAll("\\#(define)\\s*", ""), "");
+                test += "\n";
             } else if (line.matches("\\#(undefine)\\s+[A-z](\\w*)*"))
             {
-                if (!defines.containsKey(line.replaceAll("\\#(define)\\s*", ""))
+                if (allow)
                 {
-                    System.err.println("'" + line.replaceAll("\\#(define)\\s*", "") + "' cannot be undefined.");
-                    System.exit(0);
+                    if (!defines.containsKey(line.replaceAll("\\#(define)\\s*", "")))
+                    {
+                        System.err.println("'" + line.replaceAll("\\#(define)\\s*", "") + "' cannot be undefined.");
+                        System.exit(0);
+                    }
+                    defines.remove(line.replaceAll("\\#(define)\\s*", ""));
                 }
-                defines.remove(line.replaceAll("\\#(define)\\s*", ""));
+                test += "\n";
             } else if (line.matches("\\#(define)(\\s+[A-z](\\w*)*\\s+[A-z](\\w*)*)"))
             {
-                String def = line.replaceAll("\\#(define)\\s*", "").replaceAll("\\s+", " ");
+                if (allow)
+                {
+                    String def = line.replaceAll("\\#(define)\\s*", "").replaceAll("\\s+", " ");
 
-                String define[] = def.split(" ");
+                    String define[] = def.split(" ");
 
-                defines.put(define[0], define[1]);
-            } else if (line.matches("\\#(ifdef)(\\s+[A-z](\\w*)*\\s+[A-z](\\w*)*)"))
+                    defines.put(define[0], define[1]);
+                }
+                test += "\n";
+            } else if (line.matches("\\#(ifdef)\\s+([A-z](\\w*)*)"))
             {
-                String if_case = "";
+                String if_reason = line.replaceAll("\\#(ifdef)\\s+", "");
+                Tuple<String, Integer> if_case = getAllBetweenIfs(lines, i, defines.containsKey(if_reason), defines);
+                test += if_case.getI();
+                i = if_case.getJ();
+            } else if (line.matches("\\#(ifndef)\\s+([A-z](\\w*)*)"))
+            {
+                String if_reason = line.replaceAll("\\#(ifndef)\\s+", "");
+                Tuple<String, Integer> if_case = getAllBetweenIfs(lines, i, !defines.containsKey(if_reason), defines);
+                test += if_case.getI();
+                i = if_case.getJ();
+            } else if (line.matches("\\#(endif)"))
+            {
+                if (start == -1)
+                {
+                    System.err.println("No if case for endif.");
+                    System.exit(0);
+                }
+                return new Tuple<>(test + "\n", i);
+            } else {
+                String adjusted = line;
+
+                for (String def : defines.keySet())
+                    adjusted = adjusted.replaceAll("\\b" + def + "\\b", defines.get(def));
+
+                test += adjusted + "\n";
             }
         }
 
-        return test;
+        return new Tuple<>(test, -1);
     }
 
-    private String getText(final String[] lines, int startIndex)
-    {
-        String text = "";
-
-        return text;
-    }
-
-    private String getAllBetweenIfs(final String[] lines, int startIndex)
+    private Tuple<String, Integer> getAllBetweenIfs(final String[] lines, int startIndex, boolean add, Map<String, String> master)
     {
         String betweenIfs = "";
 
-        return betweenIfs;
+        Tuple<String, Integer> text = checkIfndIfndefs(lines, startIndex, master, add);
+
+        if (text.getJ() == -1)
+        {
+            System.err.println("No endif found.");
+            System.exit(0);
+        }
+
+        if (add) return text;
+
+        String l[] = text.getI().split("\n");
+
+        for (String line : l)
+            betweenIfs += "\n";
+
+        return new Tuple<>(betweenIfs, text.getJ());
     }
 
     private String checkIncludes(final String control, DynamicLibraryLoader dynamicLibraryLoader)
