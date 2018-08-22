@@ -13,6 +13,7 @@
 class HelloWorld {
     private PublicAddress owner
     private string        message
+    private string        message2
 
     public function HelloWorld() : void
     {
@@ -22,8 +23,6 @@ class HelloWorld {
 
     public function setMessage(string text) : void
     {
-        if(owner == msg.sender)
-            this.message = text
     }
 
     public function getMessage() : string
@@ -33,14 +32,12 @@ class HelloWorld {
 
     public function kill() : void
     {
-        if(owner == msg.sender)
-            destroy()
     }
 
     public function mul() : void
     {
         PublicAddress a
         PublicAddress b
-        PublicAddress c = a * b
+        PublicAddress c = message2 * b
     }
 }

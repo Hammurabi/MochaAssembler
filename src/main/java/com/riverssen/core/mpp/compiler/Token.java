@@ -943,26 +943,7 @@ public class Token implements Serializable
                     executable.add(token.getInstruction(argument, space, procedural));
                 break;
             case VALUE:
-                switch (getTokens().get(0).getType())
-                {
-                    case STRING:
-                        String push_s_v = getTokens().get(0).toString();
-                        push_s_v = push_s_v.substring(1, push_s_v.length() - 1);
-                        executable.add(instructions.push_s);
-                        executable.add(executable.convertInt(push_s_v.length()));
-                        for (int i = 0; i < push_s_v.length(); i ++)
-                            executable.add(push_s_v.charAt(i));
-                        break;
-                    case NUMBER:
-                        executable.add(getTokens().get(0).IntegralType());
-                        executable.add(getTokens().get(0).IntegralBytes());
-                        break;
-                    case DECIMAL:
-                        long push_d_v = Long.parseLong(getTokens().get(0).toString());
-                        executable.add(instructions.push_f_64);
-                        executable.add(executable.convertDouble(push_d_v));
-                        break;
-                }
+                    executable.add(getTokens().get(0).getInstruction(argument, space));
                 break;
             case STRING:
                 String push_s_v = toString();
@@ -1099,7 +1080,7 @@ public class Token implements Serializable
 
     public String getInstructionsAsString()
     {
-        return getInstruction().toString();
+        return getInstruction(null, null, false, null).toString();
     }
 
     public Type getType()

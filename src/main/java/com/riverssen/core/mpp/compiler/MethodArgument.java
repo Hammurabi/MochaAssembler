@@ -55,6 +55,14 @@ public class MethodArgument
         {
             executable.add(instructions.stack_load);
             executable.add(executable.convertLong(stack.get(variable_name)));
+        } else if (_this_ != null && _this_.containsField(variable_name, _this_.getName()))
+        {
+            executable.add(instructions.memory_read);
+            executable.add(executable.convertLong(stack.get("this")));
+            executable.add(executable.convertLong(_this_.getFieldOffset(variable_name)));
+        } else {
+            System.err.println("cannot find variable '" + variable_name + "' in the scope of '" + _this_ + "'.");
+            System.exit(0);
         }
 //        if (variable_name.equals("this"))
 //        {
