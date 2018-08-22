@@ -39,6 +39,8 @@ class HelloWorld {
 
     public function mul() : void
     {
-        int y = 0
+        PublicAddress a
+        PublicAddress b
+        PublicAddress c = a * b
     }
 }

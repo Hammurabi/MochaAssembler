@@ -135,18 +135,16 @@ public class Field
         return __typename__;
     }
 
-    public void instantiate(Executable executable, StackTrace trace)
+    public void instantiate(MethodArgument argument, Executable executable, StackTrace trace)
     {
+        executable.add(instructions.push);
+        executable.add(executable.convertLong(size(trace.space)));
+
         if (__value__ != null)
         {
-            if (__value__.getTokens().get(0).getType().equals(Token.Type.NEW))
-            {
-                if (__value__.getTokens().get(0).toString().equals("METHOD_CALL"))
-                {
-                } else {
-                }
-            }
-        } else {
+            executable.add(__value__.getInstruction(argument, executable.space));
+            executable.add(instructions.stack_set);
+            executable.add(executable.convertLong(argument.getstack(getName())));
         }
     }
 

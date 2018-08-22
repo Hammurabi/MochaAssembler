@@ -121,38 +121,40 @@ public class instructions
 
     stack_read = 73, // undefined operator
     stack_load = 74, // push stack_get(i)
-    memory_read = 75, // push memory_get(i + op[index++])
-    memory_load = 76, // push memory_get(i)
-    memory_write = 77, // memory.set(i, data[])
-    memory_write_stack = 78, //memory.set(i, stack.pop)
+    stack_write = 75, //stack.set(i, data[])
+    stack_set = 76, //stack.set(i, pop())
+    memory_read = 77, // push memory_get(i + op[index++])
+    memory_load = 78, // push memory_get(i)
+    memory_write = 79, // memory.set(i, data[])
+    memory_write_stack = 80, //memory.set(i, stack.pop)
 
-    stack_duplicate = 79, //push stack.peek
-    stack_swap = 80, //stack.set(x, stack.get(y)) and stack.set(y, stack.get(x))
+    stack_duplicate = 81, //push stack.peek
+    stack_swap = 82, //stack.set(x, stack.get(y)) and stack.set(y, stack.get(x))
 
-    iprint = 81,
-    fprint = 82,
-    print = 83,
+    iprint = 83,
+    fprint = 84,
+    print = 85,
 
-    goto_ = 84,
+    goto_ = 86,
 
-    call_ = 85,
-    call_native = 86,
+    call_ = 87,
+    call_native = 88,
 
-    if_ = 87,
-    elif_ = 88,
-    else_ = 89,
+    if_ = 89,
+    elif_ = 90,
+    else_ = 91,
 
     /** none executable instructions **/
-    start_func = 90,
-    end_func = 91,
-    _new_ = 92,
-    push = 93,
-    pop = 94,
-    malloc_ = 95,
-    calloc_ = 96,
-    less_ = 97,
-    more_ = 98,
-    lesseq_ = 99,
-    moreeq_ = 100,
-    equal_ = 101;
+    start_func = 92,
+    end_func = 93,
+    _new_ = 94,
+    push = 95,
+    pop = 96,
+    malloc_ = 97,
+    calloc_ = 98,
+    less_ = 99,
+    more_ = 100,
+    lesseq_ = 101,
+    moreeq_ = 102,
+    equal_ = 103;
 }

@@ -282,4 +282,9 @@ public class Struct
 
         return string;
     }
+
+    public int getType()
+    {
+        return 0;
+    }
 }

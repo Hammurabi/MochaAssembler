@@ -69,7 +69,7 @@ public class Method
         for (Token argument : token.getChild(Token.Type.PARENTHESIS).getTokens())
             __arguments__.add(new Field(space, argument, null));
 
-        MethodArgument argument = new MethodArgument((isStatic()) ? null : parent, __arguments__);
+        MethodArgument argument = new MethodArgument((isStatic()) ? null : parent, __arguments__, space);
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         {

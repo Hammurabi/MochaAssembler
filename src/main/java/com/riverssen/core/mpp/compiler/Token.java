@@ -816,10 +816,10 @@ public class Token implements Serializable
         }
     }
 
-    public List<Byte> getInstruction()
-    {
-        return getInstruction(new MethodArgument(null, new LinkedHashSet<>()), new GlobalSpace());
-    }
+//    public List<Byte> getInstruction()
+//    {
+//        return getInstruction(new MethodArgument(null, new LinkedHashSet<>()), new GlobalSpace());
+//    }
 
     public List<Byte> getInstruction(MethodArgument argument, GlobalSpace space)
     {
@@ -921,21 +921,23 @@ public class Token implements Serializable
             case EMPTY_DECLARATION:
                 Field field = new Field(null, this, null);
 
-                if (! argument.addArgument(field))
+                if (! argument.addArgument(field, space))
                 {
-                    field.instantiate(executable, new StackTrace(space));
                     System.err.println("compilation error: '" + this.toString() + "' already exists in function.");
                     System.exit(0);
-                } break;
+                } else {
+                    field.instantiate(argument, executable, new StackTrace(space));
+                }break;
             case FULL_DECLARATION:
                 Field fullField = new Field(null, this, null);
 
-                if (! argument.addArgument(fullField))
+                if (! argument.addArgument(fullField, space))
                 {
-                    fullField.instantiate(executable, new StackTrace(space));
                     System.err.println("compilation error: '" + this.toString() + "' already exists in function.");
                     System.exit(0);
-                } break;
+                } else {
+                    fullField.instantiate(argument, executable, new StackTrace(space));
+                }break;
             case BRACES:
                 for (Token token : getTokens())
                     executable.add(token.getInstruction(argument, space, procedural));
@@ -1022,7 +1024,7 @@ public class Token implements Serializable
 
             case IDENTIFIER:
                     if (procedural)
-                        accessor.add(argument.getVariable(toString(), space));
+                        accessor.add(accessor.value(space).getField(toString(), argument._this_ == null ? "null" : argument._this_.getName()).getTypeStruct(space));
                     else argument.loadVariable(toString(), executable, space);
                 break;
         }

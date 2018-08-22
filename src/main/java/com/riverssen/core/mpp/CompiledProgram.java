@@ -105,7 +105,7 @@ public class CompiledProgram
             }
         }
 
-        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("kill").getOpCodes())
+        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
             System.out.println(i);
     }
 
