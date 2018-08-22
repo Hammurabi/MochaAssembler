@@ -54,6 +54,7 @@ public class MethodArgument
         if (stack.containsKey(variable_name))
         {
             executable.add(instructions.stack_load);
+//            executable.add(type.reference);
             executable.add(executable.convertLong(stack.get(variable_name)));
         }
 //        if (variable_name.equals("this"))
