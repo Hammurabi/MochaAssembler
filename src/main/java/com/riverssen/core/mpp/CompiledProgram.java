@@ -109,6 +109,7 @@ public class CompiledProgram
 //            System.out.println(i);
 
         System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpcodes().humanReadable(0));
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpcodes().toExecutable().op_codes);
     }
 
     private void simulate_contract_a(Token root)

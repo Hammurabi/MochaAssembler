@@ -1,5 +1,7 @@
 package com.riverssen.core.mpp.compiler;
 
+import com.riverssen.core.mpp.Executable;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,5 +77,17 @@ public class Opcode
             add(opcode);
 
         return this;
+    }
+
+    public Executable toExecutable()
+    {
+        Executable executable = new Executable();
+
+        if (code >= 0) executable.add(code);
+
+        for (Opcode opcode : children)
+            executable.add(opcode.toExecutable().op_codes);
+
+        return executable;
     }
 }
