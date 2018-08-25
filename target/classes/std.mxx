@@ -40,16 +40,6 @@ public function array_equal(void a, void b) : bool
 public function dereference(ptr Object a) : void
 public function toptr(ref Object a) : ulong
 
-class Datetime
-{
-    private ulong time
-
-    public function Datetime(ulong t) : void
-    {
-        time = t
-    }
-}
-
 //namespace std
 //{
 //    template <typename A>
@@ -85,5 +75,17 @@ class Datetime
 //    //    void key[L];
 //    //}
 //}
+
+#include <oop>
+
+class Datetime
+{
+    private ulong time
+
+    public function Datetime(ulong t) : void
+    {
+        time = t
+    }
+}
 
 #reset

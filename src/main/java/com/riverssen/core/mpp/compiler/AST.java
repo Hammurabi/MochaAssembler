@@ -88,12 +88,50 @@ public class AST
                         fullDeclaration(root, token, method, space, opcode);
                     break;
                 case MULTIPLICATION:
-                    Opcode multiplication = new Opcode(-1, "multiplication");
 
-                    compile(token, method, space, multiplication);
+                    Token a = token.getTokens().get(0);
+                    Token b = token.getTokens().get(0);
 
-                    multiplication.add(new Opcode(instructions.op_mul, "multiply"));
-                    opcode.add(multiplication);
+                    /** check in case of object * object multiplication **/
+                    if ((a.getType().equals(Token.Type.IDENTIFIER) && getTypeOf(a, a.toString(), method, space) < 0) || b.getType().equals(Token.Type.IDENTIFIER) && getTypeOf(b, b.toString(), method, space) < 0)
+                    {
+                        if (a.getType().equals(Token.Type.IDENTIFIER))
+                        {
+                            Method op = getStructOf(a, a.toString(), method, space).getMethod("*");
+
+                            System.out.println(op.getOpcodes());
+
+                            opcode.add(new Opcode(-1, "method call 'operator *(a, b)'").add(op.getOpcodes().getChildren()));
+                        }
+                    }
+                    else
+                    {
+                        Opcode multiplication = new Opcode(-1, "multiplication");
+                        compile(token, method, space, multiplication);
+                        multiplication.add(new Opcode(instructions.op_mul, "multiply"));
+                        opcode.add(multiplication);
+                    }
+
+                    break;
+                case METHOD_CALL:
+                    if (method.getParent() != null)
+                    {
+                        if (method.getParent().containsMethod(token.getTokens().get(0).toString()))
+                            opcode.add(new Opcode(-1, "method call '" + token.getTokens().get(0).toString() + "'").add(method.getParent().getMethod(token.getTokens().get(0).toString()).getOpcodes()));
+                        else {
+                            System.err.println("method '" + token.getTokens().get(0).toString() + "' not found.");
+                            System.out.println("at line: " + token.getLine());
+                            System.exit(0);
+                        }
+                    } else {
+                        if (space.getGlobalMethods().containsKey(token.getTokens().get(0).toString()))
+                            opcode.add(new Opcode(-1, "method call '" + token.getTokens().get(0).toString() + "'").add(space.getGlobalMethods().get(token.getTokens().get(0).toString()).getOpcodes()));
+                        else {
+                            System.err.println("method '" + token.getTokens().get(0).toString() + "' not found in globalspace.");
+                            System.out.println("at line: " + token.getLine());
+                            System.exit(0);
+                        }
+                    }
                     break;
             }
         }
@@ -103,30 +141,54 @@ public class AST
             opcode.add(new Opcode(instructions.stack_set, "assign value").add(Opcode.convertLong(target)));
     }
 
-    private int getTypeOf(String string, GlobalSpace space)
+    private int getTypeOf(Token token, String string, Method method, GlobalSpace space)
     {
         if (types.containsKey(string))
             return space.getGlobalTypes().get(types.get(string)).getType();
-//        if (stack.containsKey(string))
-//            return types.get(string);
-//        else {
-//            if (method.getParent() != null && method.getParent().contains(token.toString(), method.getParent().getName(), space))
-//            {
-//                id_c.add(new Opcode(instructions.memory_read, "move pointer to stack '" + method.getParent().getName() + "->" + token.toString() + "'").add(new Opcode(-1, "parent pointer (this)").add(Opcode.convertLong(stack.get(method.getName() + ".this"))), new Opcode(-1, "location").add(Opcode.convertLong(method.getParent().getLocation(token.toString(), method.getParent().getName(), space)))));
-//            }
-//            else if (space.getGlobalMethods().containsKey(token.toString()) || space.getGlobalTypes().containsKey(token.toString()) || space.getGlobalFields().containsKey(token.toString()))
-//            {
-//                if (space.getGlobalFields().containsKey(token.toString()))
-//                {
-//                    id_c.add(new Opcode(instructions.memory_load, "move pointer to stack 'globalspace->" + token.toString() + "'").add(new Opcode(-1, "location").add(Opcode.convertLong(space.getLocation(token.toString())))));
-//                }
-//            } else {
-//                System.err.println("'" + token.toString() + "' not found.");
-//                System.err.println("at line: " + token.getLine());
-//                System.exit(0);
-//            }
-//        }
-        return 0;
+        else {
+            if (stack.containsKey(string))
+                return space.getGlobalTypes().get(types.get(string)).getType();
+            else {
+                if (method.getParent() != null && method.getParent().contains(string, method.getParent().getName(), space))
+                    return method.getParent().getField(string, method.getParent().getName()).getTypeStruct(space).getType();
+                else if (space.getGlobalMethods().containsKey(string) || space.getGlobalTypes().containsKey(string) || space.getGlobalFields().containsKey(string))
+                {
+                    if (space.getGlobalFields().containsKey(string))
+                        return space.getGlobalFields().get(string).getTypeStruct(space).getType();
+                } else {
+                    System.err.println("'" + string + "' not found.");
+                    System.err.println("at line: " + token.getLine());
+                    System.exit(0);
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private Struct getStructOf(Token token, String string, Method method, GlobalSpace space)
+    {
+        if (types.containsKey(string))
+            return space.getGlobalTypes().get(types.get(string));
+        else {
+            if (stack.containsKey(string))
+                return space.getGlobalTypes().get(types.get(string));
+            else {
+                if (method.getParent() != null && method.getParent().contains(string, method.getParent().getName(), space))
+                    return method.getParent().getField(string, method.getParent().getName()).getTypeStruct(space);
+                else if (space.getGlobalMethods().containsKey(string) || space.getGlobalTypes().containsKey(string) || space.getGlobalFields().containsKey(string))
+                {
+                    if (space.getGlobalFields().containsKey(string))
+                        return space.getGlobalFields().get(string).getTypeStruct(space);
+                } else {
+                    System.err.println("'" + string + "' not found.");
+                    System.err.println("at line: " + token.getLine());
+                    System.exit(0);
+                }
+            }
+        }
+
+        return null;
     }
 
     private void emptyDeclaration(Token root, Token token, Method method, GlobalSpace space, Opcode opcode)

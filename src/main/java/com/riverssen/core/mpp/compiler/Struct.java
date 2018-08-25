@@ -65,6 +65,8 @@ public class Struct
         this.__templates__      = new LinkedHashSet<>();
         this.__type__           = -1;
 
+//        System.out.println(space.getGlobalTypes().get("Object") + " " + __typename__);
+
         if (token.getType().equals(Token.Type.CLASS_DECLARATION)) nclass(token, token.getTokens().get(1), space);
         else if (token.getType().equals(Token.Type.TEMPLATE_CLASS_DECLARATION))
         {
@@ -305,5 +307,20 @@ public class Struct
             return getMethod(reference).getLocation();
 
         return -1;
+    }
+
+    public Field get(String string)
+    {
+        return null;
+    }
+
+    public Struct getParent()
+    {
+        return __parent__;
+    }
+
+    public Set<Method> getMethods()
+    {
+        return __methods__;
     }
 }

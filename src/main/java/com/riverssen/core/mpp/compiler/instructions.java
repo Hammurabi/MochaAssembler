@@ -156,5 +156,6 @@ public class instructions
     more_ = 100,
     lesseq_ = 101,
     moreeq_ = 102,
-    equal_ = 103;
+    equal_ = 103,
+    halt = 104;
 }

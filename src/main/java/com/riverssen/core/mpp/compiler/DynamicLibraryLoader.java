@@ -74,7 +74,25 @@ public class DynamicLibraryLoader
 
     public String get(String d)
     {
-        String utf_program = "A";
+        String utf_program = "";
+
+        if (files.containsKey(d))
+            return files.get(d);
+
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(MainCompiler.class.getClassLoader().getResource(d + ".mxx").openStream()));
+
+            String line = "";
+
+            while ((line = reader.readLine()) != null)
+                utf_program += line + "\n";
+
+            reader.close();
+        } catch (Exception e) {
+//            e.printStackTrace();
+            System.err.println("no include '" + d + "' found.");
+            System.exit(0);
+        }
         return utf_program;
     }
 }

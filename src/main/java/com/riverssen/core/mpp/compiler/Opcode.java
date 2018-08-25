@@ -90,4 +90,9 @@ public class Opcode
 
         return executable;
     }
+
+    public List<Opcode> getChildren()
+    {
+        return children;
+    }
 }

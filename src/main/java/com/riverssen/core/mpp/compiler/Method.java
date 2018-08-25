@@ -72,7 +72,7 @@ public class Method
 
         MethodArgument argument = new MethodArgument((isStatic()) ? null : parent, __arguments__, space);
 
-        if (token.getType().equals(Token.Type.METHOD_DECLARATION))
+        if (token.getType().equals(Token.Type.METHOD_DECLARATION) || token.getType().equals(Token.Type.OPERATOR))
         {
             __undeclared__ = false;
             AST ast = new AST(token.getChild(Token.Type.BRACES), this, space);
@@ -168,5 +168,10 @@ public class Method
 
     {
         return __arguments__;
+    }
+
+    public void setOpcodes(Opcode opcodes)
+    {
+        this.__opcodes2__ = opcodes;
     }
 }

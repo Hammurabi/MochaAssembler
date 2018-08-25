@@ -28,7 +28,7 @@ public class MainCompiler
         String utf_program = "";
 
         String includes[] = {
-                "std", "rivercoin", "oop", "types"
+                "std", "rivercoin", "types"
         };
 
         for (String include : includes)

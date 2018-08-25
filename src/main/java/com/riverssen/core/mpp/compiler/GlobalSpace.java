@@ -94,6 +94,7 @@ public class GlobalSpace
         {
             {
                 getOpCodes().add((byte)0);
+                setOpcodes(new Opcode(-1, "print exception and halt").add(new Opcode(instructions.print, "print").add(new Opcode(-1, "type")).add(new Opcode(type.c_string, "string"))).add(new Opcode(instructions.url_write, "halt")));
             }
         });
         __globalmethods__.put("wait", new Method("wait", this)
