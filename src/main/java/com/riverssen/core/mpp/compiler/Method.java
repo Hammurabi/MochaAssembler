@@ -36,7 +36,7 @@ public class Method
         __modifiers__   = new LinkedHashSet<>();
         __opcodes__     = new ArrayList();
         __methodname__  = name;
-        __returntype__  = null;
+        __returntype__  = "void";
         __location__    = space.addMethod(this);
         __arguments__   = new LinkedHashSet<>();
     }
@@ -73,6 +73,8 @@ public class Method
             __arguments__.add(new Field(space, argument, null));
 
         MethodArgument argument = new MethodArgument((isStatic()) ? null : parent, __arguments__, space);
+
+        __returntype__ = token.getTokens().get(1).toString();
 
         if (token.getType().equals(Token.Type.METHOD_DECLARATION) || token.getType().equals(Token.Type.OPERATOR))
         {
