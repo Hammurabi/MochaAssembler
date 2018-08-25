@@ -152,10 +152,11 @@ public class instructions
     pop = 96,
     malloc_ = 97,
     calloc_ = 98,
-    less_ = 99,
-    more_ = 100,
-    lesseq_ = 101,
-    moreeq_ = 102,
-    equal_ = 103,
-    halt = 104;
+    free_ = 99,
+    less_ = 100,
+    more_ = 101,
+    lesseq_ = 102,
+    moreeq_ = 103,
+    equal_ = 104,
+    halt = 105;
 }

@@ -424,6 +424,11 @@ public class ParsedProgram
             case "pointer":
                 modifiers.push(Modifier.POINTER);
                 break;
+            case "return":
+                Token r = new Token(RETURN);
+                parse(tokens, r, true);
+                root.add(r);
+                break;
         }
     }
 

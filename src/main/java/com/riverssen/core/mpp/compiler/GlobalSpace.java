@@ -76,12 +76,26 @@ public class GlobalSpace
         {
             {
                 getOpCodes().add((byte)0);
+                setOpcodes(new Opcode(-1, "copy pointer"));
+            }
+
+            @Override
+            public Opcode inline(AST ast, GlobalSpace space)
+            {
+                return getOpcodes();
             }
         });
         __globalmethods__.put("free", new Method("free", this)
         {
             {
                 getOpCodes().add((byte)0);
+                setOpcodes(new Opcode(-1, "free pointer").add(new Opcode(instructions.free_, "free")));
+            }
+
+            @Override
+            public Opcode inline(AST ast, GlobalSpace space)
+            {
+                return getOpcodes();
             }
         });
         __globalmethods__.put("out", new Method("out", this)
@@ -96,11 +110,50 @@ public class GlobalSpace
                 getOpCodes().add((byte)0);
                 setOpcodes(new Opcode(-1, "print exception and halt").add(new Opcode(instructions.print, "print").add(new Opcode(-1, "type")).add(new Opcode(type.c_string, "string"))).add(new Opcode(instructions.url_write, "halt")));
             }
+
+            @Override
+            public Opcode inline(AST ast, GlobalSpace space)
+            {
+                return getOpcodes();
+            }
         });
         __globalmethods__.put("wait", new Method("wait", this)
         {
             {
                 getOpCodes().add((byte)0);
+                setOpcodes(new Opcode(-1, "wait"));
+            }
+
+            @Override
+            public Opcode inline(AST ast, GlobalSpace space)
+            {
+                return getOpcodes();
+            }
+        });
+        __globalmethods__.put("out", new Method("out", this)
+        {
+            {
+                getOpCodes().add((byte)0);
+                setOpcodes(new Opcode(-1, "print out").add(new Opcode(instructions.print, "print").add(new Opcode(-1, "type")).add(new Opcode(type.c_string, "string"))));
+            }
+
+            @Override
+            public Opcode inline(AST ast, GlobalSpace space)
+            {
+                return getOpcodes();
+            }
+        });
+        __globalmethods__.put("array_equal", new Method("array_equal", this)
+        {
+            {
+                getOpCodes().add((byte)0);
+                setOpcodes(new Opcode(-1, "array_equal"));
+            }
+
+            @Override
+            public Opcode inline(AST ast, GlobalSpace space)
+            {
+                return getOpcodes();
             }
         });
     }

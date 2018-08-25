@@ -28,6 +28,7 @@ public class Method
     private String          __returntype__;
     private long            __location__;
     private Opcode          __opcodes2__;
+    private Token           __tokens__;
 
     public Method(String name, GlobalSpace space)
     {
@@ -53,6 +54,7 @@ public class Method
         __methodname__  = token.getTokens().get(0).toString();
         __undeclared__  = true;
         __location__    = space.addMethod(this);
+        __tokens__      = token;
 
         int stack = -1;
         Map<String, Integer> referencemap = new HashMap<>();
@@ -173,5 +175,18 @@ public class Method
     public void setOpcodes(Opcode opcodes)
     {
         this.__opcodes2__ = opcodes;
+    }
+
+    public Opcode inline(AST ast, GlobalSpace space)
+    {
+        try {
+            return new AST(__tokens__.getChild(Token.Type.BRACES), this, space, ast).getOpcode();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            System.out.println(__methodname__);
+            System.exit(0);
+            return null;
+        }
     }
 }

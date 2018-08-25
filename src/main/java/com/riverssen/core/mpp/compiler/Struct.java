@@ -65,6 +65,8 @@ public class Struct
         this.__templates__      = new LinkedHashSet<>();
         this.__type__           = -1;
 
+        space.getGlobalTypes().put(__typename__, this);
+
 //        System.out.println(space.getGlobalTypes().get("Object") + " " + __typename__);
 
         if (token.getType().equals(Token.Type.CLASS_DECLARATION)) nclass(token, token.getTokens().get(1), space);
@@ -74,8 +76,6 @@ public class Struct
             System.err.println("unknown class type: " + token + ".");
             System.exit(0);
         }
-
-        space.getGlobalTypes().put(__typename__, this);
     }
 
     private void nclass(Token token, Token body, GlobalSpace space)
