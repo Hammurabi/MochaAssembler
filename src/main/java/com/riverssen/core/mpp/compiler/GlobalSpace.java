@@ -136,4 +136,11 @@ public class GlobalSpace
             return 0;
         }
     }
+
+    public long getLocation(String name)
+    {
+        if (getGlobalFields().containsKey(name))
+            return getGlobalFields().get(name).getLocation();
+        return -1;
+    }
 }

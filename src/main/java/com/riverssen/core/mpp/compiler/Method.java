@@ -158,4 +158,9 @@ public class Method
     {
         return __opcodes2__;
     }
+
+    public Struct getParent()
+    {
+        return __parenttype__;
+    }
 }

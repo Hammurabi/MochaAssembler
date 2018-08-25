@@ -167,6 +167,18 @@ public class Token implements Serializable, Iterable<Token>
         return children.iterator();
     }
 
+    public boolean containsInput()
+    {
+        for (Token token : children)
+            if (token.getType().equals(Type.NUMBER)) return true;
+            else if (token.getType().equals(Type.DECIMAL)) return true;
+            else if (token.getType().equals(Type.INPUT)) return true;
+            else if (token.getType().equals(Type.STRING)) return true;
+            else if (token.containsInput()) return true;
+            
+        return false;
+    }
+
     public static enum          Type implements Serializable {
         NAMESPACE,
         KEYWORD,

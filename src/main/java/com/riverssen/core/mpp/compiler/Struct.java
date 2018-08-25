@@ -287,4 +287,19 @@ public class Struct
     {
         return 0;
     }
+
+    public boolean contains(String reference, String accessor, GlobalSpace space)
+    {
+        return containsField(reference, accessor) || containsMethod(reference, space);
+    }
+
+    public long    getLocation(String reference, String accessor, GlobalSpace space)
+    {
+        if (containsField(reference, accessor))
+            return getField(reference, accessor).getLocation();
+        else if (containsMethod(reference, space))
+            return getMethod(reference).getLocation();
+
+        return -1;
+    }
 }

@@ -66,6 +66,14 @@ public class Opcode
     @Override
     public String toString()
     {
-        return String.format("0x%x", code) + " " + description;
+        return (code < 0 ? "~" : String.format("0x%x", code)) + " " + description;
+    }
+
+    public Opcode add(Opcode ...opcodes)
+    {
+        for (Opcode opcode : opcodes)
+            add(opcode);
+
+        return this;
     }
 }
