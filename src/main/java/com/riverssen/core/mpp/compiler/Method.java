@@ -23,10 +23,11 @@ public class Method
     private String          __methodname__;
     private Set<Modifier>   __modifiers__;
     private Set<Field>      __arguments__;
-    private ArrayList<Byte> __opcodes__;
+    private List<Byte>      __opcodes__;
     private boolean         __undeclared__;
     private String          __returntype__;
     private long            __location__;
+    private Opcode          __opcodes2__;
 
     public Method(String name, GlobalSpace space)
     {
@@ -74,7 +75,10 @@ public class Method
         if (token.getType().equals(Token.Type.METHOD_DECLARATION))
         {
             __undeclared__ = false;
-            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
+            AST ast = new AST(token.getChild(Token.Type.BRACES), this, space);
+            __opcodes__  = ast.getExecutable().op_codes;
+            __opcodes2__ = ast.getOpcode();
+//            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
         }
     }
 
@@ -148,5 +152,10 @@ public class Method
                 return false;
 
         return true;
+    }
+
+    public Opcode getOpcodes()
+    {
+        return __opcodes2__;
     }
 }

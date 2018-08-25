@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 
-public class Token implements Serializable
+public class Token implements Serializable, Iterable<Token>
 {
     private StringBuilder       value;
     private int                 line = -1;
@@ -159,6 +159,12 @@ public class Token implements Serializable
             if (toString().equals(operator)) return true;
 
         return false;
+    }
+
+    @Override
+    public Iterator<Token> iterator()
+    {
+        return children.iterator();
     }
 
     public static enum          Type implements Serializable {

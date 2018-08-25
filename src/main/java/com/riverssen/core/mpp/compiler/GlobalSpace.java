@@ -124,4 +124,16 @@ public class GlobalSpace
         __allthemethods__.add(method);
         return __allmethods__ ++;
     }
+
+    public long sizeof(String type)
+    {
+        if (__globaltypes__.containsKey(type))
+            return __globaltypes__.get(type).size();
+
+        else {
+            System.err.println("type '" + type + "' doesn't exist in global space.");
+            System.exit(0);
+            return 0;
+        }
+    }
 }

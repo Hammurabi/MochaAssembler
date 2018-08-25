@@ -416,6 +416,14 @@ public class ParsedProgram
             case "const":
                 modifiers.push(Modifier.CONST);
                 break;
+            case "ref":
+            case "reference":
+                modifiers.push(Modifier.REFERENCE);
+                break;
+            case "ptr":
+            case "pointer":
+                modifiers.push(Modifier.POINTER);
+                break;
         }
     }
 
