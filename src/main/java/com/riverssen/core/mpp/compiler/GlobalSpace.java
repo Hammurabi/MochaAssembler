@@ -32,26 +32,26 @@ public class GlobalSpace
         __globalfields__ =              new HashMap<>();
         __allthemethods__ =             new ArrayList<>();
 
-        __globaltypes__.put("char",     new Struct("__int8_t", 1, this));
-        __globaltypes__.put("uchar",    new Struct("u_int8_t", 1, this));
-        __globaltypes__.put("short",    new Struct("u_int8_t", 2, this));
-        __globaltypes__.put("ushort",   new Struct("u_int8_t", 2, this));
-        __globaltypes__.put("int",      new Struct("__int32_t", 4, this));
-        __globaltypes__.put("uint",     new Struct("u_int32_t", 4, this));
-        __globaltypes__.put("long",     new Struct("__int64_t", 8, this));
-        __globaltypes__.put("ulong",    new Struct("u_int64_t", 8, this));
-        __globaltypes__.put("float",    new Struct("__float32_t", 4, this));
-        __globaltypes__.put("double",   new Struct("__float64_t", 8, this));
-        __globaltypes__.put("float128", new Struct("__float256_t", 8, this));
-        __globaltypes__.put("float256", new Struct("__float256_t", 8, this));
-        __globaltypes__.put("int128",   new Struct("__int128_t", 16, this));
-        __globaltypes__.put("uint128",  new Struct("u_int128_t", 16, this));
-        __globaltypes__.put("int256",   new Struct("__int256_t", 32, this));
-        __globaltypes__.put("uint256",  new Struct("u_int256_t", 32, this));
+        __globaltypes__.put("char",     new Struct("__int8_t", 1, this, type.char_));
+        __globaltypes__.put("uchar",    new Struct("u_int8_t", 1, this, type.uchar_));
+        __globaltypes__.put("short",    new Struct("u_int8_t", 2, this, type.short_));
+        __globaltypes__.put("ushort",   new Struct("u_int8_t", 2, this, type.ushort_));
+        __globaltypes__.put("int",      new Struct("__int32_t", 4, this, type.int_));
+        __globaltypes__.put("uint",     new Struct("u_int32_t", 4, this, type.uint_));
+        __globaltypes__.put("long",     new Struct("__int64_t", 8, this, type.long_));
+        __globaltypes__.put("ulong",    new Struct("u_int64_t", 8, this, type.ulong_));
+        __globaltypes__.put("float",    new Struct("__float32_t", 4, this, type.float32_));
+        __globaltypes__.put("double",   new Struct("__float64_t", 8, this, type.float64_));
+        __globaltypes__.put("float128", new Struct("__float256_t", 8, this, type.float128_));
+        __globaltypes__.put("float256", new Struct("__float256_t", 8, this, type.float256_));
+        __globaltypes__.put("int128",   new Struct("__int128_t", 16, this, type.int128_));
+        __globaltypes__.put("uint128",  new Struct("u_int128_t", 16, this, type.uint128_));
+        __globaltypes__.put("int256",   new Struct("__int256_t", 32, this, type.int256_));
+        __globaltypes__.put("uint256",  new Struct("u_int256_t", 32, this, type.uint256_));
 
-        __globaltypes__.put("pointer",  new Struct("__pointer__", 8, this));
-        __globaltypes__.put("string",   new Struct("__string__", 8, this));
-        __globaltypes__.put("ARRAY",    new Struct("__array__", 8, this));
+        __globaltypes__.put("pointer",  new Struct("__pointer__", 8, this, type.pointer_));
+        __globaltypes__.put("string",   new Struct("__string__", 8, this, type.c_string));
+        __globaltypes__.put("ARRAY",    new Struct("__array__", 8, this, type.pointer_));
         __globalmethods__.put("sizeof", new Method("sizeof", this)
         {
             @Override

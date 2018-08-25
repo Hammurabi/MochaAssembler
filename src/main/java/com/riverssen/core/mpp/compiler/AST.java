@@ -30,7 +30,17 @@ public class AST
         this.target     = -1;
 
         if (method.getParent() != null)
+        {
             stack.put(method.getName() + ".this", (long) stack.size());
+            types.put(method.getName() + ".this", method.getParent().getName());
+        }
+
+        for (Field field : method.getArguments())
+        {
+            stack.put(field.getName(), (long) stack.size());
+            types.put(field.getName(), field.getTypeName());
+        }
+
         this.compile(root, method, space, opcode);
     }
 
@@ -45,8 +55,9 @@ public class AST
             {
                 case IDENTIFIER:
                     Opcode id_c = new Opcode(-1, "identifier access '" + token.toString() + "'");
-
-                    if (stack.containsKey(token.toString()))
+                    if (token.toString().equals("this"))
+                        id_c.add(Opcode.convertLong(stack.get(method.getName() + ".this")));
+                    else if (stack.containsKey(token.toString()))
                         id_c.add(new Opcode(-1, "access from stack '" + token.toString() + "'").add(Opcode.convertLong(stack.get(token.toString()))));
                     else {
                         if (method.getParent() != null && method.getParent().contains(token.toString(), method.getParent().getName(), space))
@@ -92,6 +103,32 @@ public class AST
             opcode.add(new Opcode(instructions.stack_set, "assign value").add(Opcode.convertLong(target)));
     }
 
+    private int getTypeOf(String string, GlobalSpace space)
+    {
+        if (types.containsKey(string))
+            return space.getGlobalTypes().get(types.get(string)).getType();
+//        if (stack.containsKey(string))
+//            return types.get(string);
+//        else {
+//            if (method.getParent() != null && method.getParent().contains(token.toString(), method.getParent().getName(), space))
+//            {
+//                id_c.add(new Opcode(instructions.memory_read, "move pointer to stack '" + method.getParent().getName() + "->" + token.toString() + "'").add(new Opcode(-1, "parent pointer (this)").add(Opcode.convertLong(stack.get(method.getName() + ".this"))), new Opcode(-1, "location").add(Opcode.convertLong(method.getParent().getLocation(token.toString(), method.getParent().getName(), space)))));
+//            }
+//            else if (space.getGlobalMethods().containsKey(token.toString()) || space.getGlobalTypes().containsKey(token.toString()) || space.getGlobalFields().containsKey(token.toString()))
+//            {
+//                if (space.getGlobalFields().containsKey(token.toString()))
+//                {
+//                    id_c.add(new Opcode(instructions.memory_load, "move pointer to stack 'globalspace->" + token.toString() + "'").add(new Opcode(-1, "location").add(Opcode.convertLong(space.getLocation(token.toString())))));
+//                }
+//            } else {
+//                System.err.println("'" + token.toString() + "' not found.");
+//                System.err.println("at line: " + token.getLine());
+//                System.exit(0);
+//            }
+//        }
+        return 0;
+    }
+
     private void emptyDeclaration(Token root, Token token, Method method, GlobalSpace space, Opcode opcode)
     {
         String type = token.getTokens().get(0).toString();
@@ -105,6 +142,11 @@ public class AST
             System.err.println("reference to pointer not allowed.");
             System.err.println("at line: " + token.getLine());
             System.exit(0);
+        } else if (isReference)
+        {
+            System.err.println("reference declaration not allowed.");
+            System.err.println("at line: " + token.getLine());
+            System.exit(0);
         }
 
         if (isPointer)
@@ -112,12 +154,14 @@ public class AST
             opcode.add(new Opcode(instructions.malloc_, "empty pointer to '" + name + "' stack('" + stack.size() + "')").add(Opcode.convertLong(space.sizeof(type))));
             target = stack.size();
             stack.put(name, (long) stack.size());
+            types.put(name, type + " *");
         }
         else
         {
             opcode.add(new Opcode(instructions.push, "empty stack-pointer to '" + name + "' stack('" + stack.size() + "')").add(Opcode.convertLong(space.sizeof(type))));
             target = stack.size();
             stack.put(name, (long) stack.size());
+            types.put(name, type);
         }
     }
 
@@ -135,6 +179,11 @@ public class AST
             System.err.println("reference to pointer not allowed.");
             System.err.println("at line: " + token.getLine());
             System.exit(0);
+        } else if (isReference)
+        {
+            System.err.println("reference declaration not allowed.");
+            System.err.println("at line: " + token.getLine());
+            System.exit(0);
         }
 
         Opcode declaration = null;
@@ -146,12 +195,14 @@ public class AST
 //            memory.put(name, (long) memory.size());
             target = stack.size();
             stack.put(name, (long) stack.size());
+            types.put(name, type + " *");
         }
         else
         {
             opcode.add(declaration = new Opcode(instructions.push, "stack-pointer to '" + name + "' stack('" + stack.size() + "')").add(Opcode.convertLong(space.sizeof(type))));
             target = stack.size();
             stack.put(name, (long) stack.size());
+            types.put(name, type);
         }
 
         compile(value, method, space, declaration);

@@ -163,4 +163,10 @@ public class Method
     {
         return __parenttype__;
     }
+
+    public Set<Field> getArguments()
+
+    {
+        return __arguments__;
+    }
 }
