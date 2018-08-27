@@ -14,7 +14,9 @@ package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Struct
@@ -22,19 +24,19 @@ public class Struct
     public static long NULL = 0;
     public static final Struct VOID = new Struct();
 
-    private String      __typename__;
-    private long        __typesize__;
-    private Set<Field>  __fields__;
-    private Set<Method> __methods__;
-    private Struct      __parent__;
-    private GlobalSpace __glblspace__;
-    private Set<String> __templates__;
-    private int         __type__;
+    private String              __typename__;
+    private long                __typesize__;
+    private Set<Field>          __fields__;
+    private Map<String, Method> __methods__;
+    private Struct              __parent__;
+    private GlobalSpace         __glblspace__;
+    private Set<String>         __templates__;
+    private int                 __type__;
 
     public Struct()
     {
         this.__fields__         = new LinkedHashSet<>();
-        this.__methods__        = new LinkedHashSet<>();
+        this.__methods__        = new HashMap<>();
         this.__typesize__       = 0;
         this.__typename__       = "VOID";
         this.__glblspace__      = new GlobalSpace();
@@ -45,7 +47,7 @@ public class Struct
     public Struct(String name, int size, GlobalSpace space, int type)
     {
         this.__fields__         = new LinkedHashSet<>();
-        this.__methods__        = new LinkedHashSet<>();
+        this.__methods__        = new HashMap<>();
         this.__typesize__       = size;
         this.__typename__       = name;
         this.__parent__         = VOID;
@@ -57,7 +59,7 @@ public class Struct
     public Struct(GlobalSpace space, Token token)
     {
         this.__fields__         = new LinkedHashSet<>();
-        this.__methods__        = new LinkedHashSet<>();
+        this.__methods__        = new HashMap<>();
         this.__typesize__       = 0;
         this.__typename__       = token.getTokens().get(0).toString();
         this.__parent__         = space.getGlobalTypes().get("Object");
@@ -136,22 +138,26 @@ public class Struct
                 case METHOD_DECLARATION:
                     Method method = new Method(space, this, t);
 
-                    if (__methods__.contains(method) && getMethod(method.getName()).isDeclared())
+                    if (__methods__.containsKey(GlobalSpace.getMethodName(method.getName(), method.getArguments())) && getMethod(method.getName()).isDeclared())
                     {
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
                     }
-                    __methods__.add(method);
+
+                    if (method.getName().equals(__typename__))
+                        space.addMethod(method.getName(), method);
+//                    __methods__.put(method);
+                    addMethod(method.getName(), method);
                     break;
                 case OPERATOR:
                     Method opMethod = new Method(space, this, t);
 
-                    if (__methods__.contains(opMethod) && getMethod(opMethod.getName()).isDeclared())
+                    if (__methods__.containsKey(GlobalSpace.getMethodName(opMethod.getName(), opMethod.getArguments())) && getMethod(opMethod.getName()).isDeclared())
                     {
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
                     }
-                    __methods__.add(opMethod);
+                    __methods__.put(opMethod.getName(), opMethod);
                     break;
                 case CLASS_DECLARATION:
                     System.err.println("Class declaration not allowed inside of a class __" + __typename__ + "__.");
@@ -165,13 +171,13 @@ public class Struct
         }
     }
 
-    public Method func_call(String name, boolean is_static)
-    {
-        for (Method method : __methods__)
-            if (method.getName().equals(name));
-
-        return null;
-    }
+//    public Method func_call(String name, boolean is_static)
+//    {
+//        for (Method method : __methods__)
+//            if (method.getName().equals(name));
+//
+//        return null;
+//    }
 
     public long size()
     {
@@ -322,5 +328,40 @@ public class Struct
     public Set<Method> getMethods()
     {
         return __methods__;
+    }
+
+    public static String getMethodName(String name, Set<Field> args)
+    {
+        String arguments = "(";
+
+        for (Field field : args)
+            arguments += field.getTypeName() + ", ";
+
+        return name + arguments.substring(0, arguments.length() - 2) + ")";
+    }
+
+    private void addMethod(String methodName, Method method)
+    {
+        String qualifiedMethodName = getMethodName(methodName, method.getArguments());
+
+        if (__globalmethods__.containsKey(qualifiedMethodName))
+        {
+            System.err.println("err: method '" + qualifiedMethodName + "' already exists in global space.");
+            System.exit(0);
+        }
+        __globalmethods__.put(qualifiedMethodName, method);
+    }
+
+    public Method getMethod(String methodName, Set<Field> arguments)
+    {
+        String method = getMethodName(methodName, arguments);
+
+        if (__globalmethods__.containsKey(method)) return __globalmethods__.get(method);
+        else {
+            System.err.println("err: method '" + method + "' not found in globalspace.");
+            System.exit(0);
+        }
+
+        return null;
     }
 }

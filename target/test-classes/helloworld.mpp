@@ -14,11 +14,13 @@ class vector{
     int x
     int y
 
+    public function vector(int x, int y) : void
+    {
+    }
+
     public operator* (vector b) : vector
     {
-        vector c
-
-        return c
+        return vector(x + b.x, y + b.y)
     }
 }
 
@@ -48,8 +50,8 @@ class HelloWorld {
 
     public function mul() : void
     {
-        vector a
-        vector b
-        vector c = message2 * b
+        vector a(1, 2)
+        vector b(50, 12)
+        vector c = a * b
     }
 }

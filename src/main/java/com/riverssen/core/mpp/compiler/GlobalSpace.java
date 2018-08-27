@@ -12,10 +12,7 @@
 
 package com.riverssen.core.mpp.compiler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GlobalSpace
 {
@@ -196,5 +193,40 @@ public class GlobalSpace
         if (getGlobalFields().containsKey(name))
             return getGlobalFields().get(name).getLocation();
         return -1;
+    }
+
+    public static String getMethodName(String name, Set<Field> args)
+    {
+        String arguments = "(";
+
+        for (Field field : args)
+            arguments += field.getTypeName() + ", ";
+
+        return name + arguments.substring(0, arguments.length() - 2) + ")";
+    }
+
+    public void addMethod(String methodName, Method method)
+    {
+        String qualifiedMethodName = getMethodName(methodName, method.getArguments());
+
+        if (__globalmethods__.containsKey(qualifiedMethodName))
+        {
+            System.err.println("err: method '" + qualifiedMethodName + "' already exists in global space.");
+            System.exit(0);
+        }
+        __globalmethods__.put(qualifiedMethodName, method);
+    }
+
+    public Method getMethod(String methodName, Set<Field> arguments)
+    {
+        String method = getMethodName(methodName, arguments);
+
+        if (__globalmethods__.containsKey(method)) return __globalmethods__.get(method);
+        else {
+            System.err.println("err: method '" + method + "' not found in globalspace.");
+            System.exit(0);
+        }
+
+        return null;
     }
 }

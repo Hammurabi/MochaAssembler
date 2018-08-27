@@ -171,4 +171,9 @@ public class Field
     {
         return space.getGlobalTypes().get(getTypeName());
     }
+
+    public Set<Modifier> getModifiers()
+    {
+        return __modifiers__;
+    }
 }

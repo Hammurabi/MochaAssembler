@@ -884,6 +884,13 @@ public class ParsedProgram
                                 Token arrayToken = new Token(ARRAY);
                                 declaration = new Token(Token.Type.EMPTY_DECLARATION).add(arrayToken.add(type).add(_brackets)).add(name);
                             }
+                        } else if (nextOfType(tokens, PARENTHESIS_OPEN))
+                        {
+                            Token methodCall = new Token(Token.Type.METHOD_CALL).add(type).add(getNextInParenthesis(tokens, currentToken, "Method calls should end with parenthesis."));
+
+                                declaration = new Token(Token.Type.FULL_DECLARATION).add(type).add(name);
+                                Token value = new Token(Token.Type.VALUE);
+                                declaration.add(value.add(methodCall));
                         } else {
                             if (nextOfType(tokens, Token.Type.EQUALS))
                             {
