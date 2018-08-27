@@ -31,6 +31,12 @@ public class Field
 
     Executable              __opcodes__;
 
+    public Field(String name, String type)
+    {
+        __realname__ = name;
+        __typename__ = type;
+    }
+
     public Field(GlobalSpace space, Token token, Struct parent)
     {
         __modifiers__   = new LinkedHashSet<>();
@@ -135,18 +141,18 @@ public class Field
         return __typename__;
     }
 
-    public void instantiate(MethodArgument argument, Executable executable, StackTrace trace)
-    {
-        executable.add(instructions.push);
-        executable.add(executable.convertLong(size(trace.space)));
-
-        if (__value__ != null)
-        {
-            executable.add(__value__.getInstruction(argument, executable.space));
-            executable.add(instructions.stack_set);
-            executable.add(executable.convertLong(argument.getstack(getName())));
-        }
-    }
+//    public void instantiate(MethodArgument argument, Executable executable, StackTrace trace)
+//    {
+//        executable.add(instructions.push);
+//        executable.add(executable.convertLong(size(trace.space)));
+//
+//        if (__value__ != null)
+//        {
+//            executable.add(__value__.getInstruction(argument, executable.space));
+//            executable.add(instructions.stack_set);
+//            executable.add(executable.convertLong(argument.getstack(getName())));
+//        }
+//    }
 
     public boolean isStatic()
     {

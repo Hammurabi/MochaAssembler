@@ -60,13 +60,13 @@ public class CompiledProgram
                 case METHOD_DECLARATION:
                     Method method = new Method(space, null, t);
 
-                    if (space.getGlobalMethods().containsKey(method.getName()) && space.getGlobalMethods().get(method.getName()).isDeclared())
+                    if (space.containsMethod(method.getName(), method.getArguments()) && space.getMethod(method.getName(), method.getArguments()).isDeclared())
                     {
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __global__.");
                         System.exit(0);
                     }
 
-                    space.getGlobalMethods().put(method.getName(), method);
+                    space.addMethod(method.getName(), method);
                     break;
                 case METHOD_EMPTY_DECLARATION:
                     Method method2 = new Method(space, null, t);
@@ -108,8 +108,8 @@ public class CompiledProgram
 //        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
 //            System.out.println(i);
 
-        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpcodes().humanReadable(0));
-        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpcodes().toExecutable().op_codes);
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().humanReadable(0));
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().toExecutable().op_codes);
     }
 
     private void simulate_contract_a(Token root)

@@ -33,7 +33,13 @@ public class PreprocessedProgram
         {
             String line = lines[i];
 
-            if (line.matches("\\#(define)\\s+[A-z](\\w*)*"))
+            if (line.matches("(typedef)\\s+(.+)\\s+(.+)\\;"))
+            {
+                if (allow)
+                    defines.put(line.replaceAll("\\#(define)\\s*", ""), "");
+                test += "\n";
+            }
+            else if (line.matches("\\#(define)\\s+[A-z](\\w*)*"))
             {
                 if (allow)
                 defines.put(line.replaceAll("\\#(define)\\s*", ""), "");

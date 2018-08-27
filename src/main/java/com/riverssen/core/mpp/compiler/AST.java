@@ -69,10 +69,10 @@ public class AST
             return namestack.size();
         }
 
-        public long push(String name, String type, Set<Modifier> modifiers)
+        public long push(String name, String type, Set<Modifier> modifiers, Method method)
         {
             long index = size();
-            namestack.push(name);
+            namestack.push(qualifiedName(name, method));
             typestack.push(type);
             modifierstack.push(modifiers);
 
@@ -91,9 +91,9 @@ public class AST
             return namestack.toString();
         }
 
-        public String getType(String qualifiedName)
+        public String getType(String unqualifiedName, Method method)
         {
-            return typestack.get((int) find(qualifiedName));
+            return typestack.get((int) find(qualifiedName(unqualifiedName, method)));
         }
     }
 
@@ -126,14 +126,14 @@ public class AST
 
         if (method.getParent() != null)
         {
-            stack.push("this", method.getParent().getName(), new LinkedHashSet<>());
+            stack.push("this", method.getParent().getName(), new LinkedHashSet<>(), method);
 //            stack.put(qualifiedName("this", method), (long) stack.size());
 //            types.put(qualifiedName("this", method), method.getParent().getName());
         }
 
         for (Field field : method.getArguments())
         {
-            stack.push(field.getName(), field.getTypeName(), field.getModifiers());
+            stack.push(field.getName(), field.getTypeName(), field.getModifiers(), method);
 //            stack.put(qualifiedName(field.getName(), method), (long) stack.size());
 //            types.put(qualifiedName(field.getName(), method), field.getTypeName());
         }
@@ -191,7 +191,7 @@ public class AST
                     if (stack.containsKey(variableName))
                         id_c.add(new Opcode(-1, "access from stack '" + token.toString() + "'").add(new Opcode(instructions.push_s, "push reference to stack").add(Opcode.convertLong(stack.get(variableName)))));
                     else {
-                        if (method.getParent() != null && method.getParent().contains(token.toString(), method.getParent().getName(), space))
+                        if (method.getParent() != null && method.getParent().containsField(token.toString(), method.getParent().getName()))
                         {
                             id_c.add(new Opcode(instructions.memory_read, "move pointer to stack '" + method.getParent().getName() + "->" + token.toString() + "'")
                                     .add(new Opcode(-1, "parent pointer (this)").add(Opcode.convertLong(stack.get(variableName))),
@@ -226,11 +226,15 @@ public class AST
                     Token b = token.getTokens().get(0);
 
                     /** check in case of object * object multiplication **/
-                    if ((a.getType().equals(Token.Type.IDENTIFIER) && getTypeOf(a, a.toString(), method, space) < 0) || b.getType().equals(Token.Type.IDENTIFIER) && getTypeOf(b, b.toString(), method, space) < 0)
+                    if ((a.getType().equals(Token.Type.IDENTIFIER) && getTypeOf(a, a.toString(), method, space) < 0))// || b.getType().equals(Token.Type.IDENTIFIER) && getTypeOf(b, b.toString(), method, space) < 0)
                     {
                         if (a.getType().equals(Token.Type.IDENTIFIER))
                         {
-                            Method op = getStructOf(a, a.toString(), method, space).getMethod("*");
+                            Set<Field> args = new LinkedHashSet<>();
+
+                            args.add(new Field(b.toString(), stack.getType(b.toString(), method)));
+
+                            Method op = getStructOf(a, a.toString(), method, space).getMethod("*", args);
 
                             opcode.add(new Opcode(-1, "method call 'operator *(a, b)'").add(op.inline(this, space).getChildren()));
 //                            opcode.add(new Opcode(-1, "method call '" + "method call 'operator *(a, b)'" + "'").add(new Opcode(instructions.call_, "call").add(Opcode.convertLong(op.getLocation()))));
@@ -248,21 +252,27 @@ public class AST
                     }
                     break;
                 case METHOD_CALL:
+                    Set<Field> args = new LinkedHashSet<>();
+                    fillFields(args, token, method);
+                    System.out.println(args);
+
                     if (method.getParent() != null)
                     {
-                        if (method.getParent().containsMethod(token.getTokens().get(0).toString()))
+
+                        if (method.getParent().containsMethod(token.getTokens().get(0).toString(), args))
                         {
 //                            opcode.add(new Opcode(-1, "method call '" + token.getTokens().get(0).toString() + "'").add(new Opcode(instructions.call_, "call").add(Opcode.convertLong(method.getParent().getMethod(token.getTokens().get(0).toString()).getLocation()))));
-                            opcode.add(new Opcode(-1, "method call '" + token.getTokens().get(0).toString() + "'").add(method.getParent().getMethod(token.getTokens().get(0).toString()).inline(this, space)));
+                            opcode.add(new Opcode(-1, "method call '" + token.getTokens().get(0).toString() + "'").add(method.getParent().getMethod(token.getTokens().get(0).toString(), args).inline(this, space)));
 //                            if (! method.getParent().getMethod(token.getTokens().get(0).toString()).getReturnType().equals("void"))
 //                                stack.put(System.currentTimeMillis() + "", (long) stack.size());
                         }
                         else {
-                            System.err.println("method '" + token.getTokens().get(0).toString() + "' not found.");
+                            System.err.println("method '" + GlobalSpace.getMethodName(token.getTokens().get(0).toString(), args) + "' not found.");
                             System.out.println("at line: " + token.getLine());
                             System.exit(0);
                         }
                     } else {
+
                         if (space.getGlobalMethods().containsKey(token.getTokens().get(0).toString()))
                         {
                             opcode.add(new Opcode(-1, "method call '" + token.getTokens().get(0).toString() + "'").add(space.getGlobalMethods().get(token.getTokens().get(0).toString()).inline(this, space)));
@@ -271,7 +281,7 @@ public class AST
 //                                stack.put(System.currentTimeMillis() + "", (long) stack.size());
                         }
                         else {
-                            System.err.println("method '" + token.getTokens().get(0).toString() + "' not found in globalspace.");
+                            System.err.println("method '" + GlobalSpace.getMethodName(token.getTokens().get(0).toString(), args) + "' not found in globalspace.");
                             System.out.println("at line: " + token.getLine());
                             System.exit(0);
                         }
@@ -288,11 +298,39 @@ public class AST
             opcode.add(new Opcode(instructions.stack_set, "assign value").add(Opcode.convertLong(target)));
     }
 
+    private void fillFields(Set<Field> args, Token token, Method method)
+    {
+        Token parenthesis = token.getChild(Token.Type.PARENTHESIS);
+
+        for (Token t : parenthesis)
+        {
+            switch (t.getType())
+            {
+                case IDENTIFIER:
+                        args.add(new Field(t.toString(), stack.getType(t.toString(), method)));
+                    break;
+                case NUMBER:
+                        args.add(new Field(t.toString(), "long"));
+                    break;
+                case DECIMAL:
+                        args.add(new Field(t.toString(), "double"));
+                    break;
+                case STRING:
+                        args.add(new Field(t.toString(), "string"));
+                    break;
+                    default:
+                        System.err.println("err: '" + t.toString() + " " + t.getType() + "' unidentified, couldn't retrieve type.");
+                        System.exit(0);
+                        break;
+            }
+        }
+    }
+
     private int getTypeOf(Token token, String string, Method method, GlobalSpace space)
     {
         String variableName = string;
         if (stack.containsKey(variableName))
-            return space.getGlobalTypes().get(stack.getType(variableName)).getType();
+            return space.getGlobalTypes().get(stack.getType(variableName, method)).getType();
         else {
             if (stack.containsKey(variableName))
                 return space.getGlobalTypes().get(variableName).getType();
@@ -318,7 +356,7 @@ public class AST
     {
         String variableName = string;
         if (stack.containsKey(variableName))
-            return space.getGlobalTypes().get(stack.getType(variableName));
+            return space.getGlobalTypes().get(stack.getType(variableName, method));
         else {
             if (stack.containsKey(variableName))
                 return space.getGlobalTypes().get(variableName);
@@ -367,7 +405,7 @@ public class AST
 //            stack.put(variableName, (long) stack.size());
 //            types.put(variableName, type + " *");
 
-            stack.push(name, type + " *", (LinkedHashSet) token.getModifiers());
+            stack.push(name, type + " *", (LinkedHashSet) token.getModifiers(), method);
         }
         else
         {
@@ -376,7 +414,7 @@ public class AST
 //            stack.put(variableName, (long) stack.size());
 //            types.put(variableName, type);
 
-            stack.push(name, type, (LinkedHashSet) token.getModifiers());
+            stack.push(name, type, (LinkedHashSet) token.getModifiers(), method);
         }
     }
 
@@ -412,7 +450,7 @@ public class AST
 //            stack.put(variableName, (long) stack.size());
 //            types.put(variableName, type + " *");
 
-            stack.push(name, type + " *", (LinkedHashSet) token.getModifiers());
+            stack.push(name, type + " *", (LinkedHashSet) token.getModifiers(), method);
         }
         else
         {
@@ -421,7 +459,7 @@ public class AST
 //            stack.put(variableName, (long) stack.size());
 //            types.put(variableName, type);
 
-            stack.push(name, type, (LinkedHashSet) token.getModifiers());
+            stack.push(name, type, (LinkedHashSet) token.getModifiers(), method);
         }
 
         compile(value, method, space, declaration);

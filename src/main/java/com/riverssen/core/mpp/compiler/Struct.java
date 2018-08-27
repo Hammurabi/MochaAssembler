@@ -19,6 +19,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static com.riverssen.core.mpp.compiler.GlobalSpace.getMethodName;
+
 public class Struct
 {
     public static long NULL = 0;
@@ -138,7 +140,7 @@ public class Struct
                 case METHOD_DECLARATION:
                     Method method = new Method(space, this, t);
 
-                    if (__methods__.containsKey(GlobalSpace.getMethodName(method.getName(), method.getArguments())) && getMethod(method.getName()).isDeclared())
+                    if (__methods__.containsKey(getMethodName(method.getName(), method.getArguments())) && getMethod(method.getName(), method.getArguments()).isDeclared())
                     {
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
@@ -152,12 +154,12 @@ public class Struct
                 case OPERATOR:
                     Method opMethod = new Method(space, this, t);
 
-                    if (__methods__.containsKey(GlobalSpace.getMethodName(opMethod.getName(), opMethod.getArguments())) && getMethod(opMethod.getName()).isDeclared())
+                    if (__methods__.containsKey(getMethodName(opMethod.getName(), opMethod.getArguments())) && getMethod(opMethod.getName(), opMethod.getArguments()).isDeclared())
                     {
                         System.err.println("method __" + t.getTokens().get(0).toString() + "__ already exists in __" + __typename__ + "__.");
                         System.exit(0);
                     }
-                    __methods__.put(opMethod.getName(), opMethod);
+                    __methods__.put(opMethod.getName(),  opMethod);
                     break;
                 case CLASS_DECLARATION:
                     System.err.println("Class declaration not allowed inside of a class __" + __typename__ + "__.");
@@ -170,14 +172,6 @@ public class Struct
             }
         }
     }
-
-//    public Method func_call(String name, boolean is_static)
-//    {
-//        for (Method method : __methods__)
-//            if (method.getName().equals(name));
-//
-//        return null;
-//    }
 
     public long size()
     {
@@ -229,54 +223,21 @@ public class Struct
         }
     }
 
-    public Method getMethod(String methodName)
-    {
-        for (Method method : __methods__)
-            if (method.getName().equals(methodName)) return method;
-
-        if (__parent__ != null)
-            if (__parent__.containsMethod(methodName)) return __parent__.getMethod(methodName);
-
-        return __glblspace__.getGlobalMethods().get(methodName);
-    }
-
     public long getFieldOffset(String variable_name)
     {
         return getField(variable_name, __typename__).getLocation();
     }
 
-    public boolean containsMethod(String methodName)
+    public boolean containsMethod(String methodName, Set<Field> args)
     {
-        for (Method method : __methods__)
-            if (method.getName().equals(methodName))
-                return true;
+        String method = getMethodName(methodName, args);
+
+        if (__methods__.containsKey(method)) return true;
 
         if (__parent__ != null)
-            if (__parent__.containsMethod(methodName)) return true;
+            if (__parent__.containsMethod(methodName, args)) return true;
 
-        return __glblspace__.getGlobalMethods().containsKey(methodName);
-    }
-
-    public boolean containsMethod(String methodName, GlobalSpace space, Struct... structs)
-    {
-        for (Method method : __methods__)
-            if (method.getName().equals(methodName) && method.matches(space, structs)) return true;
-
-        if (__parent__ != null)
-            if (__parent__.containsMethod(methodName, space, structs)) return true;
-
-        return __glblspace__.getGlobalMethods().containsKey(methodName) && __glblspace__.getGlobalMethods().get(methodName).matches(space, structs);
-    }
-
-    public Method getMethod(String methodName, GlobalSpace space, Struct... structs)
-    {
-        for (Method method : __methods__)
-            if (method.getName().equals(methodName)) return method;
-
-        if (__parent__ != null)
-            if (__parent__.containsMethod(methodName, space, structs)) return __parent__.getMethod(methodName);
-
-        return __glblspace__.getGlobalMethods().get(methodName);
+        return __glblspace__.containsMethod(methodName, args);
     }
 
     @Override
@@ -302,15 +263,15 @@ public class Struct
 
     public boolean contains(String reference, String accessor, GlobalSpace space)
     {
-        return containsField(reference, accessor) || containsMethod(reference, space);
+        return containsField(reference, accessor);
     }
 
     public long    getLocation(String reference, String accessor, GlobalSpace space)
     {
         if (containsField(reference, accessor))
             return getField(reference, accessor).getLocation();
-        else if (containsMethod(reference, space))
-            return getMethod(reference).getLocation();
+//        else if (containsMethod(reference, space))
+//            return getMethod(reference).getLocation();
 
         return -1;
     }
@@ -325,43 +286,66 @@ public class Struct
         return __parent__;
     }
 
-    public Set<Method> getMethods()
+    public Map<String, Method> getMethods()
     {
         return __methods__;
-    }
-
-    public static String getMethodName(String name, Set<Field> args)
-    {
-        String arguments = "(";
-
-        for (Field field : args)
-            arguments += field.getTypeName() + ", ";
-
-        return name + arguments.substring(0, arguments.length() - 2) + ")";
     }
 
     private void addMethod(String methodName, Method method)
     {
         String qualifiedMethodName = getMethodName(methodName, method.getArguments());
 
-        if (__globalmethods__.containsKey(qualifiedMethodName))
+        if (__methods__.containsKey(qualifiedMethodName))
         {
-            System.err.println("err: method '" + qualifiedMethodName + "' already exists in global space.");
+            System.err.println("err: method '" + qualifiedMethodName + "' already exists in '" + getName() + "'.");
             System.exit(0);
         }
-        __globalmethods__.put(qualifiedMethodName, method);
+        __methods__.put(qualifiedMethodName, method);
     }
 
     public Method getMethod(String methodName, Set<Field> arguments)
     {
         String method = getMethodName(methodName, arguments);
 
-        if (__globalmethods__.containsKey(method)) return __globalmethods__.get(method);
+        if (__methods__.containsKey(method)) return __methods__.get(method);
+        else if (__parent__ != null && __parent__.containsMethod(methodName, arguments)) return __parent__.getMethod(methodName, arguments);
+        else if (__glblspace__.containsMethod(methodName, arguments)) return __glblspace__.getMethod(methodName, arguments);
         else {
-            System.err.println("err: method '" + method + "' not found in globalspace.");
+            System.err.println("err: method '" + method + "' not found in '" + getName() + "'.");
+
             System.exit(0);
         }
 
         return null;
+    }
+
+    /**
+     * @param struct; the struct to match agaisnt.
+     * @return if this struct matches with or is child of 'struct'.
+     */
+    public boolean match(Struct struct)
+    {
+        if (getName().equals(struct.getName())) return true;
+
+        Struct parent = __parent__;
+
+        while (parent != null)
+        {
+            if (parent.getName().equals(struct.getName())) return true;
+
+            parent = parent.__parent__;
+        }
+
+        return false;
+    }
+
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof Struct)
+        {
+            this.match((Struct) obj);
+        }
+
+        return super.equals(obj);
     }
 }

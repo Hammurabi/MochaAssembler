@@ -890,6 +890,7 @@ public class ParsedProgram
 
                                 declaration = new Token(Token.Type.FULL_DECLARATION).add(type).add(name);
                                 Token value = new Token(Token.Type.VALUE);
+                                value.add(methodCall);
                                 declaration.add(value.add(methodCall));
                         } else {
                             if (nextOfType(tokens, Token.Type.EQUALS))
@@ -909,7 +910,7 @@ public class ParsedProgram
                         declaration.getModifiers().addAll(modifiers);
                         modifiers.clear();
                         /** must be on same line to be valid, so nextValid isn't used here **/
-                    } else if (tokens.size() > 0 && tokens.get(0).getType() == Token.Type.PARENTHESIS_OPEN)
+                    } else if (tokens.size() > 0 && nextOfType(tokens, Token.Type.PARENTHESIS_OPEN))
                     {
                         Token methodCall = new Token(Token.Type.METHOD_CALL).add(type).add(getNextInParenthesis(tokens, currentToken, "Method calls should end with parenthesis."));
 

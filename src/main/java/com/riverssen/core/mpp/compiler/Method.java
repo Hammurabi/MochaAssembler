@@ -158,6 +158,24 @@ public class Method
         return true;
     }
 
+    public boolean matches(GlobalSpace space, List<Field> arguments)
+    {
+        if ((arguments == null || arguments.size() == 0) && __arguments__.size() == 0)
+            return true;
+        else if ((arguments == null || arguments.size() == 0) && __arguments__.size() > 0)
+            return false;
+        else if ((arguments == null || arguments.size() != __arguments__.size()))
+            return false;
+
+        int i = 0;
+
+        for (Field field : __arguments__)
+            if (!arguments.get(i ++).getTypeStruct(space).match(field.getTypeStruct(space)))
+                return false;
+
+        return true;
+    }
+
     public Opcode getOpcodes()
     {
         return __opcodes2__;

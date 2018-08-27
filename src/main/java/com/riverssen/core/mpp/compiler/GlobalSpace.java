@@ -17,7 +17,7 @@ import java.util.*;
 public class GlobalSpace
 {
     private Map<String, Struct>     __globaltypes__;
-    private Map<String, Method>     __globalmethods__;
+    private Set<Method>             __globalmethods__;
     private Map<String, Field>      __globalfields__;
     private long                    __allmethods__;
     private List<Method>            __allthemethods__;
@@ -25,7 +25,7 @@ public class GlobalSpace
     public GlobalSpace()
     {
         __globaltypes__ =               new HashMap<>();
-        __globalmethods__ =             new HashMap<>();
+        __globalmethods__ =             new LinkedHashSet<>();
         __globalfields__ =              new HashMap<>();
         __allthemethods__ =             new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class GlobalSpace
         __globaltypes__.put("pointer",  new Struct("__pointer__", 8, this, type.pointer_));
         __globaltypes__.put("string",   new Struct("__string__", 8, this, type.c_string));
         __globaltypes__.put("ARRAY",    new Struct("__array__", 8, this, type.pointer_));
-        __globalmethods__.put("sizeof", new Method("sizeof", this)
+        addMethod("sizeof", new Method("sizeof", this)
         {
             @Override
             public Object call(Token token)
@@ -69,7 +69,7 @@ public class GlobalSpace
                 return __globaltypes__.get(token.getTokens().get(0).toString()).size();
             }
         });
-        __globalmethods__.put("memcpy", new Method("memcpy", this)
+        addMethod("memcpy", new Method("memcpy", this)
         {
             {
                 getOpCodes().add((byte)0);
@@ -82,7 +82,7 @@ public class GlobalSpace
                 return getOpcodes();
             }
         });
-        __globalmethods__.put("free", new Method("free", this)
+        addMethod("free", new Method("free", this)
         {
             {
                 getOpCodes().add((byte)0);
@@ -95,13 +95,13 @@ public class GlobalSpace
                 return getOpcodes();
             }
         });
-        __globalmethods__.put("out", new Method("out", this)
+        addMethod("out", new Method("out", this)
         {
             {
                 getOpCodes().add((byte)0);
             }
         });
-        __globalmethods__.put("exception", new Method("exception", this)
+        addMethod("exception", new Method("exception", this)
         {
             {
                 getOpCodes().add((byte)0);
@@ -114,7 +114,7 @@ public class GlobalSpace
                 return getOpcodes();
             }
         });
-        __globalmethods__.put("wait", new Method("wait", this)
+        addMethod("wait", new Method("wait", this)
         {
             {
                 getOpCodes().add((byte)0);
@@ -127,7 +127,7 @@ public class GlobalSpace
                 return getOpcodes();
             }
         });
-        __globalmethods__.put("out", new Method("out", this)
+        addMethod("out", new Method("out", this)
         {
             {
                 getOpCodes().add((byte)0);
@@ -140,7 +140,7 @@ public class GlobalSpace
                 return getOpcodes();
             }
         });
-        __globalmethods__.put("array_equal", new Method("array_equal", this)
+        addMethod("array_equal", new Method("array_equal", this)
         {
             {
                 getOpCodes().add((byte)0);
@@ -160,10 +160,10 @@ public class GlobalSpace
         return __globaltypes__;
     }
 
-    public Map<String, Method> getGlobalMethods()
-    {
-        return __globalmethods__;
-    }
+//    public Map<String, Set<Method>> getGlobalMethods()
+//    {
+//        return __globalmethods__;
+//    }
 
     public Map<String, Field> getGlobalFields()
     {
@@ -197,6 +197,9 @@ public class GlobalSpace
 
     public static String getMethodName(String name, Set<Field> args)
     {
+        if (args.size() == 0)
+            return name + "()";
+
         String arguments = "(";
 
         for (Field field : args)
@@ -209,24 +212,41 @@ public class GlobalSpace
     {
         String qualifiedMethodName = getMethodName(methodName, method.getArguments());
 
-        if (__globalmethods__.containsKey(qualifiedMethodName))
+        if (containsMethod(methodName, method.getArguments()))
         {
             System.err.println("err: method '" + qualifiedMethodName + "' already exists in global space.");
             System.exit(0);
         }
-        __globalmethods__.put(qualifiedMethodName, method);
+
+        __globalmethods__.add(method);
     }
 
     public Method getMethod(String methodName, Set<Field> arguments)
     {
         String method = getMethodName(methodName, arguments);
 
-        if (__globalmethods__.containsKey(method)) return __globalmethods__.get(method);
+        if (containsMethod(methodName, arguments))
+        {
+            for (Method method_ : __globalmethods__)
+            {
+                if (methodName.equals(method_.getName()) && method_.matches(this, arguments))
+                {
+
+                }
+            }
+        }
         else {
             System.err.println("err: method '" + method + "' not found in globalspace.");
             System.exit(0);
         }
 
         return null;
+    }
+
+    public boolean containsMethod(String methodName, Set<Field> args)
+    {
+        String method = getMethodName(methodName, args);
+
+        return __globalmethods__.containsKey(method);
     }
 }
