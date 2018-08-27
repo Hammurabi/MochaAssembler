@@ -140,23 +140,23 @@ public class Method
         return space.getGlobalTypes().get(__returntype__);
     }
 
-    public boolean matches(GlobalSpace space, Struct ... arguments)
-    {
-        if ((arguments == null || arguments.length == 0) && __arguments__.size() == 0)
-            return true;
-        else if ((arguments == null || arguments.length == 0) && __arguments__.size() > 0)
-            return false;
-        else if ((arguments == null || arguments.length != __arguments__.size()))
-            return false;
-
-        int i = 0;
-
-        for (Field field : __arguments__)
-            if (!field.getTypeStruct(space).getName().equals(arguments[i ++]))
-                return false;
-
-        return true;
-    }
+//    public boolean matches(GlobalSpace space, Struct ... arguments)
+//    {
+//        if ((arguments == null || arguments.length == 0) && __arguments__.size() == 0)
+//            return true;
+//        else if ((arguments == null || arguments.length == 0) && __arguments__.size() > 0)
+//            return false;
+//        else if ((arguments == null || arguments.length != __arguments__.size()))
+//            return false;
+//
+//        int i = 0;
+//
+//        for (Field field : __arguments__)
+//            if (!field.getTypeStruct(space).getName().equals(arguments[i ++]))
+//                return false;
+//
+//        return true;
+//    }
 
     public boolean matches(GlobalSpace space, List<Field> arguments)
     {

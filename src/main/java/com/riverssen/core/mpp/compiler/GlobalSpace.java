@@ -229,9 +229,8 @@ public class GlobalSpace
         {
             for (Method method_ : __globalmethods__)
             {
-                if (methodName.equals(method_.getName()) && method_.matches(this, arguments))
+                if (methodName.equals(method_.getName()) && method_.matches(this, new ArrayList<>(arguments)))
                 {
-
                 }
             }
         }
@@ -245,8 +244,10 @@ public class GlobalSpace
 
     public boolean containsMethod(String methodName, Set<Field> args)
     {
-        String method = getMethodName(methodName, args);
+        for (Method method_ : __globalmethods__)
+            if (methodName.equals(method_.getName()) && method_.matches(this, new ArrayList<>(args)))
+                return true;
 
-        return __globalmethods__.containsKey(method);
+        return false;
     }
 }
