@@ -39,6 +39,7 @@ public function exception(string s) : void
 public function array_equal(void a, void b) : bool
 public function dereference(ptr Object a) : void
 public function toptr(ref Object a) : ulong
+public function static_cast(void t, void o) : ulong
 
 //namespace std
 //{

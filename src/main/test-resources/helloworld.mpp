@@ -53,7 +53,5 @@ class HelloWorld {
         vector a(1, 2)
         vector b(50, 12)
         vector c = a * b
-
-        vec(a())
     }
 }

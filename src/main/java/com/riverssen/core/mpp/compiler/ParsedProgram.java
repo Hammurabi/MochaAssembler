@@ -879,6 +879,13 @@ public class ParsedProgram
                                 declaration = new Token(Token.Type.FULL_DECLARATION).add(arrayToken.add(type).add(_brackets)).add(name);
                                 Token value = new Token(Token.Type.VALUE);
                                 parse(tokens, value, false, true, false, false, false, true);
+
+                                if (value.getTokens().get(0).getType().equals(METHOD_CALL) && value.getTokens().get(0).toString().equals(name))
+                                {
+                                    Token methodCall = value.getTokens().get(0).getTokens().get(0);
+                                    methodCall.setType(CONSTRUCTOR_CALL);
+                                    value = methodCall;
+                                }
                                 declaration.add(value);
                             } else {
                                 Token arrayToken = new Token(ARRAY);
@@ -886,12 +893,12 @@ public class ParsedProgram
                             }
                         } else if (nextOfType(tokens, PARENTHESIS_OPEN))
                         {
-                            Token methodCall = new Token(Token.Type.METHOD_CALL).add(type).add(getNextInParenthesis(tokens, currentToken, "Method calls should end with parenthesis."));
+                            Token methodCall = new Token(Token.Type.CONSTRUCTOR_CALL).add(name).add(getNextInParenthesis(tokens, currentToken, "Method calls should end with parenthesis."));
 
                                 declaration = new Token(Token.Type.FULL_DECLARATION).add(type).add(name);
-                                Token value = new Token(Token.Type.VALUE);
-                                value.add(methodCall);
-                                declaration.add(value.add(methodCall));
+//                                Token value = new Token(Token.Type.VALUE);
+//                                value.add(methodCall);
+                                declaration.add(methodCall);
                         } else {
                             if (nextOfType(tokens, Token.Type.EQUALS))
                             {
@@ -916,7 +923,6 @@ public class ParsedProgram
 
 //                        if(!root.getType().equals(PROCEDURAL_ACCESS))
 //                            Namespace.check(methodCall);
-
                         if(tokens.size() > 0 && tokens.get(0).getType().equals(PROCEDURAL_ACCESS))
                         {
                             tokens.remove(0);

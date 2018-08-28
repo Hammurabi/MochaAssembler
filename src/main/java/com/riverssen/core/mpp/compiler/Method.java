@@ -39,6 +39,7 @@ public class Method
         __returntype__  = "void";
         __location__    = space.addMethod(this);
         __arguments__   = new LinkedHashSet<>();
+        __undeclared__  = false;
     }
 
     /**

@@ -81,22 +81,22 @@ public class CompiledProgram
                     space.addMethod(method2.getName(), method2);
                     break;
                 case CLASS_DECLARATION:
-                    Struct struct = new Struct(space, t);
-
-                    if (space.getGlobalTypes().containsKey(struct.getName()))
+                    if (space.getGlobalTypes().containsKey(t.getTokens().get(0).toString()))
                     {
-                        System.err.println("struct __" + struct.getName() + "__ already exists in __global__.");
+                        System.err.println("struct __" + space.getGlobalTypes().containsKey(t.getTokens().get(0).toString()) + "__ already exists in __global__.");
                         System.exit(0);
                     }
+
+                    Struct struct = new Struct(space, t);
                     break;
                 case TEMPLATE_CLASS_DECLARATION:
-                    Struct tstruct = new Struct(space, t);
-
-                    if (space.getGlobalTypes().containsKey(tstruct.getName()))
+                    if (space.getGlobalTypes().containsKey(t.getTokens().get(0).toString()))
                     {
-                        System.err.println("struct __" + tstruct.getName() + "__ already exists in __global__.");
+                        System.err.println("struct __" + space.getGlobalTypes().containsKey(t.getTokens().get(0).toString()) + "__ already exists in __global__.");
                         System.exit(0);
                     }
+
+                    Struct tstruct = new Struct(space, t);
                     break;
                 default:
                     System.out.println("An error occured in compiler setup. '" + t.getType() + "'.");

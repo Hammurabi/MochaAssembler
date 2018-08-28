@@ -117,7 +117,10 @@ public class Token implements Serializable, Iterable<Token>
     public long getSizeAsLong(GlobalSpace space)
     {
         if (getType().equals(Type.METHOD_CALL))
-            return (Long) space.getGlobalMethods().get(getTokens().get(0).toString()).call(getTokens().get(1));
+//        {
+//            Set<Field> args = new LinkedHashSet<>();
+            return (Long) space.getMethod(getTokens().get(0).toString()).call(getTokens().get(1));
+//        }
         else if (getType().equals(Type.NUMBER))
             return Long.parseLong(toString());
         else if (getType().equals(Type.ADDITION))
@@ -203,6 +206,7 @@ public class Token implements Serializable, Iterable<Token>
         EMPTY_DECLARATION,
         FULL_DECLARATION,
         METHOD_CALL,
+        CONSTRUCTOR_CALL,
         METHOD_DECLARATION,
         METHOD_EMPTY_DECLARATION,
         CLASS_DECLARATION,

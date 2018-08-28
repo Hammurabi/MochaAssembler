@@ -29,26 +29,30 @@ public class GlobalSpace
         __globalfields__ =              new HashMap<>();
         __allthemethods__ =             new ArrayList<>();
 
-        __globaltypes__.put("char",     new Struct("__int8_t", 1, this, type.char_));
-        __globaltypes__.put("uchar",    new Struct("u_int8_t", 1, this, type.uchar_));
-        __globaltypes__.put("short",    new Struct("u_int8_t", 2, this, type.short_));
-        __globaltypes__.put("ushort",   new Struct("u_int8_t", 2, this, type.ushort_));
-        __globaltypes__.put("int",      new Struct("__int32_t", 4, this, type.int_));
-        __globaltypes__.put("uint",     new Struct("u_int32_t", 4, this, type.uint_));
-        __globaltypes__.put("long",     new Struct("__int64_t", 8, this, type.long_));
-        __globaltypes__.put("ulong",    new Struct("u_int64_t", 8, this, type.ulong_));
-        __globaltypes__.put("float",    new Struct("__float32_t", 4, this, type.float32_));
-        __globaltypes__.put("double",   new Struct("__float64_t", 8, this, type.float64_));
-        __globaltypes__.put("float128", new Struct("__float256_t", 8, this, type.float128_));
-        __globaltypes__.put("float256", new Struct("__float256_t", 8, this, type.float256_));
-        __globaltypes__.put("int128",   new Struct("__int128_t", 16, this, type.int128_));
-        __globaltypes__.put("uint128",  new Struct("u_int128_t", 16, this, type.uint128_));
-        __globaltypes__.put("int256",   new Struct("__int256_t", 32, this, type.int256_));
-        __globaltypes__.put("uint256",  new Struct("u_int256_t", 32, this, type.uint256_));
+        Struct integral_type = new Struct("integer_t", 0, this, -1);
+        Struct floating_type = new Struct("float_t", 0, this, -1);
+
+        __globaltypes__.put("char",     new Struct("__int8_t", 1, this, type.char_).setParent(integral_type));
+        __globaltypes__.put("uchar",    new Struct("u_int8_t", 1, this, type.uchar_).setParent(integral_type));
+        __globaltypes__.put("short",    new Struct("u_int8_t", 2, this, type.short_).setParent(integral_type));
+        __globaltypes__.put("ushort",   new Struct("u_int8_t", 2, this, type.ushort_).setParent(integral_type));
+        __globaltypes__.put("int",      new Struct("__int32_t", 4, this, type.int_).setParent(integral_type));
+        __globaltypes__.put("uint",     new Struct("u_int32_t", 4, this, type.uint_).setParent(integral_type));
+        __globaltypes__.put("long",     new Struct("__int64_t", 8, this, type.long_).setParent(integral_type));
+        __globaltypes__.put("ulong",    new Struct("u_int64_t", 8, this, type.ulong_).setParent(integral_type));
+        __globaltypes__.put("float",    new Struct("__float32_t", 4, this, type.float32_).setParent(floating_type));
+        __globaltypes__.put("double",   new Struct("__float64_t", 8, this, type.float64_).setParent(floating_type));
+        __globaltypes__.put("float128", new Struct("__float256_t", 8, this, type.float128_).setParent(floating_type));
+        __globaltypes__.put("float256", new Struct("__float256_t", 8, this, type.float256_).setParent(floating_type));
+        __globaltypes__.put("int128",   new Struct("__int128_t", 16, this, type.int128_).setParent(integral_type));
+        __globaltypes__.put("uint128",  new Struct("u_int128_t", 16, this, type.uint128_).setParent(integral_type));
+        __globaltypes__.put("int256",   new Struct("__int256_t", 32, this, type.int256_).setParent(integral_type));
+        __globaltypes__.put("uint256",  new Struct("u_int256_t", 32, this, type.uint256_).setParent(integral_type));
 
         __globaltypes__.put("pointer",  new Struct("__pointer__", 8, this, type.pointer_));
         __globaltypes__.put("string",   new Struct("__string__", 8, this, type.c_string));
         __globaltypes__.put("ARRAY",    new Struct("__array__", 8, this, type.pointer_));
+        __globaltypes__.put("void",    Struct.VOID);
         addMethod("sizeof", new Method("sizeof", this)
         {
             @Override
@@ -72,6 +76,9 @@ public class GlobalSpace
         addMethod("memcpy", new Method("memcpy", this)
         {
             {
+                getArguments().add(new Field("dst", "void"));
+                getArguments().add(new Field("src", "void"));
+                getArguments().add(new Field("length", "ulong"));
                 getOpCodes().add((byte)0);
                 setOpcodes(new Opcode(-1, "copy pointer"));
             }
@@ -85,6 +92,7 @@ public class GlobalSpace
         addMethod("free", new Method("free", this)
         {
             {
+                getArguments().add(new Field("o", "void"));
                 getOpCodes().add((byte)0);
                 setOpcodes(new Opcode(-1, "free pointer").add(new Opcode(instructions.free_, "free")));
             }
@@ -95,15 +103,10 @@ public class GlobalSpace
                 return getOpcodes();
             }
         });
-        addMethod("out", new Method("out", this)
-        {
-            {
-                getOpCodes().add((byte)0);
-            }
-        });
         addMethod("exception", new Method("exception", this)
         {
             {
+                getArguments().add(new Field("o", "string"));
                 getOpCodes().add((byte)0);
                 setOpcodes(new Opcode(-1, "print exception and halt").add(new Opcode(instructions.print, "print").add(new Opcode(-1, "type")).add(new Opcode(type.c_string, "string"))).add(new Opcode(instructions.url_write, "halt")));
             }
@@ -117,6 +120,7 @@ public class GlobalSpace
         addMethod("wait", new Method("wait", this)
         {
             {
+                getArguments().add(new Field("time", "ulong"));
                 getOpCodes().add((byte)0);
                 setOpcodes(new Opcode(-1, "wait"));
             }
@@ -130,6 +134,7 @@ public class GlobalSpace
         addMethod("out", new Method("out", this)
         {
             {
+                getArguments().add(new Field("o", "string"));
                 getOpCodes().add((byte)0);
                 setOpcodes(new Opcode(-1, "print out").add(new Opcode(instructions.print, "print").add(new Opcode(-1, "type")).add(new Opcode(type.c_string, "string"))));
             }
@@ -143,6 +148,9 @@ public class GlobalSpace
         addMethod("array_equal", new Method("array_equal", this)
         {
             {
+                getArguments().add(new Field("a", "void"));
+                getArguments().add(new Field("b", "void"));
+                getArguments().add(new Field("length", "ulong"));
                 getOpCodes().add((byte)0);
                 setOpcodes(new Opcode(-1, "array_equal"));
             }
@@ -208,17 +216,42 @@ public class GlobalSpace
         return name + arguments.substring(0, arguments.length() - 2) + ")";
     }
 
+    public static String getMethodName(String name, int args)
+    {
+        return name + "(" + args + ")";
+    }
+
     public void addMethod(String methodName, Method method)
     {
+        if (!method.isDeclared()) return;
+
         String qualifiedMethodName = getMethodName(methodName, method.getArguments());
 
         if (containsMethod(methodName, method.getArguments()))
         {
-            System.err.println("err: method '" + qualifiedMethodName + "' already exists in global space.");
-            System.exit(0);
+            if (getMethod(methodName, method.getArguments()).isDeclared() && method.isDeclared())
+            {
+                System.err.println("err: method '" + qualifiedMethodName + "' already exists in global space.");
+                new Exception().printStackTrace();
+                System.exit(0);
+            }
         }
 
         __globalmethods__.add(method);
+    }
+
+    public Method getMethod(String methodName)
+    {
+            for (Method method_ : __globalmethods__)
+                if (methodName.equals(method_.getName()))
+                    return method_;
+
+
+            System.err.println("err: method '" + methodName + "' not found in globalspace.");
+            new Exception().printStackTrace();
+            System.exit(0);
+
+        return null;
     }
 
     public Method getMethod(String methodName, Set<Field> arguments)
@@ -228,14 +261,12 @@ public class GlobalSpace
         if (containsMethod(methodName, arguments))
         {
             for (Method method_ : __globalmethods__)
-            {
                 if (methodName.equals(method_.getName()) && method_.matches(this, new ArrayList<>(arguments)))
-                {
-                }
-            }
+                    return method_;
         }
         else {
             System.err.println("err: method '" + method + "' not found in globalspace.");
+            new Exception().printStackTrace();
             System.exit(0);
         }
 
@@ -245,8 +276,46 @@ public class GlobalSpace
     public boolean containsMethod(String methodName, Set<Field> args)
     {
         for (Method method_ : __globalmethods__)
+        {
+//            if (method_.getName().equals("free"))
+//            {
+//                System.out.println(method_.getArguments() + " hi");
+//            }
             if (methodName.equals(method_.getName()) && method_.matches(this, new ArrayList<>(args)))
                 return true;
+        }
+
+        return false;
+    }
+
+    public Method getMethod(String methodName, int arguments)
+    {
+        if (containsMethod(methodName, arguments))
+        {
+            for (Method method_ : __globalmethods__)
+                if (methodName.equals(method_.getName()) && method_.getArguments().size() == arguments)
+                    return method_;
+        }
+        else {
+            System.err.println("err: method '" + methodName + "' not found in globalspace.");
+            new Exception().printStackTrace();
+            System.exit(0);
+        }
+
+        return null;
+    }
+
+    public boolean containsMethod(String methodName, int args)
+    {
+        for (Method method_ : __globalmethods__)
+        {
+//            if (method_.getName().equals("free"))
+//            {
+//                System.out.println(method_.getArguments() + " hi");
+//            }
+            if (methodName.equals(method_.getName()) && method_.getArguments().size() == args)
+                return true;
+        }
 
         return false;
     }

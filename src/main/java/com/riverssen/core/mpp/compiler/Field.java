@@ -170,7 +170,7 @@ public class Field
     @Override
     public String toString()
     {
-        return getName();
+        return getName() + " " + getTypeName();
     }
 
     public Struct getTypeStruct(GlobalSpace space)
