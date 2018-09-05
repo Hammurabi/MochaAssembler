@@ -56,6 +56,29 @@ public class Opcode
         return list;
     }
 
+    public static List<Opcode> convertInteger(long integer)
+    {
+        ByteBuffer _int_ = ByteBuffer.allocate(4);
+        _int_.putInt((int) integer);
+        _int_.flip();
+
+        List<Opcode> list = new ArrayList<>();
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+
+        return list;
+    }
+
+    public static List<Opcode> convertByte(long integer)
+    {
+        List<Opcode> list = new ArrayList<>();
+        list.add(new Opcode((byte) integer, "uint8_t"));
+
+        return list;
+    }
+
     public Opcode add(Opcode opcode)
     {
         this.children.add(opcode);

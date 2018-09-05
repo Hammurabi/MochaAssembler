@@ -50,25 +50,25 @@ public class AbstractSyntaxTree
         switch (type)
         {
             case "byte":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
             case "short":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(2)); break;
             case "int":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)); break;
             case "long":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(8)); break;
             case "int128":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
             case "int256":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
             case "float":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)); break;
             case "double":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(8)); break;
             case "float128":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
             case "float256":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
                 default:
                     op = new Opcode(Ops.aconst_null); break;
         }
