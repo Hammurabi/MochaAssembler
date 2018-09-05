@@ -29,6 +29,7 @@ public class Method
     private long            __location__;
     private Opcode          __opcodes2__;
     private Token           __tokens__;
+    private AbstractSyntaxTree ast;
 
     public Method(String name, GlobalSpace space)
     {
@@ -80,7 +81,8 @@ public class Method
         if (token.getType().equals(Token.Type.METHOD_DECLARATION) || token.getType().equals(Token.Type.OPERATOR))
         {
             __undeclared__ = false;
-            AST ast = new AST(token.getChild(Token.Type.BRACES), this, space);
+//            AST ast = new AST(token.getChild(Token.Type.BRACES), this, space);
+            AbstractSyntaxTree ast = new AbstractSyntaxTree(token.getChild(Token.Type.BRACES), this, space);
             __opcodes__  = ast.getExecutable().op_codes;
             __opcodes2__ = ast.getOpcode();
 //            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));

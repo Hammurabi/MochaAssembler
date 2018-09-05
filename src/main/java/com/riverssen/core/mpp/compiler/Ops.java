@@ -1,5 +1,6 @@
 package com.riverssen.core.mpp.compiler;
 
+/** Object oriented opcodes inspired by the java vm's own opcodes with a little twist. **/
 public enum Ops
 {
     //load a reference onto the stack from a local variable #index
@@ -8,8 +9,10 @@ public enum Ops
     aload_1(2, "load a reference onto the stack from a local variable 1"),
     aload_2(3, "load a reference onto the stack from a local variable 2"),
     aload_3(4, "load a reference onto the stack from a local variable 3"),
+//    aaload(29, "load a reference onto the stack from a local object"),
     //load null reference to stack
     aconst_null(5, "push a null reference onto the stack"),
+    aconst_new("push a new object onto the stack"),
 
     //store a reference into local variable #index
     astore(6, "store a reference into a local variable"),
@@ -42,8 +45,7 @@ public enum Ops
     sub(26, "perform a multiplication on the register"),
     add(27, "perform a multiplication on the register"),
     mod(28, "perform a multiplication on the register"),
-    aaload(29, "load a reference onto the stack from a local object"),
-    aastore(30, "store a reference into a local object"),
+//    aastore(30, "store a reference into a local object"),
     iiregld(31, "load an integer onto the register from a local object"),
     ffregld(32, "load a float onto the register from a local object"),
 
@@ -78,6 +80,31 @@ public enum Ops
     pop("pop the top value from the stack"),
     pop2("pop the top two values from the stack"),
 
+    istore("store an integer value into a local variable"),
+    istore_0("store an integer value into a local variable 0"),
+    istore_1("store an integer value into a local variable 1"),
+    istore_2("store an integer value into a local variable 2"),
+    istore_3("store an integer value into a local variable 3"),
+
+    fstore("store a float value into a local variable"),
+    fstore_0("store a float value into a local variable 0"),
+    fstore_1("store a float value into a local variable 1"),
+    fstore_2("store a float value into a local variable 2"),
+    fstore_3("store a float value into a local variable 3"),
+
+//    bset("set current object"),
+//    bastore("store a reference into object"),
+//    bistore("store an integer into object"),
+//    bfstore("store a float into object"),
+
+    anew("create a new heap array"),
+    adel("delete a heap array"),
+    amov("move a reference from heap data onto stack"),
+    imov("move an integer from heap data onto stack"),
+    fmov("move a float from heap data onto stack"),
+    mload_a("pop a reference from stack into a heap array"),
+    mload_i("pop an integer from stack into a heap array"),
+    mload_f("pop an integer from stack into a heap array"),
     ;
 //    sin,
 //    cos,

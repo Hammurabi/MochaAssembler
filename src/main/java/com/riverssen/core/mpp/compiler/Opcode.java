@@ -86,7 +86,7 @@ public class Opcode
     @Override
     public String toString()
     {
-        return (code < 0 ? "~" : String.format("0x%x", code)) + " " + description;
+        return (code < 0 ? "~" : (ops != null ? ops.name() + " " : "") + String.format("0x%x", code)) + " " + description;
     }
 
     public Opcode add(Opcode ...opcodes)
