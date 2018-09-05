@@ -182,6 +182,21 @@ public class AST
         {
             switch (token.getType())
             {
+                case NUMBER:
+                    opcode.add(new Opcode(-1, "push number (long)").add(Opcode.convertLong(Long.parseLong(token.toString()))));
+                    break;
+                case PROCEDURAL_ACCESS:
+                    break;
+                case VALUE:
+                    compile(token, method, space, opcode);
+                    break;
+                case INITIALIZATION:
+                    Opcode initializationopcode = new Opcode(-1, "initialize a variable.");
+
+                    compile(token, method, space, initializationopcode);
+
+                    opcode.add(initializationopcode.add(new Opcode(instructions.memory_write_stack, "pop stack to memory location in register '0'.")));
+                    break;
                 case IDENTIFIER:
                     Opcode id_c = new Opcode(-1, "identifier access '" + token.toString() + "'");
                     String variableName = token.toString();
@@ -194,7 +209,7 @@ public class AST
                         if (method.getParent() != null && method.getParent().containsField(token.toString(), method.getParent().getName()))
                         {
                             id_c.add(new Opcode(instructions.memory_read, "move pointer to stack '" + method.getParent().getName() + "->" + token.toString() + "'")
-                                    .add(new Opcode(-1, "parent pointer (this)").add(Opcode.convertLong(stack.get(variableName, method))),
+                                    .add(new Opcode(-1, "parent pointer (this)").add(Opcode.convertLong(stack.get("this", method))),
                                     new Opcode(-1, "location").add(Opcode.convertLong(method.getParent().getLocation(token.toString(), method.getParent().getName(), space)))));
                         }
                         else if (space.getGlobalTypes().containsKey(token.toString()) || space.getGlobalFields().containsKey(token.toString()))
@@ -212,8 +227,6 @@ public class AST
                     }
 
                     opcode.add(id_c);
-                    break;
-                case INITIALIZATION:
                     break;
                 case EMPTY_DECLARATION:
                         emptyDeclaration(root, token, method, space, opcode);
@@ -250,6 +263,9 @@ public class AST
                         multiplication.add(new Opcode(instructions.op_mul, "multiply"));
                         opcode.add(multiplication);
                     }
+                    break;
+                case PARENTHESIS:
+                        compile(token, method, space, opcode);
                     break;
                 case METHOD_CALL:
 //                    Set<Field> args = new LinkedHashSet<>();
@@ -370,6 +386,11 @@ public class AST
                         break;
             }
         }
+    }
+
+    /** call method through this function **/
+    private void callMethod(Token methodCallToken, Method method, GlobalSpace space)
+    {
     }
 
     private int getTypeOf(Token token, String string, Method method, GlobalSpace space)
@@ -496,7 +517,7 @@ public class AST
 //            stack.put(variableName, (long) stack.size());
 //            types.put(variableName, type + " *");
 
-            stack.push(name, type + " *", (LinkedHashSet) token.getModifiers(), method);
+            target = stack.push(name, type + " *", (LinkedHashSet) token.getModifiers(), method);
         }
         else
         {
@@ -505,7 +526,7 @@ public class AST
 //            stack.put(variableName, (long) stack.size());
 //            types.put(variableName, type);
 
-            stack.push(name, type, (LinkedHashSet) token.getModifiers(), method);
+            target = stack.push(name, type, (LinkedHashSet) token.getModifiers(), method);
         }
 
         if (value.getType().equals(Token.Type.CONSTRUCTOR_CALL))
@@ -515,14 +536,26 @@ public class AST
 
             if (space.containsMethod(cname, args))
             {
-                opcode.add(new Opcode(-1, "constructor call to '" + type + "'.").add(space.getMethod(cname, args).inline(this, space)));
+                long temp = target;
+                /** provide "this" argument **/
+                Opcode arguments = new Opcode(-1, "arguments").add(new Opcode(instructions.stack_load, "re-reference a pointer to 'this'.").add(Opcode.convertLong(target)));
+                target = -1;
+                /** add all other arguments and push them to stack. **/
+                compile(value.getTokens().get(1), method, space, arguments);
+
+                opcode.add(new Opcode(-1, "constructor call to '" + type + "'.")
+                        .add(arguments)
+                        .add(space.getMethod(cname, args).inline(this, space)));
             } else {
                 System.err.println("err: no construcor '" + cname + "' found in globalspace.");
                 System.err.println("at line: " + token.getLine());
                 System.exit(0);
             }
+            target = -1;
         } else
+        {
             compile(value, method, space, declaration);
+        }
     }
 
     public Executable getExecutable()

@@ -14,8 +14,16 @@ class vector{
     int x
     int y
 
-    public function vector(int x, int y) : void
+    public function vector(int a, int b) : void
     {
+        x = a
+        y = b
+    }
+
+    public function vector(const ref vector v) : void
+    {
+        x = v.x
+        y = v.y
     }
 
     public operator* (vector b) : vector
@@ -32,7 +40,7 @@ class HelloWorld {
     public function HelloWorld() : void
     {
         message = "no message!"
-        owner   = msg.sender
+//        owner   = msg.sender
     }
 
     public function setMessage(string text) : void
@@ -50,8 +58,10 @@ class HelloWorld {
 
     public function mul() : void
     {
-        vector a(1, 2)
-        vector b(50, 12)
-        vector c = a * b
+    int a
+    a = 5
+//        vector a(1, 2)
+//        vector b(50, 12)
+//        vector c = a * b
     }
 }

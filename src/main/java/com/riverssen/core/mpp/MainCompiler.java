@@ -113,6 +113,17 @@ public class MainCompiler
                 writer.close();
             } else if (arg.equals("-c") || arg.equals("-compile"))
             {
+//                String ops = "";
+//
+//                String split[] = ops.split(",");
+//
+//                int i = 0;
+//
+//                for (String op : split)
+//                    System.out.println(op + " = " + i ++ + ",");
+
+//                System.exit(0);
+
                 String utf_program = "" + stdlib();
 
                 BufferedReader reader = new BufferedReader(new FileReader(main_class));
