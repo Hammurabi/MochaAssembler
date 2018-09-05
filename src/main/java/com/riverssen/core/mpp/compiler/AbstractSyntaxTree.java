@@ -51,6 +51,8 @@ public class AbstractSyntaxTree
         {
             case "byte":
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
+            case "char":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
             case "short":
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(2)); break;
             case "int":
@@ -61,6 +63,20 @@ public class AbstractSyntaxTree
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
             case "int256":
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
+            case "ubyte":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
+            case "uchar":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
+            case "ushort":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(2)); break;
+            case "uint":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)); break;
+            case "ulong":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(8)); break;
+            case "uint128":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
+            case "uint256":
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
             case "float":
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)); break;
             case "double":
@@ -69,6 +85,9 @@ public class AbstractSyntaxTree
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
             case "float256":
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
+            case "String":
+            case "string":
+                op = new Opcode(Ops.aconst_null); break;
                 default:
                     op = new Opcode(Ops.aconst_null); break;
         }
@@ -78,6 +97,10 @@ public class AbstractSyntaxTree
 
     private void initializeVariable(Token token)
     {
+        Token var = token.getTokens().get(0);
+        Token val = token.getTokens().get(1).getTokens().get(0);
+
+        ops.add(new Opcode(-1, "init (" + var.toString() + ", " + val.toString() + ")").add(new Opcode(Ops.istore)));
     }
 
     public Executable getExecutable()
