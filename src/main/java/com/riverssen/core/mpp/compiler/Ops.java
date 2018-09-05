@@ -50,6 +50,8 @@ public enum Ops
     areturn(33, "return a reference from a method"),
     ireturn(34, "return an integer from a method"),
     freturn(35, "return a float from a method"),
+    returnvoid("return void"),
+    returnnull("return null"),
 
     invoke(36, "invoke a method"),
     invokentv(37, "invoke a native method"),
@@ -72,7 +74,10 @@ public enum Ops
     fconst_5(51, "push a float onto the stack with value 5"),
     fconst_e(52, "push a float onto the stack with no value"),
 
-    aself(53, "set 'this'")
+    aself(53, "set 'this'"),
+    pop("pop the top value from the stack"),
+    pop2("pop the top two values from the stack"),
+
     ;
 //    sin,
 //    cos,
