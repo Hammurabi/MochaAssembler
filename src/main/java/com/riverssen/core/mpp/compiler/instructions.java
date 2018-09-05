@@ -14,6 +14,7 @@ package com.riverssen.core.mpp.compiler;
 
 public class instructions
 {
+    public static short i;
     public static final short
     push_i_8 = 0,
 

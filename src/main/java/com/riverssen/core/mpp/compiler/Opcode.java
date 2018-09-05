@@ -9,12 +9,30 @@ import java.util.List;
 public class Opcode
 {
     private int             code;
+    private Ops             ops;
     private String          description;
     private List<Opcode>    children;
 
     public Opcode(int code, String description)
     {
+        this.ops = null;
         this.code = code;
+        this.description = description;
+        this.children = new ArrayList<>();
+    }
+
+    public Opcode(Ops code)
+    {
+        this.ops = code;
+        this.code = code.get();
+        this.description = code.getDesc();
+        this.children = new ArrayList<>();
+    }
+
+    public Opcode(Ops code, String description)
+    {
+        this.ops = code;
+        this.code = code.get();
         this.description = description;
         this.children = new ArrayList<>();
     }
