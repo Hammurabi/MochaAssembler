@@ -113,7 +113,10 @@ public class AbstractSyntaxTree
                             op = new Opcode(Ops.ddmovrld); break;
                         case "String":
                         case "string":
-                            op = new Opcode(Ops.csmovrld); break;
+//                            op = new Opcode(Ops.csmovrld); break;
+                            System.err.println("compiler error: cannot move 'string' to ALU '" + v.name + "'.");
+                            System.exit(0);
+                            break;
                         default:
                             op = new Opcode(Ops.amovrld); break;
                     }
