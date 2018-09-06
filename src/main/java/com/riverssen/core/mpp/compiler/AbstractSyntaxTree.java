@@ -60,182 +60,360 @@ public class AbstractSyntaxTree
         compile(child, ops);
     }
 
-    private Opcode loadVariable(String variable, Opcode ops)
+    private Opcode loadVariable(String variable, Opcode ops, CompileType compileType)
     {
         Opcode op = null;
         var v = getLocalVariable(variable);
 
-        if (v.isField)
+        switch (compileType)
         {
-            switch (v.type)
-            {
-                case "byte":
-                case "char":
-                    op = new Opcode(Ops.bmov); break;
-                case "short":
-                    op = new Opcode(Ops.smov); break;
-                case "int":
-                    op = new Opcode(Ops.imov); break;
-                case "long":
-                    op = new Opcode(Ops.lmov); break;
-                case "int128":
-                    op = new Opcode(Ops.limov); break;
-                case "int256":
-                    op = new Opcode(Ops.llmov); break;
-                case "ubyte":
-                case "uchar":
-                    op = new Opcode(Ops.bmov); break;
-                case "ushort":
-                    op = new Opcode(Ops.smov); break;
-                case "uint":
-                    op = new Opcode(Ops.imov); break;
-                case "ulong":
-                    op = new Opcode(Ops.lmov); break;
-                case "uint128":
-                    op = new Opcode(Ops.limov); break;
-                case "uint256":
-                    op = new Opcode(Ops.llmov); break;
-                case "float":
-                    op = new Opcode(Ops.fmov); break;
-                case "double":
-                    op = new Opcode(Ops.dmov); break;
-                case "float128":
-                    op = new Opcode(Ops.dfmov); break;
-                case "float256":
-                    op = new Opcode(Ops.ddmov); break;
-                case "String":
-                case "string":
-                    op = new Opcode(Ops.csmov); break;
-                default:
-                    op = new Opcode(Ops.amov); break;
-            }
-        } else {
-            switch (v.type)
-            {
-                case "ubyte":
-                case "uchar":
-                case "byte":
-                case "char":
-                    switch ((int) v.localvarlocation)
+            case STRAIGHT_TO_REGISTER:
+                if (v.isField)
+                {
+                    switch (v.type)
                     {
-                        case 0: op = new Opcode(Ops.bload_0); break;
-                        case 1: op = new Opcode(Ops.bload_1); break;
-                        case 2: op = new Opcode(Ops.bload_2); break;
-                        case 3: op = new Opcode(Ops.bload_3); break;
-                            default: op = new Opcode(Ops.bload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "ushort":
-                case "short":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.sload_0); break;
-                        case 1: op =    new Opcode(Ops.sload_1); break;
-                        case 2: op =    new Opcode(Ops.sload_2); break;
-                        case 3: op =    new Opcode(Ops.sload_3); break;
-                        default: op =   new Opcode(Ops.sload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "uint":
-                case "int":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.iload_0); break;
-                        case 1: op =    new Opcode(Ops.iload_1); break;
-                        case 2: op =    new Opcode(Ops.iload_2); break;
-                        case 3: op =    new Opcode(Ops.iload_3); break;
-                        default: op =   new Opcode(Ops.iload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "ulong":
-                case "long":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.lload_0); break;
-                        case 1: op =    new Opcode(Ops.lload_1); break;
-                        case 2: op =    new Opcode(Ops.lload_2); break;
-                        case 3: op =    new Opcode(Ops.lload_3); break;
-                        default: op =   new Opcode(Ops.lload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "uint128":
-                case "int128":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.liload_0); break;
-                        case 1: op =    new Opcode(Ops.liload_1); break;
-                        case 2: op =    new Opcode(Ops.liload_2); break;
-                        case 3: op =    new Opcode(Ops.liload_3); break;
-                        default: op =   new Opcode(Ops.liload).add(Opcode.convertLong(v.localvarlocation)); break;
+                        case "ubyte":
+                        case "uchar":
+                        case "byte":
+                        case "char":
+                            op = new Opcode(Ops.bmovrld); break;
+                        case "short":
+                        case "ushort":
+                            op = new Opcode(Ops.smovrld); break;
+                        case "uint":
+                        case "int":
+                            op = new Opcode(Ops.imovrld); break;
+                        case "ulong":
+                        case "long":
+                            op = new Opcode(Ops.lmovrld); break;
+                        case "uint128":
+                        case "int128":
+                            op = new Opcode(Ops.limovrld); break
+                        case "uint256":
+                        case "int256":
+                            op = new Opcode(Ops.llmovrld); break;
+                            op = new Opcode(Ops.llmovrld); break;
+                        case "float":
+                            op = new Opcode(Ops.fmovrld); break;
+                        case "double":
+                            op = new Opcode(Ops.dmovrld); break;
+                        case "float128":
+                            op = new Opcode(Ops.dfmovrld); break;
+                        case "float256":
+                            op = new Opcode(Ops.ddmovrld); break;
+                        case "String":
+                        case "string":
+                            op = new Opcode(Ops.csmovrld); break;
+                        default:
+                            op = new Opcode(Ops.amovrld); break;
                     }
-                case "uint256":
-                case "int256":
-                    switch ((int) v.localvarlocation)
+                } else {
+                    switch (v.type)
                     {
-                        case 0: op =    new Opcode(Ops.llload_0); break;
-                        case 1: op =    new Opcode(Ops.llload_1); break;
-                        case 2: op =    new Opcode(Ops.llload_2); break;
-                        case 3: op =    new Opcode(Ops.llload_3); break;
-                        default: op =   new Opcode(Ops.llload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "float":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.fload_0); break;
-                        case 1: op =    new Opcode(Ops.fload_1); break;
-                        case 2: op =    new Opcode(Ops.fload_2); break;
-                        case 3: op =    new Opcode(Ops.fload_3); break;
-                        default: op =   new Opcode(Ops.fload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "double":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.dload_0); break;
-                        case 1: op =    new Opcode(Ops.dload_1); break;
-                        case 2: op =    new Opcode(Ops.dload_2); break;
-                        case 3: op =    new Opcode(Ops.dload_3); break;
-                        default: op =   new Opcode(Ops.dload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "float128":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.dfload_0); break;
-                        case 1: op =    new Opcode(Ops.dfload_1); break;
-                        case 2: op =    new Opcode(Ops.dfload_2); break;
-                        case 3: op =    new Opcode(Ops.dfload_3); break;
-                        default: op =   new Opcode(Ops.dfload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "float256":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.ddload_0); break;
-                        case 1: op =    new Opcode(Ops.ddload_1); break;
-                        case 2: op =    new Opcode(Ops.ddload_2); break;
-                        case 3: op =    new Opcode(Ops.ddload_3); break;
-                        default: op =   new Opcode(Ops.ddload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-                case "String":
-                case "string":
-                    switch ((int) v.localvarlocation)
-                    {
-                        case 0: op =    new Opcode(Ops.csload_0); break;
-                        case 1: op =    new Opcode(Ops.csload_1); break;
-                        case 2: op =    new Opcode(Ops.csload_2); break;
-                        case 3: op =    new Opcode(Ops.csload_3); break;
-                        default: op =   new Opcode(Ops.csload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
+                        case "ubyte":
+                        case "uchar":
+                        case "byte":
+                        case "char":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op = new Opcode(Ops.bload_0); break;
+                                case 1: op = new Opcode(Ops.bload_1); break;
+                                case 2: op = new Opcode(Ops.bload_2); break;
+                                case 3: op = new Opcode(Ops.bload_3); break;
+                                default: op = new Opcode(Ops.bload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "ushort":
+                        case "short":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.sload_0); break;
+                                case 1: op =    new Opcode(Ops.sload_1); break;
+                                case 2: op =    new Opcode(Ops.sload_2); break;
+                                case 3: op =    new Opcode(Ops.sload_3); break;
+                                default: op =   new Opcode(Ops.sload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "uint":
+                        case "int":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.iload_0); break;
+                                case 1: op =    new Opcode(Ops.iload_1); break;
+                                case 2: op =    new Opcode(Ops.iload_2); break;
+                                case 3: op =    new Opcode(Ops.iload_3); break;
+                                default: op =   new Opcode(Ops.iload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "ulong":
+                        case "long":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.lload_0); break;
+                                case 1: op =    new Opcode(Ops.lload_1); break;
+                                case 2: op =    new Opcode(Ops.lload_2); break;
+                                case 3: op =    new Opcode(Ops.lload_3); break;
+                                default: op =   new Opcode(Ops.lload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "uint128":
+                        case "int128":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.liload_0); break;
+                                case 1: op =    new Opcode(Ops.liload_1); break;
+                                case 2: op =    new Opcode(Ops.liload_2); break;
+                                case 3: op =    new Opcode(Ops.liload_3); break;
+                                default: op =   new Opcode(Ops.liload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            }
+                        case "uint256":
+                        case "int256":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.llload_0); break;
+                                case 1: op =    new Opcode(Ops.llload_1); break;
+                                case 2: op =    new Opcode(Ops.llload_2); break;
+                                case 3: op =    new Opcode(Ops.llload_3); break;
+                                default: op =   new Opcode(Ops.llload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "float":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.fload_0); break;
+                                case 1: op =    new Opcode(Ops.fload_1); break;
+                                case 2: op =    new Opcode(Ops.fload_2); break;
+                                case 3: op =    new Opcode(Ops.fload_3); break;
+                                default: op =   new Opcode(Ops.fload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "double":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.dload_0); break;
+                                case 1: op =    new Opcode(Ops.dload_1); break;
+                                case 2: op =    new Opcode(Ops.dload_2); break;
+                                case 3: op =    new Opcode(Ops.dload_3); break;
+                                default: op =   new Opcode(Ops.dload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "float128":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.dfload_0); break;
+                                case 1: op =    new Opcode(Ops.dfload_1); break;
+                                case 2: op =    new Opcode(Ops.dfload_2); break;
+                                case 3: op =    new Opcode(Ops.dfload_3); break;
+                                default: op =   new Opcode(Ops.dfload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "float256":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.ddload_0); break;
+                                case 1: op =    new Opcode(Ops.ddload_1); break;
+                                case 2: op =    new Opcode(Ops.ddload_2); break;
+                                case 3: op =    new Opcode(Ops.ddload_3); break;
+                                default: op =   new Opcode(Ops.ddload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        case "String":
+                        case "string":
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.csload_0); break;
+                                case 1: op =    new Opcode(Ops.csload_1); break;
+                                case 2: op =    new Opcode(Ops.csload_2); break;
+                                case 3: op =    new Opcode(Ops.csload_3); break;
+                                default: op =   new Opcode(Ops.csload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                        default:
+                            switch ((int) v.localvarlocation)
+                            {
+                                case 0: op =    new Opcode(Ops.aload_0); break;
+                                case 1: op =    new Opcode(Ops.aload_1); break;
+                                case 2: op =    new Opcode(Ops.aload_2); break;
+                                case 3: op =    new Opcode(Ops.aload_3); break;
+                                default: op =   new Opcode(Ops.aload).add(Opcode.convertLong(v.localvarlocation)); break;
+                            } break;
+                    }
+                }
+                break;
                 default:
-                    switch ((int) v.localvarlocation)
+                    if (v.isField)
                     {
-                        case 0: op =    new Opcode(Ops.aload_0); break;
-                        case 1: op =    new Opcode(Ops.aload_1); break;
-                        case 2: op =    new Opcode(Ops.aload_2); break;
-                        case 3: op =    new Opcode(Ops.aload_3); break;
-                        default: op =   new Opcode(Ops.aload).add(Opcode.convertLong(v.localvarlocation)); break;
-                    } break;
-            }
+                        switch (v.type)
+                        {
+                            case "byte":
+                            case "char":
+                                op = new Opcode(Ops.bmov); break;
+                            case "short":
+                                op = new Opcode(Ops.smov); break;
+                            case "int":
+                                op = new Opcode(Ops.imov); break;
+                            case "long":
+                                op = new Opcode(Ops.lmov); break;
+                            case "int128":
+                                op = new Opcode(Ops.limov); break;
+                            case "int256":
+                                op = new Opcode(Ops.llmov); break;
+                            case "ubyte":
+                            case "uchar":
+                                op = new Opcode(Ops.bmov); break;
+                            case "ushort":
+                                op = new Opcode(Ops.smov); break;
+                            case "uint":
+                                op = new Opcode(Ops.imov); break;
+                            case "ulong":
+                                op = new Opcode(Ops.lmov); break;
+                            case "uint128":
+                                op = new Opcode(Ops.limov); break;
+                            case "uint256":
+                                op = new Opcode(Ops.llmov); break;
+                            case "float":
+                                op = new Opcode(Ops.fmov); break;
+                            case "double":
+                                op = new Opcode(Ops.dmov); break;
+                            case "float128":
+                                op = new Opcode(Ops.dfmov); break;
+                            case "float256":
+                                op = new Opcode(Ops.ddmov); break;
+                            case "String":
+                            case "string":
+                                op = new Opcode(Ops.csmov); break;
+                            default:
+                                op = new Opcode(Ops.amov); break;
+                        }
+                    } else {
+                        switch (v.type)
+                        {
+                            case "ubyte":
+                            case "uchar":
+                            case "byte":
+                            case "char":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op = new Opcode(Ops.bload_0); break;
+                                    case 1: op = new Opcode(Ops.bload_1); break;
+                                    case 2: op = new Opcode(Ops.bload_2); break;
+                                    case 3: op = new Opcode(Ops.bload_3); break;
+                                    default: op = new Opcode(Ops.bload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "ushort":
+                            case "short":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.sload_0); break;
+                                    case 1: op =    new Opcode(Ops.sload_1); break;
+                                    case 2: op =    new Opcode(Ops.sload_2); break;
+                                    case 3: op =    new Opcode(Ops.sload_3); break;
+                                    default: op =   new Opcode(Ops.sload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "uint":
+                            case "int":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.iload_0); break;
+                                    case 1: op =    new Opcode(Ops.iload_1); break;
+                                    case 2: op =    new Opcode(Ops.iload_2); break;
+                                    case 3: op =    new Opcode(Ops.iload_3); break;
+                                    default: op =   new Opcode(Ops.iload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "ulong":
+                            case "long":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.lload_0); break;
+                                    case 1: op =    new Opcode(Ops.lload_1); break;
+                                    case 2: op =    new Opcode(Ops.lload_2); break;
+                                    case 3: op =    new Opcode(Ops.lload_3); break;
+                                    default: op =   new Opcode(Ops.lload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "uint128":
+                            case "int128":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.liload_0); break;
+                                    case 1: op =    new Opcode(Ops.liload_1); break;
+                                    case 2: op =    new Opcode(Ops.liload_2); break;
+                                    case 3: op =    new Opcode(Ops.liload_3); break;
+                                    default: op =   new Opcode(Ops.liload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                }
+                            case "uint256":
+                            case "int256":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.llload_0); break;
+                                    case 1: op =    new Opcode(Ops.llload_1); break;
+                                    case 2: op =    new Opcode(Ops.llload_2); break;
+                                    case 3: op =    new Opcode(Ops.llload_3); break;
+                                    default: op =   new Opcode(Ops.llload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "float":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.fload_0); break;
+                                    case 1: op =    new Opcode(Ops.fload_1); break;
+                                    case 2: op =    new Opcode(Ops.fload_2); break;
+                                    case 3: op =    new Opcode(Ops.fload_3); break;
+                                    default: op =   new Opcode(Ops.fload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "double":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.dload_0); break;
+                                    case 1: op =    new Opcode(Ops.dload_1); break;
+                                    case 2: op =    new Opcode(Ops.dload_2); break;
+                                    case 3: op =    new Opcode(Ops.dload_3); break;
+                                    default: op =   new Opcode(Ops.dload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "float128":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.dfload_0); break;
+                                    case 1: op =    new Opcode(Ops.dfload_1); break;
+                                    case 2: op =    new Opcode(Ops.dfload_2); break;
+                                    case 3: op =    new Opcode(Ops.dfload_3); break;
+                                    default: op =   new Opcode(Ops.dfload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "float256":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.ddload_0); break;
+                                    case 1: op =    new Opcode(Ops.ddload_1); break;
+                                    case 2: op =    new Opcode(Ops.ddload_2); break;
+                                    case 3: op =    new Opcode(Ops.ddload_3); break;
+                                    default: op =   new Opcode(Ops.ddload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            case "String":
+                            case "string":
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.csload_0); break;
+                                    case 1: op =    new Opcode(Ops.csload_1); break;
+                                    case 2: op =    new Opcode(Ops.csload_2); break;
+                                    case 3: op =    new Opcode(Ops.csload_3); break;
+                                    default: op =   new Opcode(Ops.csload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                            default:
+                                switch ((int) v.localvarlocation)
+                                {
+                                    case 0: op =    new Opcode(Ops.aload_0); break;
+                                    case 1: op =    new Opcode(Ops.aload_1); break;
+                                    case 2: op =    new Opcode(Ops.aload_2); break;
+                                    case 3: op =    new Opcode(Ops.aload_3); break;
+                                    default: op =   new Opcode(Ops.aload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                } break;
+                        }
+                    }
+                    break;
         }
 
         return op;
     }
 
+    private enum CompileType{
+        NONE,
+        STRAIGHT_TO_REGISTER,
+    }
+
     private void compile(Token token, Opcode ops)
+    {
+        this.compile(token, ops, CompileType.NONE);
+    }
+
+    private void compile(Token token, Opcode ops, CompileType compileType)
     {
         switch (token.getType())
         {
@@ -246,7 +424,11 @@ public class AbstractSyntaxTree
                 initializeVariable(token, ops);
                 break;
             case IDENTIFIER:
-                ops.add(loadVariable(token.toString(), ops));
+                ops.add(loadVariable(token.toString(), ops, compileType));
+                break;
+            case MULTIPLICATION:
+                compile(token.getTokens().get(0), ops, CompileType.STRAIGHT_TO_REGISTER);
+                compile(token.getTokens().get(1), ops, CompileType.STRAIGHT_TO_REGISTER);
                 break;
                 default:
                     for (Token t : token)
