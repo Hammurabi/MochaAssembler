@@ -4,6 +4,7 @@ import com.riverssen.core.mpp.Executable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class AbstractSyntaxTree
 {
@@ -11,6 +12,21 @@ public class AbstractSyntaxTree
     private Method context;
     private Executable exe;
     private Opcode     ops;
+    private long       lcllvts;
+    private class var{
+        String name, type;
+        Set<Modifier> modifiers;
+//        long stacklocation;
+        long localvarlocation;
+
+        public var(String name, String type, Set<Modifier> modifiers)
+        {
+            this.name = name;
+            this.type = type;
+            this.modifiers = modifiers;
+            this.localvarlocation = lcllvts ++;
+        }
+    }
     private Map<String, Long> localVariableTable;
 
     public AbstractSyntaxTree(Token child, Method method, GlobalSpace space)
@@ -101,6 +117,8 @@ public class AbstractSyntaxTree
     {
         Token var = token.getTokens().get(0);
         Token val = token.getTokens().get(1).getTokens().get(0);
+
+        String type;
 
         ops.add(new Opcode(-1, "init (" + var.toString() + ", " + val.toString() + ")").add(new Opcode(Ops.istore)));
     }
