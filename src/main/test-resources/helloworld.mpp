@@ -37,6 +37,7 @@ class HelloWorld {
     private string        message
     private string        message2
     private int           potato
+    private long          i
 
     public function HelloWorld() : void
     {
@@ -59,8 +60,9 @@ class HelloWorld {
 
     public function mul() : void
     {
-    int a
-    potato = a * 2
+        int a
+        potato = a * 2
+        potato = i * 56
 //        vector a(1, 2)
 //        vector b(50, 12)
 //        vector c = a * b

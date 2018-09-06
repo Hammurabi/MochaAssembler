@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Opcode
 {
+    private static final int jump = 20;
     private int             code;
     private Ops             ops;
     private String          description;
@@ -151,23 +152,42 @@ public class Opcode
 
     public String humanReadable(int i)
     {
+        return this.humanReadable(i, false);
+    }
+
+    public String humanReadable(int i, boolean m)
+    {
         String t = "";
 
         for (int x = 0; x < i; x ++)
             t += "\t";
 
-        t += toString();
+        if (m && code >= 0)
+            t += toString();
+        else if (!m)
+            t += toString();
 
         for (Opcode opcode : children)
-            t += "\n" + opcode.humanReadable(i + 1);
+            t += "\n" + opcode.humanReadable(i + 1, m);
 
         return t;
+    }
+
+    private String space(int i)
+    {
+        String s = "";
+
+        for (int x = 0; x < i; x ++)
+            s += " ";
+
+        return s;
     }
 
     @Override
     public String toString()
     {
-        return (code < 0 ? "~" : (ops != null ? ops.name() + " " : "") + String.format("0x%x", code)) + " " + description;
+        String first_part = (code < 0 ? "~" : (ops != null ? ops.name() + " " : "") + String.format("0x%x", code));
+        return first_part + space(jump - first_part.length()) + description;
     }
 
     public Opcode add(Opcode ...opcodes)
@@ -182,7 +202,7 @@ public class Opcode
     {
         Executable executable = new Executable();
 
-        if (code >= 0) executable.add(code);
+        if (code >= 0) executable.add(executable.convertShort(code));
 
         for (Opcode opcode : children)
             executable.add(opcode.toExecutable().op_codes);

@@ -73,6 +73,15 @@ public class Executable
         return _int_.array();
     }
 
+    public byte[] convertShort(long integer)
+    {
+        ByteBuffer _int_ = ByteBuffer.allocate(2);
+        _int_.putShort((short) integer);
+        _int_.flip();
+
+        return _int_.array();
+    }
+
     public byte[] convertDouble(long integer)
     {
         ByteBuffer _int_ = ByteBuffer.allocate(8);
