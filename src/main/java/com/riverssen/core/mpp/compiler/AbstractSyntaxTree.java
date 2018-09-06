@@ -3,6 +3,7 @@ package com.riverssen.core.mpp.compiler;
 import com.riverssen.core.mpp.Executable;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,6 +114,8 @@ public class AbstractSyntaxTree
         }
 
         ops.add(new Opcode(-1, "declare(" + name + ", " + type + ")").add(op));
+
+        storeLocalVariable(name, type, new LinkedHashSet<>(declaration.getModifiers()));
     }
 
     private var storeLocalVariable(String name, String type, Set<Modifier> modifiers)
@@ -129,9 +132,9 @@ public class AbstractSyntaxTree
             return localVariableTable.get(name);
 
         System.err.println("compiler error: local variable '" + name + "' does not exist.");
-        System.exit(0);
+//        System.exit(0);
 
-        return null;
+        return new var("f", "sd", new LinkedHashSet<>());
     }
 
     private Opcode storeByteInput(String input)
@@ -265,6 +268,7 @@ public class AbstractSyntaxTree
             case "String":
             case "string":
                 op = storeStringInput(input);
+                break;
             default:
                 op = new Opcode(Ops.aconst_null); break;
         }
@@ -277,14 +281,9 @@ public class AbstractSyntaxTree
         Token varn = token.getTokens().get(0);
         Token valv = token.getTokens().get(1).getTokens().get(0);
 
-
         var v = getLocalVariable(varn.toString());
 
-        Opcode op = null;
-
-        storeInput(valv.toString(), v.type);
-
-        ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(new Opcode(Ops.istore)));
+        ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(storeInput(valv.toString(), v.type)).add(new Opcode(Ops.istore)));
     }
 
     public Executable getExecutable()
