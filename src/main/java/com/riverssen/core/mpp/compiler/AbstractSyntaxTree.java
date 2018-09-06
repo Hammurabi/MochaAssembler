@@ -54,41 +54,39 @@ public class AbstractSyntaxTree
         switch (type)
         {
             case "byte":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
             case "char":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
+                op = new Opcode(Ops.bconst_e); break;
             case "short":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(2)); break;
+                op = new Opcode(Ops.sconst_e); break;
             case "int":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)).add(new Opcode(Ops.istore_0)); break;
+                op = new Opcode(Ops.iconst_e); break;
             case "long":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(8)); break;
+                op = new Opcode(Ops.lconst_e); break;
             case "int128":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
+                op = new Opcode(Ops.liconst_e); break;
             case "int256":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
+                op = new Opcode(Ops.llconst_e); break;
             case "ubyte":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
             case "uchar":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(1)); break;
+                op = new Opcode(Ops.bconst_e); break;
             case "ushort":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(2)); break;
+                op = new Opcode(Ops.sconst_e); break;
             case "uint":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)); break;
+                op = new Opcode(Ops.iconst_e); break;
             case "ulong":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(8)); break;
+                op = new Opcode(Ops.lconst_e); break;
             case "uint128":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
+                op = new Opcode(Ops.liconst_e); break;
             case "uint256":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
+                op = new Opcode(Ops.llconst_e); break;
             case "float":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)); break;
+                op = new Opcode(Ops.fconst_e); break;
             case "double":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(8)); break;
+                op = new Opcode(Ops.dconst_e); break;
             case "float128":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(16)); break;
+                op = new Opcode(Ops.dfconst_e); break;
             case "float256":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(32)); break;
+                op = new Opcode(Ops.ddconst_e); break;
             case "String":
             case "string":
                 op = new Opcode(Ops.aconst_null); break;
