@@ -2,15 +2,20 @@ package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AbstractSyntaxTree
 {
     private Struct self;
     private Method context;
     private Executable exe;
     private Opcode     ops;
+    private Map<String, Long> localVariableTable;
 
     public AbstractSyntaxTree(Token child, Method method, GlobalSpace space)
     {
+        localVariableTable = new HashMap<>();
         if (method.getParent() == null || method.getParent().getName().equals("VOID") || method.getParent().getName().equals("void"))
             self = null;
         else self = method.getParent();
@@ -55,7 +60,7 @@ public class AbstractSyntaxTree
             case "short":
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(2)); break;
             case "int":
-                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)); break;
+                op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(4)).add(new Opcode(Ops.istore_0)); break;
             case "long":
                 op = new Opcode(Ops.iconst_e).add(Opcode.convertByte(8)); break;
             case "int128":
