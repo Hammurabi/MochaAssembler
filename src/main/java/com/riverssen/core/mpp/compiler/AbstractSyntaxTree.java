@@ -19,7 +19,6 @@ public class AbstractSyntaxTree
         exe = new Executable();
         ops = new Opcode(-1, method.getName() + "()");
 
-
         compile(child);
     }
 

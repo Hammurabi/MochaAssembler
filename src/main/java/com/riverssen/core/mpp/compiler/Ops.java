@@ -28,6 +28,16 @@ public enum Ops
     iregld_1(14, "load an integer onto the register from a local variable 1"),
     iregld_2(15, "load an integer onto the register from a local variable 2"),
     iregld_3(16, "load an integer onto the register from a local variable 3"),
+    iload(0,   "load an integer onto the stack from a local variable"),
+    iload_0(1, "load an integer onto the stack from a local variable 0"),
+    iload_1(2, "load an integer onto the stack from a local variable 1"),
+    iload_2(3, "load an integer onto the stack from a local variable 2"),
+    iload_3(4, "load an integer onto the stack from a local variable 3"),
+    fload(0,   "load a float onto the stack from a local variable"),
+    fload_0(1, "load a float onto the stack from a local variable 0"),
+    fload_1(2, "load a float onto the stack from a local variable 1"),
+    fload_2(3, "load a float onto the stack from a local variable 2"),
+    fload_3(4, "load a float onto the stack from a local variable 3"),
 
     //load a float onto the register from a local variable #index #size_in_bytes #cast_type
     fregld(17, "load a float onto the register from a local variable"),
