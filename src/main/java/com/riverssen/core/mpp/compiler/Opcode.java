@@ -137,6 +137,8 @@ public class Opcode
 
     public Opcode add(Opcode opcode)
     {
+        if (opcode == null) return this;
+
         this.children.add(opcode);
         return this;
     }

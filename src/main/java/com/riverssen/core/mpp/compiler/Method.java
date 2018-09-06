@@ -29,6 +29,7 @@ public class Method
     private long            __location__;
     private Opcode          __opcodes2__;
     private Token           __tokens__;
+    private GlobalSpace     __space__;
     private AbstractSyntaxTree ast;
 
     public Method(String name, GlobalSpace space)
@@ -41,6 +42,7 @@ public class Method
         __location__    = space.addMethod(this);
         __arguments__   = new LinkedHashSet<>();
         __undeclared__  = false;
+        __space__       = space;
     }
 
     /**
@@ -57,6 +59,7 @@ public class Method
         __undeclared__  = true;
         __location__    = space.addMethod(this);
         __tokens__      = token;
+        __space__       = space;
 
         int stack = -1;
         Map<String, Integer> referencemap = new HashMap<>();
@@ -78,15 +81,15 @@ public class Method
 
         __returntype__ = token.getTokens().get(1).toString();
 
-        if (token.getType().equals(Token.Type.METHOD_DECLARATION) || token.getType().equals(Token.Type.OPERATOR))
-        {
-            __undeclared__ = false;
-//            AST ast = new AST(token.getChild(Token.Type.BRACES), this, space);
-            AbstractSyntaxTree ast = new AbstractSyntaxTree(token.getChild(Token.Type.BRACES), this, space);
-            __opcodes__  = ast.getExecutable().op_codes;
-            __opcodes2__ = ast.getOpcode();
-//            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
-        }
+//        if (token.getType().equals(Token.Type.METHOD_DECLARATION) || token.getType().equals(Token.Type.OPERATOR))
+//        {
+//            __undeclared__ = false;
+////            AST ast = new AST(token.getChild(Token.Type.BRACES), this, space);
+//            AbstractSyntaxTree ast = new AbstractSyntaxTree(token.getChild(Token.Type.BRACES), this, space);
+//            __opcodes__  = ast.getExecutable().op_codes;
+//            __opcodes2__ = ast.getOpcode();
+////            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
+//        }
     }
 
     public String getReturnType()
@@ -181,6 +184,16 @@ public class Method
 
     public Opcode getOpcodes()
     {
+        if (__tokens__.getType().equals(Token.Type.METHOD_DECLARATION) || __tokens__.getType().equals(Token.Type.OPERATOR))
+        {
+            __undeclared__ = false;
+//            AST ast = new AST(token.getChild(Token.Type.BRACES), this, space);
+            AbstractSyntaxTree ast = new AbstractSyntaxTree(__tokens__.getChild(Token.Type.BRACES), this, __space__);
+            __opcodes__  = ast.getExecutable().op_codes;
+            __opcodes2__ = ast.getOpcode();
+//            __opcodes__.addAll(token.getChild(Token.Type.BRACES).getInstruction(argument, space));
+        }
+
         return __opcodes2__;
     }
 

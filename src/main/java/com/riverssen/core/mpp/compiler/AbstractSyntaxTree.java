@@ -19,6 +19,7 @@ public class AbstractSyntaxTree
         Set<Modifier> modifiers;
 //        long stacklocation;
         long localvarlocation;
+        boolean isField;
 
         public var(String name, String type, Set<Modifier> modifiers)
         {
@@ -26,6 +27,15 @@ public class AbstractSyntaxTree
             this.type = type;
             this.modifiers = modifiers;
             this.localvarlocation = lcllvts ++;
+        }
+
+        public var(String name, String type, Set<Modifier> modifiers, long localvarlocation, boolean isField)
+        {
+            this.name = name;
+            this.type = type;
+            this.modifiers = modifiers;
+            this.localvarlocation = localvarlocation;
+            this.isField = isField;
         }
     }
     private Map<String, var> localVariableTable;
@@ -35,7 +45,10 @@ public class AbstractSyntaxTree
         localVariableTable = new HashMap<>();
         if (method.getParent() == null || method.getParent().getName().equals("VOID") || method.getParent().getName().equals("void"))
             self = null;
-        else self = method.getParent();
+        else {
+            localVariableTable.put("this", new var("this", method.getParent().getName(), new LinkedHashSet<>()));
+            self = method.getParent();
+        }
 
         context = method;
         exe = new Executable();
@@ -130,6 +143,15 @@ public class AbstractSyntaxTree
     {
         if (localVariableTable.containsKey(name))
             return localVariableTable.get(name);
+
+        if (self != null)
+        {
+            if (self.containsField(name, self.getName()))
+            {
+                Field field = self.getField(name, self.getName());
+                return new var(name, field.getTypeName(), field.getModifiers(), field.getLocation(), true);
+            }
+        }
 
         System.err.println("compiler error: local variable '" + name + "' does not exist.");
 //        System.exit(0);
@@ -283,7 +305,178 @@ public class AbstractSyntaxTree
 
         var v = getLocalVariable(varn.toString());
 
-        ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(storeInput(valv.toString(), v.type)).add(new Opcode(Ops.istore)));
+        if (v.isField)
+            ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(putInput(valv, v.type, v.localvarlocation)));
+        else
+            ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(storeInput(valv.toString(), v.type)));
+    }
+
+    private Opcode putByteInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putShortInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putIntInput(Token input)
+    {
+        Opcode op = null;
+
+        if (input.getType().equals(Token.Type.NUMBER) || input.getType().equals(Token.Type.DECIMAL))
+        {
+            switch (input.toString())
+            {
+                case "0":
+                    op = new Opcode(Ops.iconst_0); break;
+                case "1":
+                    op = new Opcode(Ops.iconst_1); break;
+                case "2":
+                    op = new Opcode(Ops.iconst_2); break;
+                case "3":
+                    op = new Opcode(Ops.iconst_3); break;
+                default:
+                    if (input.getType().equals(Token.Type.NUMBER))
+                        op = new Opcode(Ops.iconst).add(Opcode.convertInteger(Long.parseLong(input.toString())));
+                    else op = new Opcode(Ops.iconst).add(Opcode.convertInteger((long) Double.parseDouble(input.toString())));
+                    break;
+            }
+        } else {
+            op = new Opcode(Ops.halt);
+        }
+
+        return op;
+    }
+
+    private Opcode putLongInput(Token input)
+    {
+        Opcode op = null;
+
+        if (input.getType().equals(Token.Type.NUMBER) || input.getType().equals(Token.Type.DECIMAL))
+        {
+            switch (input.toString())
+            {
+                case "0":
+                    op = new Opcode(Ops.lconst_0); break;
+                case "1":
+                    op = new Opcode(Ops.lconst_1); break;
+                case "2":
+                    op = new Opcode(Ops.lconst_2); break;
+                case "3":
+                    op = new Opcode(Ops.lconst_3); break;
+                    default:
+                        if (input.getType().equals(Token.Type.NUMBER))
+                            op = new Opcode(Ops.lconst).add(Opcode.convertLong(Long.parseLong(input.toString())));
+                        else op = new Opcode(Ops.lconst).add(Opcode.convertLong((long) Double.parseDouble(input.toString())));
+                        break;
+            }
+        } else {
+            op = new Opcode(Ops.halt);
+        }
+
+        return op;
+    }
+
+    private Opcode putLongIntInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putLongLongInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putFloatInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putDoubleInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putDoubleFloatInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putDoubleDoubleInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putStringInput(Token input)
+    {
+        Opcode op = null;
+
+        return op;
+    }
+
+    private Opcode putInput(Token input, String type, long index)
+    {
+        Opcode op = new Opcode(-1, "put into field");
+
+        switch (type)
+        {
+            case "byte":
+            case "char":
+            case "ubyte":
+            case "uchar":
+                op.add(putByteInput(input)).add(new Opcode(Ops.ptb)); break;
+            case "short":
+            case "ushort":
+                op.add(putShortInput(input)).add(new Opcode(Ops.pts).add(Opcode.convertLong(index))); break;
+            case "uint":
+            case "int":
+                op.add(putIntInput(input)).add(new Opcode(Ops.pti).add(Opcode.convertLong(index))); break;
+            case "ulong":
+            case "long":
+                op.add(putLongInput(input)).add(new Opcode(Ops.ptl).add(Opcode.convertLong(index))); break;
+            case "int128":
+        //                op = new Opcode(Ops.liconst_e); break;
+            case "int256":
+        //                op = new Opcode(Ops.llconst_e); break;
+            case "uint128":
+        //                op = new Opcode(Ops.liconst_e); break;
+            case "uint256":
+        //                op = new Opcode(Ops.llconst_e); break;
+            case "float":
+                op.add(putFloatInput(input)).add(new Opcode(Ops.ptf).add(Opcode.convertLong(index))); break;
+            case "double":
+                op.add(putDoubleInput(input)).add(new Opcode(Ops.ptd).add(Opcode.convertLong(index))); break;
+            case "float128":
+        //                op = new Opcode(Ops.dfconst_e); break;
+            case "float256":
+        //                op = new Opcode(Ops.ddconst_e); break;
+            case "String":
+            case "string":
+                op.add(putStringInput(input)).add(new Opcode(Ops.ptcs).add(Opcode.convertLong(index)));
+                break;
+            default:
+                op = new Opcode(Ops.aconst_null); break;
+        }
+
+        return op;
     }
 
     public Executable getExecutable()
