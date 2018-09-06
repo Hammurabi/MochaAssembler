@@ -74,24 +74,29 @@ public class AbstractSyntaxTree
                     {
                         case "ubyte":
                         case "uchar":
+                            op = new Opcode(Ops.bmovrld_u); break;
                         case "byte":
                         case "char":
                             op = new Opcode(Ops.bmovrld); break;
                         case "short":
-                        case "ushort":
                             op = new Opcode(Ops.smovrld); break;
+                        case "ushort":
+                            op = new Opcode(Ops.smovrld_u); break;
                         case "uint":
+                            op = new Opcode(Ops.imovrld_u); break;
                         case "int":
                             op = new Opcode(Ops.imovrld); break;
                         case "ulong":
+                            op = new Opcode(Ops.lmovrld_u); break;
                         case "long":
                             op = new Opcode(Ops.lmovrld); break;
                         case "uint128":
+                            op = new Opcode(Ops.limovrld_u); break;
                         case "int128":
-                            op = new Opcode(Ops.limovrld); break
+                            op = new Opcode(Ops.limovrld); break;
                         case "uint256":
+                            op = new Opcode(Ops.llmovrld_u); break;
                         case "int256":
-                            op = new Opcode(Ops.llmovrld); break;
                             op = new Opcode(Ops.llmovrld); break;
                         case "float":
                             op = new Opcode(Ops.fmovrld); break;
