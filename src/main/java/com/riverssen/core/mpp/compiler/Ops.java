@@ -159,6 +159,9 @@ public enum Ops
     ddconst_5(51, "push a 256bit double onto the stack with value 5"),
     ddconst_e(52, "push a 256bit double onto the stack with no value"),
 
+    csconst(45,   "push a string onto the stack"),
+    csconst_e(52, "push a string onto the stack with no value"),
+
     aself(53, "set 'this'"),
     pop("pop the top value from the stack"),
     pop2("pop the top two values from the stack"),

@@ -71,10 +71,66 @@ public class Opcode
         return list;
     }
 
+    public static List<Opcode> convertDouble(double integer)
+    {
+        ByteBuffer _int_ = ByteBuffer.allocate(8);
+        _int_.putDouble(integer);
+        _int_.flip();
+
+        List<Opcode> list = new ArrayList<>();
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+
+        return list;
+    }
+
+    public static List<Opcode> convertFloat(double integer)
+    {
+        ByteBuffer _int_ = ByteBuffer.allocate(4);
+        _int_.putFloat((float) integer);
+        _int_.flip();
+
+        List<Opcode> list = new ArrayList<>();
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+
+        return list;
+    }
+
+    public static List<Opcode> convertShort(long integer)
+    {
+        ByteBuffer _int_ = ByteBuffer.allocate(2);
+        _int_.putInt((short) integer);
+        _int_.flip();
+
+        List<Opcode> list = new ArrayList<>();
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(_int_.get(), "uint8_t"));
+
+        return list;
+    }
+
     public static List<Opcode> convertByte(long integer)
     {
         List<Opcode> list = new ArrayList<>();
         list.add(new Opcode((byte) integer, "uint8_t"));
+
+        return list;
+    }
+
+    public static List<Opcode> convertBytes(byte... bytes)
+    {
+        List<Opcode> list = new ArrayList<>();
+        for (byte b : bytes)
+            list.add(new Opcode(b, "uint8_t"));
 
         return list;
     }

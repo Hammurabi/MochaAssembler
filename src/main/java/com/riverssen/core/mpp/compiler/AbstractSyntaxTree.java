@@ -40,6 +40,9 @@ public class AbstractSyntaxTree
         exe = new Executable();
         ops = new Opcode(-1, method.getName() + "()");
 
+        for (Field field : method.getArguments())
+            localVariableTable.put(field.getName(), new var(field.getName(), field.getTypeName(), field.getModifiers()));
+
         compile(child);
     }
 
@@ -105,7 +108,6 @@ public class AbstractSyntaxTree
                 op = new Opcode(Ops.ddconst_e); break;
             case "String":
             case "string":
-                op = new Opcode(Ops.aconst_null); break;
                 default:
                     op = new Opcode(Ops.aconst_null); break;
         }
@@ -113,14 +115,176 @@ public class AbstractSyntaxTree
         ops.add(new Opcode(-1, "declare(" + name + ", " + type + ")").add(op));
     }
 
+    private var storeLocalVariable(String name, String type, Set<Modifier> modifiers)
+    {
+        var v = new var(name, type, modifiers);
+
+        localVariableTable.put(name, v);
+        return v;
+    }
+
+    private var getLocalVariable(String name)
+    {
+        if (localVariableTable.containsKey(name))
+            return localVariableTable.get(name);
+
+        System.err.println("compiler error: local variable '" + name + "' does not exist.");
+        System.exit(0);
+
+        return null;
+    }
+
+    private Opcode storeByteInput(String input)
+    {
+        byte b = (byte) Long.parseLong(input);
+
+        switch (b)
+        {
+            case 0: return new Opcode(Ops.bconst_0);
+            case 1: return new Opcode(Ops.bconst_1);
+            case 2: return new Opcode(Ops.bconst_2);
+            case 3: return new Opcode(Ops.bconst_3);
+            default:
+                return new Opcode(Ops.bconst).add(Opcode.convertByte(b));
+        }
+    }
+
+    private Opcode storeShortInput(String input)
+    {
+        short b = (short) Long.parseLong(input);
+
+        switch (b)
+        {
+            case 0: return new Opcode(Ops.sconst_0);
+            case 1: return new Opcode(Ops.sconst_1);
+            case 2: return new Opcode(Ops.sconst_2);
+            case 3: return new Opcode(Ops.sconst_3);
+            default:
+                return new Opcode(Ops.sconst).add(Opcode.convertShort(b));
+        }
+    }
+
+    private Opcode storeIntInput(String input)
+    {
+        int b = (int) Long.parseLong(input);
+
+        switch (b)
+        {
+            case 0: return new Opcode(Ops.iconst_0);
+            case 1: return new Opcode(Ops.iconst_1);
+            case 2: return new Opcode(Ops.iconst_2);
+            case 3: return new Opcode(Ops.iconst_3);
+            default:
+                return new Opcode(Ops.iconst).add(Opcode.convertInteger(b));
+        }
+    }
+
+    private Opcode storeLongInput(String input)
+    {
+        short b = (short) Long.parseLong(input);
+
+        switch (b)
+        {
+            case 0: return new Opcode(Ops.lconst_0);
+            case 1: return new Opcode(Ops.lconst_1);
+            case 2: return new Opcode(Ops.lconst_2);
+            case 3: return new Opcode(Ops.lconst_3);
+            default:
+                return new Opcode(Ops.lconst).add(Opcode.convertLong(b));
+        }
+    }
+
+    private Opcode storeFloatInput(String input)
+    {
+        float b = (float) Double.parseDouble(input);
+
+            if (b == 0) return new Opcode(Ops.fconst_0);
+            else if (b == 1) return new Opcode(Ops.fconst_1);
+            else if (b == 2) return new Opcode(Ops.fconst_2);
+            else if (b == 3) return new Opcode(Ops.fconst_3);
+            else
+                return new Opcode(Ops.fconst).add(Opcode.convertFloat(b));
+    }
+
+    private Opcode storeDoubleInput(String input)
+    {
+        double b = (double) Double.parseDouble(input);
+
+        if (b == 0) return new Opcode(Ops.dconst_0);
+        else if (b == 1) return new Opcode(Ops.dconst_1);
+        else if (b == 2) return new Opcode(Ops.dconst_2);
+        else if (b == 3) return new Opcode(Ops.dconst_3);
+        else
+                return new Opcode(Ops.dconst).add(Opcode.convertDouble(b));
+    }
+
+    private Opcode storeStringInput(String input)
+    {
+        if (input.isEmpty())
+            return new Opcode(Ops.csconst_e);
+
+        else return new Opcode(Ops.csconst).add(Opcode.convertShort(input.length())).add(Opcode.convertBytes(input.getBytes()));
+    }
+
+    private Opcode storeInput(String input, String type)
+    {
+        Opcode op = null;
+
+        switch (type)
+        {
+            case "byte":
+            case "char":
+            case "ubyte":
+            case "uchar":
+                op = storeByteInput(input); break;
+            case "short":
+            case "ushort":
+                op = storeShortInput(input); break;
+            case "uint":
+            case "int":
+                op = storeIntInput(input); break;
+            case "ulong":
+            case "long":
+                op = storeLongInput(input); break;
+            case "int128":
+//                op = new Opcode(Ops.liconst_e); break;
+            case "int256":
+//                op = new Opcode(Ops.llconst_e); break;
+            case "uint128":
+//                op = new Opcode(Ops.liconst_e); break;
+            case "uint256":
+//                op = new Opcode(Ops.llconst_e); break;
+            case "float":
+                op = storeFloatInput(input); break;
+            case "double":
+                op = storeDoubleInput(input); break;
+            case "float128":
+//                op = new Opcode(Ops.dfconst_e); break;
+            case "float256":
+//                op = new Opcode(Ops.ddconst_e); break;
+            case "String":
+            case "string":
+                op = storeStringInput(input);
+            default:
+                op = new Opcode(Ops.aconst_null); break;
+        }
+
+        return op;
+    }
+
     private void initializeVariable(Token token)
     {
-        Token var = token.getTokens().get(0);
-        Token val = token.getTokens().get(1).getTokens().get(0);
+        Token varn = token.getTokens().get(0);
+        Token valv = token.getTokens().get(1).getTokens().get(0);
 
-        String type;
 
-        ops.add(new Opcode(-1, "init (" + var.toString() + ", " + val.toString() + ")").add(new Opcode(Ops.istore)));
+        var v = getLocalVariable(varn.toString());
+
+        Opcode op = null;
+
+        storeInput(valv.toString(), v.type);
+
+        ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(new Opcode(Ops.istore)));
     }
 
     public Executable getExecutable()
