@@ -27,7 +27,7 @@ public class AbstractSyntaxTree
             this.localvarlocation = lcllvts ++;
         }
     }
-    private Map<String, Long> localVariableTable;
+    private Map<String, var> localVariableTable;
 
     public AbstractSyntaxTree(Token child, Method method, GlobalSpace space)
     {
