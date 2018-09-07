@@ -578,16 +578,15 @@ public class AbstractSyntaxTree
             case "short":
                 op = new Opcode(Ops.sconst_e); break;
             case "int":
-                op = new Opcode(Ops.iconst_e);
                 if      (v.localvarlocation == 0)
-                    stor = new Opcode(Ops.istore_0);
+                    stor = new Opcode(Ops.iconstse_0);
                 else if (v.localvarlocation == 1)
-                    stor = new Opcode(Ops.istore_1);
+                    stor = new Opcode(Ops.iconstse_1);
                 else if (v.localvarlocation == 2)
-                    stor = new Opcode(Ops.istore_2);
+                    stor = new Opcode(Ops.iconstse_2);
                 else if (v.localvarlocation == 3)
-                    stor = new Opcode(Ops.istore_3);
-                else stor = new Opcode(Ops.istore).add(Opcode.convertLong(v.localvarlocation));
+                    stor = new Opcode(Ops.iconstse_3);
+                else stor = new Opcode(Ops.iconstse).add(Opcode.convertLong(v.localvarlocation));
                 break;
             case "long":
                 op = new Opcode(Ops.lconst_e); break;
