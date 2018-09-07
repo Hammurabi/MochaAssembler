@@ -1174,7 +1174,7 @@ public class AbstractSyntaxTree
                     compile(t, lessthan, compileType);
 
                 if (compileType.equals(CompileType.FOR))
-                    ops.add(lessthan.add(JUMP_TO = new Opcode(Ops.if_cmpgt).add(Opcode.convertInteger(0))));
+                    ops.add(lessthan.add(JUMP_TO = new Opcode(Ops.if_cmplt).add(Opcode.convertInteger(0))));
                 else ops.add(lessthan.add(new Opcode(Ops.ltn)));
                 break;
             case FOR:
