@@ -1,6 +1,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.Executable;
+import com.riverssen.core.utils.Handler;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -18,6 +19,14 @@ public class Opcode
     {
         this.ops = null;
         this.code = code;
+        this.description = description;
+        this.children = new ArrayList<>();
+    }
+
+    public Opcode(String description)
+    {
+        this.ops = null;
+        this.code = -300;
         this.description = description;
         this.children = new ArrayList<>();
     }
@@ -45,14 +54,14 @@ public class Opcode
         _int_.flip();
 
         List<Opcode> list = new ArrayList<>();
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
 
         return list;
     }
@@ -64,10 +73,10 @@ public class Opcode
         _int_.flip();
 
         List<Opcode> list = new ArrayList<>();
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
 
         return list;
     }
@@ -79,14 +88,14 @@ public class Opcode
         _int_.flip();
 
         List<Opcode> list = new ArrayList<>();
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
 
         return list;
     }
@@ -98,10 +107,10 @@ public class Opcode
         _int_.flip();
 
         List<Opcode> list = new ArrayList<>();
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
 
         return list;
     }
@@ -113,8 +122,8 @@ public class Opcode
         _int_.flip();
 
         List<Opcode> list = new ArrayList<>();
-        list.add(new Opcode(_int_.get(), "uint8_t"));
-        list.add(new Opcode(_int_.get(), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt(_int_.get()), "uint8_t"));
 
         return list;
     }
@@ -122,7 +131,7 @@ public class Opcode
     public static List<Opcode> convertByte(long integer)
     {
         List<Opcode> list = new ArrayList<>();
-        list.add(new Opcode((byte) integer, "uint8_t"));
+        list.add(new Opcode(Byte.toUnsignedInt((byte) integer), "uint8_t"));
 
         return list;
     }
@@ -131,7 +140,7 @@ public class Opcode
     {
         List<Opcode> list = new ArrayList<>();
         for (byte b : bytes)
-            list.add(new Opcode(b, "uint8_t"));
+            list.add(new Opcode(Byte.toUnsignedInt(b), "uint8_t"));
 
         return list;
     }
@@ -157,19 +166,34 @@ public class Opcode
 
     public String humanReadable(int i, boolean m)
     {
-        String t = "";
+        return this.humanReadable(i, m, new Handler<>(0));
+    }
+
+    public String humanReadable(int i, boolean m,  Handler<Integer> line)
+    {
+        String t = line + ": ";
+
+        if (code >= -256)
+        {
+            if (ops != null) line.set(line.get() + 2);
+            else line.set(line.get() + 1);
+        }
 
         if (i >= 0)
         for (int x = 0; x < i; x ++)
             t += "\t";
 
-        if (m && code >= 0)
-            t += toString();
-        else if (!m)
-            t += toString();
+//        if (m && code >= -256)
+//            t += toString();
+//        else if (!m)
+//            t += toString();
+
+        if (code < -256)
+            t = "";
+        else t += toString() + "\n";
 
         for (Opcode opcode : children)
-            t += "\n" + opcode.humanReadable((i >= 0 ? (i + 1) : -1), m);
+            t += opcode.humanReadable((i >= 0 ? (i + 1) : -1), m, line);
 
         return t;
     }
@@ -203,7 +227,7 @@ public class Opcode
     {
         Executable executable = new Executable();
 
-        if (code >= 0) executable.add(executable.convertShort(code));
+        if (code >= -256) executable.add(executable.convertShort(code));
 
         for (Opcode opcode : children)
             executable.add(opcode.toExecutable().op_codes);

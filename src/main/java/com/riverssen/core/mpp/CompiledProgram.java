@@ -110,6 +110,7 @@ public class CompiledProgram
 
         System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().humanReadable(-1, true));
         System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().toExecutable().op_codes);
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().toExecutable().op_codes.size());
     }
 
     private void simulate_contract_a(Token root)

@@ -60,8 +60,9 @@ class HelloWorld {
 
     public function mul() : void
     {
-        for (int i = 0; i < 5; i ++)
+        for (int i; i < 5; i ++)
         {
+            potato = i * 5
         }
 //        vector a(1, 2)
 //        vector b(50, 12)
