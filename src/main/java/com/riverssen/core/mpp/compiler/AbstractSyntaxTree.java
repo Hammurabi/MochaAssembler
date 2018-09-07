@@ -815,12 +815,56 @@ public class AbstractSyntaxTree
     {
         Opcode op = null;
 
+        if (input.getType().equals(Token.Type.NUMBER) || input.getType().equals(Token.Type.DECIMAL))
+        {
+            switch (input.toString())
+            {
+                case "0":
+                    op = new Opcode(Ops.bconst_0); break;
+                case "1":
+                    op = new Opcode(Ops.bconst_1); break;
+                case "2":
+                    op = new Opcode(Ops.bconst_2); break;
+                case "3":
+                    op = new Opcode(Ops.bconst_3); break;
+                default:
+                    if (input.getType().equals(Token.Type.NUMBER))
+                        op = new Opcode(Ops.bconst).add(Opcode.convertByte(Long.parseLong(input.toString())));
+                    else op = new Opcode(Ops.bconst).add(Opcode.convertByte((long) Double.parseDouble(input.toString())));
+                    break;
+            }
+        } else {
+            compile(input, ops);
+        }
+
         return op;
     }
 
     private Opcode putShortInput(Token input, Opcode ops)
     {
         Opcode op = null;
+
+        if (input.getType().equals(Token.Type.NUMBER) || input.getType().equals(Token.Type.DECIMAL))
+        {
+            switch (input.toString())
+            {
+                case "0":
+                    op = new Opcode(Ops.sconst_0); break;
+                case "1":
+                    op = new Opcode(Ops.sconst_1); break;
+                case "2":
+                    op = new Opcode(Ops.sconst_2); break;
+                case "3":
+                    op = new Opcode(Ops.sconst_3); break;
+                default:
+                    if (input.getType().equals(Token.Type.NUMBER))
+                        op = new Opcode(Ops.sconst).add(Opcode.convertShort(Long.parseLong(input.toString())));
+                    else op = new Opcode(Ops.sconst).add(Opcode.convertShort((long) Double.parseDouble(input.toString())));
+                    break;
+            }
+        } else {
+            compile(input, ops);
+        }
 
         return op;
     }
@@ -905,12 +949,56 @@ public class AbstractSyntaxTree
     {
         Opcode op = null;
 
+        if (input.getType().equals(Token.Type.NUMBER) || input.getType().equals(Token.Type.DECIMAL))
+        {
+            switch (input.toString())
+            {
+                case "0":
+                    op = new Opcode(Ops.fconst_0); break;
+                case "1":
+                    op = new Opcode(Ops.fconst_1); break;
+                case "2":
+                    op = new Opcode(Ops.fconst_2); break;
+                case "3":
+                    op = new Opcode(Ops.fconst_3); break;
+                default:
+                    if (input.getType().equals(Token.Type.NUMBER))
+                        op = new Opcode(Ops.fconst).add(Opcode.convertFloat(Double.parseDouble(input.toString())));
+                    else op = new Opcode(Ops.fconst).add(Opcode.convertFloat(Double.parseDouble(input.toString())));
+                    break;
+            }
+        } else {
+            compile(input, ops);
+        }
+
         return op;
     }
 
     private Opcode putDoubleInput(Token input, Opcode ops)
     {
         Opcode op = null;
+
+        if (input.getType().equals(Token.Type.NUMBER) || input.getType().equals(Token.Type.DECIMAL))
+        {
+            switch (input.toString())
+            {
+                case "0":
+                    op = new Opcode(Ops.dconst_0); break;
+                case "1":
+                    op = new Opcode(Ops.dconst_1); break;
+                case "2":
+                    op = new Opcode(Ops.dconst_2); break;
+                case "3":
+                    op = new Opcode(Ops.dconst_3); break;
+                default:
+                    if (input.getType().equals(Token.Type.NUMBER))
+                        op = new Opcode(Ops.dconst).add(Opcode.convertDouble(Double.parseDouble(input.toString())));
+                    else op = new Opcode(Ops.dconst).add(Opcode.convertDouble(Double.parseDouble(input.toString())));
+                    break;
+            }
+        } else {
+            compile(input, ops);
+        }
 
         return op;
     }
@@ -932,6 +1020,21 @@ public class AbstractSyntaxTree
     private Opcode putStringInput(Token input, Opcode ops)
     {
         Opcode op = null;
+
+        if (input.getType().equals(Token.Type.STRING) || input.getType().equals(Token.Type.DECIMAL) || input.getType().equals(Token.Type.NUMBER))
+        {
+            switch (input.toString())
+            {
+                default:
+                    if (input.getType().equals(Token.Type.NUMBER))
+                                                                            op = new Opcode(Ops.csconst).add(Opcode.convertShort(input.toString().getBytes().length)).add(Opcode.convertBytes(input.toString().getBytes()));
+                    else if (input.getType().equals(Token.Type.DECIMAL))    op = new Opcode(Ops.csconst).add(Opcode.convertShort(input.toString().getBytes().length)).add(Opcode.convertBytes(input.toString().getBytes()));
+                    else                                                    op = new Opcode(Ops.csconst).add(Opcode.convertShort(input.toString().substring(1, input.toString().getBytes().length - 1).getBytes().length)).add(Opcode.convertBytes(input.toString().substring(1, input.toString().getBytes().length - 1).getBytes()));
+                    break;
+            }
+        } else {
+            compile(input, ops);
+        }
 
         return op;
     }
@@ -1142,13 +1245,55 @@ public class AbstractSyntaxTree
         //                op = new Opcode(Ops.ddconst_e); break;
             case "String":
             case "string":
-                op.add(putStringInput(input, op)).add(new Opcode(Ops.ptcs).add(Opcode.convertLong(index)));
+                op.add(putStringInput(input, op)).add(castToString()).add(new Opcode(Ops.ptcs).add(Opcode.convertLong(index)));
                 break;
             default:
                 op = new Opcode(Ops.aconst_null); break;
         }
 
         return op;
+    }
+
+    private Opcode castToString()
+    {
+        Opcode cast = null;//new Opcode(-1, "");
+        switch (resetLastOnStack())
+        {
+            case "byte":
+            case "char":
+            case "ubyte":
+            case "uchar":
+                return new Opcode(Ops.b2cs);
+            case "short":
+            case "ushort":
+                return new Opcode(Ops.s2i);
+            case "int":
+            case "uint":
+                return cast;
+            case "long":
+            case "ulong":
+                return new Opcode(Ops.l2i);
+            case "int128":
+            case "uint128":
+                return new Opcode(Ops.li2i);
+            case "int256":
+            case "uint256":
+                return new Opcode(Ops.ll2i);
+            case "float":
+                return new Opcode(Ops.f2i);
+            case "double":
+                return new Opcode(Ops.d2i);
+            case "float128":
+                return new Opcode(Ops.df2i);
+            case "float256":
+                return new Opcode(Ops.dd2i);
+            case "":
+                return cast;
+            default:
+                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to int.");
+                System.exit(0);
+                return null;
+        }
     }
 
     public Executable getExecutable()

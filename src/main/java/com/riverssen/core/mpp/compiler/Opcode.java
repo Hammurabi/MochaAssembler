@@ -109,7 +109,7 @@ public class Opcode
     public static List<Opcode> convertShort(long integer)
     {
         ByteBuffer _int_ = ByteBuffer.allocate(2);
-        _int_.putInt((short) integer);
+        _int_.putShort((short) integer);
         _int_.flip();
 
         List<Opcode> list = new ArrayList<>();

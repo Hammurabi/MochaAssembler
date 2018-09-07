@@ -165,6 +165,7 @@ public enum Ops
     returnnull("return null"),
 
     invoke(36, "invoke a method"),
+    invked(36, "invoke a dynamic method"),
     invokentv(37, "invoke a native method"),
 
     bconst(38,   "push a byte onto the stack"),
@@ -343,11 +344,9 @@ public enum Ops
     csload_2(3, "load a long onto the stack from a local variable 2"),
     csload_3(4, "load a long onto the stack from a local variable 3"),
 
-    aself(53, "set 'this'"),
+    ebp(53, "set 'this'"),
     pop("pop the top value from the stack"),
     pop2("pop the top two values from the stack"),
-
-
 
     bstore  ("store a byte value into a local variable"),
     bstore_0("store a byte value into a local variable 0"),
@@ -627,6 +626,23 @@ public enum Ops
     dd2f,
     dd2d,
     dd2df,
+
+    b2c,
+    s2c,
+    i2c,
+    l2c,
+    li2c,
+    ll2c,
+    b2cu,
+    s2cu,
+    i2cu,
+    l2cu,
+    li2cu,
+    ll2cu,
+    f2c,
+    d2c,
+    df2c,
+    dd2c,
 
     slp("force the virtual machine to sleep"),
     halt("halt the virtual machine"),
