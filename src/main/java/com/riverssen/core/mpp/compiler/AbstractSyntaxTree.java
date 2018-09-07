@@ -841,7 +841,7 @@ public class AbstractSyntaxTree
 
     private void compileNumberInput(Token token, Opcode ops, CompileType compileType)
     {
-        if (lastOnStack.isEmpty()) {
+        if (true) {//lastOnStack.isEmpty()) {
             switch (compileType) {
                 case FOR:
                 case STRAIGHT_TO_REGISTER:
@@ -1177,6 +1177,36 @@ public class AbstractSyntaxTree
                     ops.add(lessthan.add(JUMP_TO = new Opcode(Ops.if_cmplt).add(Opcode.convertInteger(0))));
                 else ops.add(lessthan.add(new Opcode(Ops.ltn)));
                 break;
+            case MORE_THAN:
+                Opcode morethan = new Opcode( "more than");
+
+                for (Token t : token)
+                    compile(t, morethan, compileType);
+
+                if (compileType.equals(CompileType.FOR))
+                    ops.add(morethan.add(JUMP_TO = new Opcode(Ops.if_cmpgt).add(Opcode.convertInteger(0))));
+                else ops.add(morethan.add(new Opcode(Ops.gtn)));
+                break;
+            case LESSTHAN_EQUAL:
+                Opcode lessthaneq = new Opcode( "less than equal to");
+
+                for (Token t : token)
+                    compile(t, lessthaneq, compileType);
+
+                if (compileType.equals(CompileType.FOR))
+                    ops.add(lessthaneq.add(JUMP_TO = new Opcode(Ops.if_cmplteq).add(Opcode.convertInteger(0))));
+                else ops.add(lessthaneq.add(new Opcode(Ops.lte)));
+                break;
+            case MORETHAN_EQUAL:
+                Opcode morethaneq = new Opcode( "more than");
+
+                for (Token t : token)
+                    compile(t, morethaneq, compileType);
+
+                if (compileType.equals(CompileType.FOR))
+                    ops.add(morethaneq.add(JUMP_TO = new Opcode(Ops.if_cmpgteq).add(Opcode.convertInteger(0))));
+                else ops.add(morethaneq.add(new Opcode(Ops.gte)));
+                break;
             case FOR:
                 Token for_case = token.getTokens().get(0);
                 Token caseBody = token.getTokens().get(1);
@@ -1197,7 +1227,7 @@ public class AbstractSyntaxTree
                 //TODO: make sure the compile type is correct this way.
                 compile(for_init_, for_loop, CompileType.NONE);
 
-                long jumplcn = getExecutable().op_codes.size();
+                long jumplcn = getExecutable().op_codes.size() + for_loop.toExecutable().op_codes.size();
 
                 compile(for_midl_, checkLoop, CompileType.FOR);
                 compile(for_last_, checkLoop, CompileType.NONE);
@@ -1207,7 +1237,7 @@ public class AbstractSyntaxTree
 
 //                unsvrerr("for loop size: " + (checkLoop.toExecutable().op_codes.size() + for_loop.toExecutable().op_codes.size()) + 10);
 
-                JUMP_TO.add((Opcode.convertInteger(jumplcn + checkLoop.toExecutable().op_codes.size() + 14 + for_loop.toExecutable().op_codes.size())));
+                JUMP_TO.add((Opcode.convertInteger(jumplcn + checkLoop.toExecutable().op_codes.size() + 14)));
 
                 for_loop.add(checkLoop.getChildren());
                 ops.add(for_loop);
@@ -2133,16 +2163,16 @@ public class AbstractSyntaxTree
             case "char":
             case "ubyte":
             case "uchar":
-                op.add(putByteInput(input, op), op).add(castToChar()).add(new Opcode(Ops.ptb)); break;
+                op.add(putByteInput(input, op), op).add(castToChar()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptb)); break;
             case "short":
             case "ushort":
-                op.add(putShortInput(input, op), op).add(castToShort()).add(new Opcode(Ops.pts).add(Opcode.convertLong(index))); break;
+                op.add(putShortInput(input, op), op).add(castToShort()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pts).add(Opcode.convertLong(index))); break;
             case "uint":
             case "int":
-                op.add(putIntInput(input, op)).add(castToInt()).add(new Opcode(Ops.pti).add(Opcode.convertLong(index))); break;
+                op.add(putIntInput(input, op)).add(castToInt()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pti).add(Opcode.convertLong(index))); break;
             case "ulong":
             case "long":
-                op.add(putLongInput(input, op)).add(castToLong()).add(new Opcode(Ops.ptl).add(Opcode.convertLong(index))); break;
+                op.add(putLongInput(input, op)).add(castToLong()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptl).add(Opcode.convertLong(index))); break;
             case "int128":
         //                op = new Opcode(Ops.liconst_e); break;
             case "int256":
@@ -2152,16 +2182,16 @@ public class AbstractSyntaxTree
             case "uint256":
         //                op = new Opcode(Ops.llconst_e); break;
             case "float":
-                op.add(putFloatInput(input, op)).add(new Opcode(Ops.ptf).add(Opcode.convertLong(index))); break;
+                op.add(putFloatInput(input, op)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptf).add(Opcode.convertLong(index))); break;
             case "double":
-                op.add(putDoubleInput(input, op)).add(new Opcode(Ops.ptd).add(Opcode.convertLong(index))); break;
+                op.add(putDoubleInput(input, op)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptd).add(Opcode.convertLong(index))); break;
             case "float128":
         //                op = new Opcode(Ops.dfconst_e); break;
             case "float256":
         //                op = new Opcode(Ops.ddconst_e); break;
             case "String":
             case "string":
-                op.add(putStringInput(input, op)).add(castToString()).add(new Opcode(Ops.ptcs).add(Opcode.convertLong(index)));
+                op.add(putStringInput(input, op)).add(new Opcode(Ops.ebp)).add(castToString()).add(new Opcode(Ops.ptcs).add(Opcode.convertLong(index)));
                 break;
             default:
                 op = new Opcode(Ops.aconst_null); break;

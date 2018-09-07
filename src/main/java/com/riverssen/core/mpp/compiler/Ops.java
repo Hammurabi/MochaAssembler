@@ -189,8 +189,10 @@ public enum Ops
     if_dfcmpgt,
     if_ddcmpgt,
 
-    if_cmpgt,
-    if_cmplt,
+    if_cmpgt("if a greater than b"),
+    if_cmplt("if a less than b"),
+    if_cmpgteq("if a greater than or equal to b"),
+    if_cmplteq("if a less than or equal to b"),
     jump("'goto'"),
 
 //    aastore(30, "store a reference into a local object"),
