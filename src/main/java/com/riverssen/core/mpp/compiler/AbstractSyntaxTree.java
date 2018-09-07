@@ -1174,12 +1174,15 @@ public class AbstractSyntaxTree
                     compile(t, lessthan, compileType);
 
                 if (compileType.equals(CompileType.FOR))
-                    ops.add(lessthan.add(JUMP_TO = new Opcode(Ops.if_cmpgt).add(Opcode.convertLong(0))));
+                    ops.add(lessthan.add(JUMP_TO = new Opcode(Ops.if_cmpgt).add(Opcode.convertInteger(0))));
                 else ops.add(lessthan.add(new Opcode(Ops.ltn)));
                 break;
             case FOR:
                 Token for_case = token.getTokens().get(0);
                 Token caseBody = token.getTokens().get(1);
+
+                long lvtable_l = localVariableTable.size();
+                long lvtable_t = lcllvts;
 
                 if (for_case.getTokens().size() != 3)
                     svrerr("for loops must contains 3 segments for ( ; ; ; ) {}");
@@ -1202,16 +1205,13 @@ public class AbstractSyntaxTree
 
                 JUMP_TO.getChildren().clear();
 
-                unsvrerr("for loop size: " + (checkLoop.toExecutable().op_codes.size() + for_loop.toExecutable().op_codes.size()) + 10);
+//                unsvrerr("for loop size: " + (checkLoop.toExecutable().op_codes.size() + for_loop.toExecutable().op_codes.size()) + 10);
 
-                JUMP_TO.add((Opcode.convertLong(jumplcn + checkLoop.toExecutable().op_codes.size())));
+                JUMP_TO.add((Opcode.convertInteger(jumplcn + checkLoop.toExecutable().op_codes.size() + 14 + for_loop.toExecutable().op_codes.size())));
 
                 for_loop.add(checkLoop.getChildren());
                 ops.add(for_loop);
                 ops.add(new Opcode(Ops.jump).add(Opcode.convertLong(jumplcn)));
-
-                long lvtable_l = localVariableTable.size();
-                long lvtable_t = lcllvts;
 
                 // DELETE ALL VARIABLES DECLARED IN FOR_LOOP
 

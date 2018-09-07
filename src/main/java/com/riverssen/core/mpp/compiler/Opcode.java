@@ -227,7 +227,11 @@ public class Opcode
     {
         Executable executable = new Executable();
 
-        if (code >= -256) executable.add(executable.convertShort(code));
+        if (code >= -256) {
+            if (ops != null)
+                executable.add(executable.convertShort(code));
+            else executable.add(code);
+        }
 
         for (Opcode opcode : children)
             executable.add(opcode.toExecutable().op_codes);
