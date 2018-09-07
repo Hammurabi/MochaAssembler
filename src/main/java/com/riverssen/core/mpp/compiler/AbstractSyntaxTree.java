@@ -556,16 +556,39 @@ public class AbstractSyntaxTree
         String name = declaration.getTokens().get(1).toString();
 
         Opcode op   = null;
+        Opcode stor = null;
+
+        var v = storeLocalVariable(name, type, new LinkedHashSet<>(declaration.getModifiers()));
 
         switch (type)
         {
             case "byte":
             case "char":
-                op = new Opcode(Ops.bconst_e); break;
+                op = new Opcode(Ops.bconst_e);
+                if      (v.localvarlocation == 0)
+                    stor = new Opcode(Ops.bstore_0);
+                else if (v.localvarlocation == 1)
+                    stor = new Opcode(Ops.bstore_1);
+                else if (v.localvarlocation == 2)
+                    stor = new Opcode(Ops.bstore_2);
+                else if (v.localvarlocation == 3)
+                    stor = new Opcode(Ops.bstore_3);
+                else stor = new Opcode(Ops.bstore).add(Opcode.convertLong(v.localvarlocation));
+                break;
             case "short":
                 op = new Opcode(Ops.sconst_e); break;
             case "int":
-                op = new Opcode(Ops.iconst_e); break;
+                op = new Opcode(Ops.iconst_e);
+                if      (v.localvarlocation == 0)
+                    stor = new Opcode(Ops.istore_0);
+                else if (v.localvarlocation == 1)
+                    stor = new Opcode(Ops.istore_1);
+                else if (v.localvarlocation == 2)
+                    stor = new Opcode(Ops.istore_2);
+                else if (v.localvarlocation == 3)
+                    stor = new Opcode(Ops.istore_3);
+                else stor = new Opcode(Ops.istore).add(Opcode.convertLong(v.localvarlocation));
+                break;
             case "long":
                 op = new Opcode(Ops.lconst_e); break;
             case "int128":
@@ -599,16 +622,21 @@ public class AbstractSyntaxTree
                     op = new Opcode(Ops.aconst_null); break;
         }
 
-        ops.add(new Opcode(-1, "declare(" + name + ", " + type + ")").add(op));
-
-        storeLocalVariable(name, type, new LinkedHashSet<>(declaration.getModifiers()));
+        ops.add(new Opcode(-1, "declare(" + name + ", " + type + ")").add(op).add(stor));
     }
 
     private var storeLocalVariable(String name, String type, Set<Modifier> modifiers)
     {
         var v = new var(name, type, modifiers);
 
-        localVariableTable.put(name, v);
+        var p = null;
+
+        if ((p = localVariableTable.put(name, v)) != null)
+        {
+            System.err.println("compiler error: variable '" + name + "' already declared as '" + p.name + " of type " + p.type + "'");
+            System.exit(0);
+        }
+
         return v;
     }
 

@@ -319,8 +319,19 @@ public enum Ops
     pop("pop the top value from the stack"),
     pop2("pop the top two values from the stack"),
 
-    bstore,
-    sstore,
+
+
+    bstore  ("store a byte value into a local variable"),
+    bstore_0("store a byte value into a local variable 0"),
+    bstore_1("store a byte value into a local variable 1"),
+    bstore_2("store a byte value into a local variable 2"),
+    bstore_3("store a byte value into a local variable 3"),
+
+    sstore  ("store a short value into a local variable"),
+    sstore_0("store a short value into a local variable 0"),
+    sstore_1("store a short value into a local variable 1"),
+    sstore_2("store a short value into a local variable 2"),
+    sstore_3("store a short value into a local variable 3"),
 
     istore("store an integer value into a local variable"),
     istore_0("store an integer value into a local variable 0"),
@@ -328,9 +339,28 @@ public enum Ops
     istore_2("store an integer value into a local variable 2"),
     istore_3("store an integer value into a local variable 3"),
 
-    lstore,
-    listore,
-    llstore,
+
+
+    lstore  ("store a long value into a local variable"),
+    lstore_0("store a long value into a local variable 0"),
+    lstore_1("store a long value into a local variable 1"),
+    lstore_2("store a long value into a local variable 2"),
+    lstore_3("store a long value into a local variable 3"),
+
+
+
+    listore  ("store a 128bit integer value into a local variable"),
+    listore_0("store a 128bit integer value into a local variable 0"),
+    listore_1("store a 128bit integer value into a local variable 1"),
+    listore_2("store a 128bit integer value into a local variable 2"),
+    listore_3("store a 128bit integer value into a local variable 3"),,
+
+
+    llstore  ("store a 256bit integer value into a local variable"),
+    llstore_0("store a 256bit integer value into a local variable 0"),
+    llstore_1("store a 256bit integer value into a local variable 1"),
+    llstore_2("store a 256bit integer value into a local variable 2"),
+    llstore_3("store a 256bit integer value into a local variable 3"),
 
     fstore("store a float value into a local variable"),
     fstore_0("store a float value into a local variable 0"),
@@ -338,9 +368,27 @@ public enum Ops
     fstore_2("store a float value into a local variable 2"),
     fstore_3("store a float value into a local variable 3"),
 
-    dstore,
-    dfstore,
-    ddstore,
+
+
+    dstore  ("store a double value into a local variable"),
+    dstore_0("store a double value into a local variable 0"),
+    dstore_1("store a double value into a local variable 1"),
+    dstore_2("store a double value into a local variable 2"),
+    dstore_3("store a double value into a local variable 3"),
+
+
+    dfstore  ("store a 128bit float value into a local variable"),
+    dfstore_0("store a 128bit float value into a local variable 0"),
+    dfstore_1("store a 128bit float value into a local variable 1"),
+    dfstore_2("store a 128bit float value into a local variable 2"),
+    dfstore_3("store a 128bit float value into a local variable 3"),
+
+
+    ddstore  ("store a 256bit flaot value into a local variable"),
+    ddstore_0("store a 256bit flaot value into a local variable 0"),
+    ddstore_1("store a 256bit flaot value into a local variable 1"),
+    ddstore_2("store a 256bit flaot value into a local variable 2"),
+    ddstore_3("store a 256bit flaot value into a local variable 3"),
 
 //    bset("set current object"),
 //    bastore("store a reference into object"),
