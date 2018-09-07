@@ -79,47 +79,48 @@ public class AbstractSyntaxTree
                     {
                         case "ubyte":
                         case "uchar":
-                            op = new Opcode(Ops.bmovrld_u); break;
+                            op = new Opcode(Ops.bmovrld_u).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "byte":
                         case "char":
-                            op = new Opcode(Ops.bmovrld); break;
+                            op = new Opcode(Ops.bmovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "short":
-                            op = new Opcode(Ops.smovrld); break;
+                            op = new Opcode(Ops.smovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "ushort":
-                            op = new Opcode(Ops.smovrld_u); break;
+                            op = new Opcode(Ops.smovrld_u).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "uint":
-                            op = new Opcode(Ops.imovrld_u); break;
+                            op = new Opcode(Ops.imovrld_u).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "int":
-                            op = new Opcode(Ops.imovrld); break;
+                            op = new Opcode(Ops.imovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "ulong":
-                            op = new Opcode(Ops.lmovrld_u); break;
+                            op = new Opcode(Ops.lmovrld_u).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "long":
-                            op = new Opcode(Ops.lmovrld); break;
+                            op = new Opcode(Ops.lmovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "uint128":
-                            op = new Opcode(Ops.limovrld_u); break;
+                            op = new Opcode(Ops.limovrld_u).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "int128":
-                            op = new Opcode(Ops.limovrld); break;
+                            op = new Opcode(Ops.limovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "uint256":
-                            op = new Opcode(Ops.llmovrld_u); break;
+                            op = new Opcode(Ops.llmovrld_u).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "int256":
-                            op = new Opcode(Ops.llmovrld); break;
+                            op = new Opcode(Ops.llmovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "float":
-                            op = new Opcode(Ops.fmovrld); break;
+                            op = new Opcode(Ops.fmovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "double":
-                            op = new Opcode(Ops.dmovrld); break;
+                            op = new Opcode(Ops.dmovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "float128":
-                            op = new Opcode(Ops.dfmovrld); break;
+                            op = new Opcode(Ops.dfmovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "float256":
-                            op = new Opcode(Ops.ddmovrld); break;
+                            op = new Opcode(Ops.ddmovrld).add(Opcode.convertLong(v.localvarlocation)); break;
                         case "String":
                         case "string":
 //                            op = new Opcode(Ops.csmovrld); break;
-                            System.err.println("compiler error: cannot move 'string' to ALU '" + v.name + "'.");
-                            System.exit(0);
+                            svrerr("compiler error: cannot move 'string' to ALU '" + v.name + "'.");
                             break;
                         default:
-                            op = new Opcode(Ops.amovrld); break;
+                            svrerr("compiler error: cannot move 'string' to ALU '" + v.name + "'.");
                     }
+
+                    op = new Opcode(Ops.ebp).add(op);
                 } else {
                     switch (v.type)
                     {
@@ -271,11 +272,9 @@ public class AbstractSyntaxTree
                             } break;
                         case "String":
                         case "string":
-                            System.err.println("compiler error: cannot perform math operation on a string.");
-                            System.exit(0);
+                            svrerr("compiler error: cannot load String to ALU.");
                         default:
-                            System.err.println("compiler error: cannot perform math operation on a reference.");
-                            System.exit(0);
+                            svrerr("compiler error: cannot perform math operation on a reference.");
                             break;
                     }
                 }
@@ -287,44 +286,46 @@ public class AbstractSyntaxTree
                         {
                             case "byte":
                             case "char":
-                                op = new Opcode(Ops.bmov); break;
+                                op = new Opcode(Ops.bmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "short":
-                                op = new Opcode(Ops.smov); break;
+                                op = new Opcode(Ops.smov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "int":
-                                op = new Opcode(Ops.imov); break;
+                                op = new Opcode(Ops.imov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "long":
-                                op = new Opcode(Ops.lmov); break;
+                                op = new Opcode(Ops.lmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "int128":
-                                op = new Opcode(Ops.limov); break;
+                                op = new Opcode(Ops.limov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "int256":
-                                op = new Opcode(Ops.llmov); break;
+                                op = new Opcode(Ops.llmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "ubyte":
                             case "uchar":
-                                op = new Opcode(Ops.bmov); break;
+                                op = new Opcode(Ops.bmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "ushort":
-                                op = new Opcode(Ops.smov); break;
+                                op = new Opcode(Ops.smov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "uint":
-                                op = new Opcode(Ops.imov); break;
+                                op = new Opcode(Ops.imov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "ulong":
-                                op = new Opcode(Ops.lmov); break;
+                                op = new Opcode(Ops.lmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "uint128":
-                                op = new Opcode(Ops.limov); break;
+                                op = new Opcode(Ops.limov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "uint256":
-                                op = new Opcode(Ops.llmov); break;
+                                op = new Opcode(Ops.llmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "float":
-                                op = new Opcode(Ops.fmov); break;
+                                op = new Opcode(Ops.fmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "double":
-                                op = new Opcode(Ops.dmov); break;
+                                op = new Opcode(Ops.dmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "float128":
-                                op = new Opcode(Ops.dfmov); break;
+                                op = new Opcode(Ops.dfmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "float256":
-                                op = new Opcode(Ops.ddmov); break;
+                                op = new Opcode(Ops.ddmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             case "String":
                             case "string":
-                                op = new Opcode(Ops.csmov); break;
+                                op = new Opcode(Ops.csmov).add(Opcode.convertLong(v.localvarlocation)); break;
                             default:
-                                op = new Opcode(Ops.amov); break;
+                                op = new Opcode(Ops.amov).add(Opcode.convertLong(v.localvarlocation)); break;
                         }
+
+                        op = new Opcode(Ops.ebp).add(op);
                     } else {
                         switch (v.type)
                         {
@@ -659,7 +660,7 @@ public class AbstractSyntaxTree
         return new var("f", "sd", new LinkedHashSet<>());
     }
 
-    private Opcode storeByteInput(String input)
+    private Opcode storeByteInput(String input, Opcode ops)
     {
         byte b = (byte) Long.parseLong(input);
 
@@ -674,7 +675,7 @@ public class AbstractSyntaxTree
         }
     }
 
-    private Opcode storeShortInput(String input)
+    private Opcode storeShortInput(String input, Opcode ops)
     {
         short b = (short) Long.parseLong(input);
 
@@ -689,7 +690,7 @@ public class AbstractSyntaxTree
         }
     }
 
-    private Opcode storeIntInput(String input)
+    private Opcode storeIntInput(String input, Opcode ops)
     {
         int b = (int) Long.parseLong(input);
 
@@ -751,9 +752,9 @@ public class AbstractSyntaxTree
         else return new Opcode(Ops.csconst).add(Opcode.convertShort(input.length())).add(Opcode.convertBytes(input.getBytes()));
     }
 
-    private Opcode storeInput(String input, String type)
+    private Opcode storeInput(Token input, String type, long variableLocation, Opcode ops)
     {
-        Opcode op = null;
+        Opcode op = new Opcode(-1, "store input");
 
         switch (type)
         {
@@ -761,16 +762,52 @@ public class AbstractSyntaxTree
             case "char":
             case "ubyte":
             case "uchar":
-                op = storeByteInput(input); break;
+                    if (variableLocation == 0)
+                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_0));
+                    else if (variableLocation == 1)
+                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_1));
+                    else if (variableLocation == 2)
+                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_2));
+                    else if (variableLocation == 3)
+                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_3));
+                    else op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore).add(Opcode.convertLong(variableLocation)));
+                break;
             case "short":
             case "ushort":
-                op = storeShortInput(input); break;
+                if (variableLocation == 0)
+                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_0));
+                else if (variableLocation == 1)
+                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_1));
+                else if (variableLocation == 2)
+                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_2));
+                else if (variableLocation == 3)
+                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_3));
+                else op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore).add(Opcode.convertLong(variableLocation)));
+                break;
             case "uint":
             case "int":
-                op = storeIntInput(input); break;
+                if (variableLocation == 0)
+                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_0));
+                else if (variableLocation == 1)
+                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_1));
+                else if (variableLocation == 2)
+                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_2));
+                else if (variableLocation == 3)
+                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_3));
+                else op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore).add(Opcode.convertLong(variableLocation)));
+                break;
             case "ulong":
             case "long":
-                op = storeLongInput(input); break;
+                if (variableLocation == 0)
+                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_0));
+                else if (variableLocation == 1)
+                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_1));
+                else if (variableLocation == 2)
+                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_2));
+                else if (variableLocation == 3)
+                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_3));
+                else op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore).add(Opcode.convertLong(variableLocation)));
+                break;
             case "int128":
 //                op = new Opcode(Ops.liconst_e); break;
             case "int256":
@@ -780,22 +817,136 @@ public class AbstractSyntaxTree
             case "uint256":
 //                op = new Opcode(Ops.llconst_e); break;
             case "float":
-                op = storeFloatInput(input); break;
+                if (variableLocation == 0)
+                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_0));
+                else if (variableLocation == 1)
+                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_1));
+                else if (variableLocation == 2)
+                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_2));
+                else if (variableLocation == 3)
+                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_3));
+                else op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore).add(Opcode.convertLong(variableLocation)));
+                break;
             case "double":
-                op = storeDoubleInput(input); break;
+                if (variableLocation == 0)
+                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_0));
+                else if (variableLocation == 1)
+                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_1));
+                else if (variableLocation == 2)
+                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_2));
+                else if (variableLocation == 3)
+                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_3));
+                else op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore).add(Opcode.convertLong(variableLocation)));
+                break;
             case "float128":
 //                op = new Opcode(Ops.dfconst_e); break;
             case "float256":
 //                op = new Opcode(Ops.ddconst_e); break;
             case "String":
             case "string":
-                op = storeStringInput(input);
+                op.add(putStringInput(input, ops));
                 break;
             default:
                 op = new Opcode(Ops.aconst_null); break;
         }
 
         return op;
+    }
+
+    private Opcode castToDouble()
+    {
+        Opcode cast = null;//new Opcode(-1, "");
+        String t = null;
+        switch (t = resetLastOnStack())
+        {
+            case "byte":
+            case "char":
+            case "ubyte":
+            case "uchar":
+                return cast;
+            case "short":
+            case "ushort":
+                return cast;
+            case "int":
+            case "uint":
+                implicitcasterr(t, "float64_t", "");
+                return new Opcode(Ops.i2d);
+            case "long":
+            case "ulong":
+                implicitcasterr(t, "float64_t", "");
+                return new Opcode(Ops.l2d);
+            case "int128":
+            case "uint128":
+                implicitcasterr(t, "float64_t", "");
+                return new Opcode(Ops.li2d);
+            case "int256":
+            case "uint256":
+                implicitcasterr(t, "float64_t", "");
+                return new Opcode(Ops.ll2d);
+            case "float":
+                return cast;
+            case "double":
+                return cast;
+            case "float128":
+                return new Opcode(Ops.df2d);
+            case "float256":
+                return new Opcode(Ops.dd2d);
+            case "":
+                return cast;
+            default:
+                implicitcasterr(t + "(ptr_t)", "float64_t", "");
+                return new Opcode(Ops.l2d);
+        }
+    }
+
+    private Opcode castToFloat()
+    {
+        Opcode cast = null;//new Opcode(-1, "");
+        String t = null;
+        switch (t = resetLastOnStack())
+        {
+            case "byte":
+            case "char":
+            case "ubyte":
+            case "uchar":
+                return cast;
+            case "short":
+            case "ushort":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.s2f);
+            case "int":
+            case "uint":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.i2f);
+            case "long":
+            case "ulong":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.l2f);
+            case "int128":
+            case "uint128":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.li2f);
+            case "int256":
+            case "uint256":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.ll2f);
+            case "float":
+                return cast;
+            case "double":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.d2f);
+            case "float128":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.df2f);
+            case "float256":
+                implicitcasterr(t, "float32_t", "");
+                return new Opcode(Ops.dd2f);
+            case "":
+                return cast;
+            default:
+                implicitcasterr(t + "(ptr_t)", "float32_t", "");
+                return new Opcode(Ops.l2f);
+        }
     }
 
     private void initializeVariable(Token token, Opcode ops)
@@ -808,7 +959,7 @@ public class AbstractSyntaxTree
         if (v.isField)
             ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(putInput(valv, v.type, v.localvarlocation, ops)));
         else
-            ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(storeInput(valv.toString(), v.type)));
+            ops.add(new Opcode(-1, "init (" + varn.toString() + ", " + valv.toString() + ")").add(storeInput(valv, v.type, v.localvarlocation, ops)));
     }
 
     private Opcode putByteInput(Token input, Opcode ops)
@@ -1039,10 +1190,27 @@ public class AbstractSyntaxTree
         return op;
     }
 
+    private void unsvrerr(String msg)
+    {
+        System.err.println("compiler error: " + msg);
+    }
+
+    private void svrerr(String msg)
+    {
+        System.err.println("compiler error: " + msg);
+        System.exit(0);
+    }
+
+    private void implicitcasterr(String typea, String typeb, String extra)
+    {
+        unsvrerr("implicit cast from '" + typea + "' to '" + typeb + "' " + extra);
+    }
+
     private Opcode castToChar()
     {
         Opcode cast = null;//new Opcode(-1, "");
-        switch (resetLastOnStack())
+        String t = null;
+        switch (t = resetLastOnStack())
         {
             case "byte":
             case "char":
@@ -1051,40 +1219,49 @@ public class AbstractSyntaxTree
                 return cast;
             case "short":
             case "ushort":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.s2b);
             case "int":
             case "uint":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.i2b);
             case "long":
             case "ulong":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.l2b);
             case "int128":
             case "uint128":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.li2b);
             case "int256":
             case "uint256":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.ll2b);
             case "float":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.f2b);
             case "double":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.d2b);
             case "float128":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.df2b);
             case "float256":
+                implicitcasterr(t, "int8_t", "");
                 return new Opcode(Ops.dd2b);
             case "":
                 return cast;
                 default:
-                    System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to byte.");
-                    System.exit(0);
-                    return null;
+                    implicitcasterr(t + "(ptr_t)", "int8_t", "");
+                    return new Opcode(Ops.l2b);
         }
     }
 
     private Opcode castToShort()
     {
         Opcode cast = null;//new Opcode(-1, "");
-        switch (resetLastOnStack())
+        String t = null;
+        switch (t = resetLastOnStack())
         {
             case "byte":
             case "char":
@@ -1096,37 +1273,47 @@ public class AbstractSyntaxTree
                 return cast;
             case "int":
             case "uint":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.i2s);
             case "long":
             case "ulong":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.l2s);
             case "int128":
             case "uint128":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.li2s);
             case "int256":
             case "uint256":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.ll2s);
             case "float":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.f2s);
             case "double":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.d2s);
             case "float128":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.df2s);
             case "float256":
+                implicitcasterr(t, "int16_t", "");
                 return new Opcode(Ops.dd2s);
             case "":
                 return cast;
             default:
-                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to short.");
-                System.exit(0);
-                return null;
+//                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to short.");
+//                System.exit(0);
+                implicitcasterr(t + "(ptr_t)", "int16_t", "");
+                return new Opcode(Ops.l2s);
         }
     }
 
     private Opcode castToInt()
     {
         Opcode cast = null;//new Opcode(-1, "");
-        switch (resetLastOnStack())
+        String t = null;
+        switch (t = resetLastOnStack())
         {
             case "byte":
             case "char":
@@ -1141,34 +1328,43 @@ public class AbstractSyntaxTree
                 return cast;
             case "long":
             case "ulong":
+                implicitcasterr(t, "int32_t", "");
                 return new Opcode(Ops.l2i);
             case "int128":
             case "uint128":
+                implicitcasterr(t, "int32_t", "");
                 return new Opcode(Ops.li2i);
             case "int256":
             case "uint256":
+                implicitcasterr(t, "int32_t", "");
                 return new Opcode(Ops.ll2i);
             case "float":
+                implicitcasterr(t, "int32_t", "");
                 return new Opcode(Ops.f2i);
             case "double":
+                implicitcasterr(t, "int32_t", "");
                 return new Opcode(Ops.d2i);
             case "float128":
+                implicitcasterr(t, "int32_t", "");
                 return new Opcode(Ops.df2i);
             case "float256":
+                implicitcasterr(t, "int32_t", "");
                 return new Opcode(Ops.dd2i);
             case "":
                 return cast;
             default:
-                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to int.");
-                System.exit(0);
-                return null;
+//                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to int.");
+//                System.exit(0);
+                implicitcasterr(t + "(ptr_t)", "int32_t", "");
+                return new Opcode(Ops.l2i);
         }
     }
 
     private Opcode castToLong()
     {
         Opcode cast = new Opcode(-1, "");
-        switch (resetLastOnStack())
+        String t = null;
+        switch (t = resetLastOnStack())
         {
             case "byte":
             case "char":
@@ -1186,24 +1382,29 @@ public class AbstractSyntaxTree
                 return cast;
             case "int128":
             case "uint128":
+                implicitcasterr(t, "int64_t", "");
                 return new Opcode(Ops.li2l);
             case "int256":
             case "uint256":
+                implicitcasterr(t, "int64_t", "");
                 return new Opcode(Ops.ll2l);
             case "float":
+                implicitcasterr(t, "int64_t", "");
                 return new Opcode(Ops.f2l);
             case "double":
+                implicitcasterr(t, "int64_t", "");
                 return new Opcode(Ops.d2l);
             case "float128":
+                implicitcasterr(t, "int64_t", "");
                 return new Opcode(Ops.df2l);
             case "float256":
+                implicitcasterr(t, "int64_t", "");
                 return new Opcode(Ops.dd2l);
             case "":
                 return cast;
             default:
-                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to long.");
-                System.exit(0);
-                return null;
+                implicitcasterr(t + "(ptr_t)", "int64_t", "");
+                return cast;
         }
     }
 
@@ -1261,38 +1462,45 @@ public class AbstractSyntaxTree
         {
             case "byte":
             case "char":
+                return new Opcode(Ops.b2c);
             case "ubyte":
             case "uchar":
-                return new Opcode(Ops.b2cs);
+                return new Opcode(Ops.b2cu);
             case "short":
+                return new Opcode(Ops.s2c);
             case "ushort":
-                return new Opcode(Ops.s2i);
+                return new Opcode(Ops.s2cu);
             case "int":
+                return new Opcode(Ops.i2c);
             case "uint":
-                return cast;
+                return new Opcode(Ops.i2cu);
+            case "reference":
             case "long":
+                return new Opcode(Ops.l2c);
             case "ulong":
-                return new Opcode(Ops.l2i);
+                return new Opcode(Ops.l2cu);
             case "int128":
+                return new Opcode(Ops.li2c);
             case "uint128":
-                return new Opcode(Ops.li2i);
+                return new Opcode(Ops.li2cu);
             case "int256":
+                return new Opcode(Ops.ll2c);
             case "uint256":
-                return new Opcode(Ops.ll2i);
+                return new Opcode(Ops.ll2cu);
             case "float":
-                return new Opcode(Ops.f2i);
+                return new Opcode(Ops.f2c);
             case "double":
-                return new Opcode(Ops.d2i);
+                return new Opcode(Ops.d2c);
             case "float128":
-                return new Opcode(Ops.df2i);
+                return new Opcode(Ops.df2c);
             case "float256":
-                return new Opcode(Ops.dd2i);
+                return new Opcode(Ops.dd2c);
             case "":
+            case "string":
+            case "String":
                 return cast;
             default:
-                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to int.");
-                System.exit(0);
-                return null;
+                return new Opcode(Ops.l2cu);
         }
     }
 

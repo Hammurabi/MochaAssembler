@@ -344,7 +344,10 @@ public enum Ops
     csload_2(3, "load a long onto the stack from a local variable 2"),
     csload_3(4, "load a long onto the stack from a local variable 3"),
 
-    ebp(53, "set 'this'"),
+    ebp(53, "get 'this' base pointer"),
+    esp(53, "get stack pointer"),
+    sbp("set 'this' base pointer"),
+    ssp("set stack pointer"),
     pop("pop the top value from the stack"),
     pop2("pop the top two values from the stack"),
 
