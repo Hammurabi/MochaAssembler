@@ -108,7 +108,7 @@ public class CompiledProgram
 //        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
 //            System.out.println(i);
 
-        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().humanReadable(0, true));
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().humanReadable(-1, true));
         System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().toExecutable().op_codes);
     }
 

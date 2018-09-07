@@ -61,7 +61,8 @@ class HelloWorld {
     public function mul() : void
     {
     int a
-    a = potato
+    int b
+    a = i
 //        vector a(1, 2)
 //        vector b(50, 12)
 //        vector c = a * b

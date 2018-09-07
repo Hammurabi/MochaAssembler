@@ -159,6 +159,7 @@ public class Opcode
     {
         String t = "";
 
+        if (i >= 0)
         for (int x = 0; x < i; x ++)
             t += "\t";
 
@@ -168,7 +169,7 @@ public class Opcode
             t += toString();
 
         for (Opcode opcode : children)
-            t += "\n" + opcode.humanReadable(i + 1, m);
+            t += "\n" + opcode.humanReadable((i >= 0 ? (i + 1) : -1), m);
 
         return t;
     }

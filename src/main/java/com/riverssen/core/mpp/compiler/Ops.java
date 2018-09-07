@@ -395,7 +395,16 @@ public enum Ops
     iconstse_2("store an integer value into a local variable 2 with no value"),
     iconstse_3("store an integer value into a local variable 3 with no value"),
     iconstse("store an integer value into a local variable with no value"),
-
+    lconstse("store an integer value into a local variable with no value"),
+    liconstse("store an integer value into a local variable with no value"),
+    llconstse("store an integer value into a local variable with no value"),
+    fconstse("store an integer value into a local variable with no value"),
+    dconstse("store an integer value into a local variable with no value"),
+    dfconstse("store an integer value into a local variable with no value"),
+    ddconstse("store an integer value into a local variable with no value"),
+    bconstse("store an integer value into a local variable with no value"),
+    sconstse("store an integer value into a local variable with no value"),
+    aconstse("store an integer value into a local variable with no value"),
 
 
     lstore  ("store a long value into a local variable"),
