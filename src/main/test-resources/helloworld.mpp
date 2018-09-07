@@ -60,6 +60,9 @@ class HelloWorld {
 
     public function mul() : void
     {
+        for (int i = 0; i < 5; i ++)
+        {
+        }
 //        vector a(1, 2)
 //        vector b(50, 12)
 //        vector c = a * b
