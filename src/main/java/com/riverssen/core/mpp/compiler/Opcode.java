@@ -145,6 +145,26 @@ public class Opcode
         return list;
     }
 
+    public static List<Opcode> to40bitPointer(long unsigned_long_pointer)
+    {
+        List<Opcode> bytes = new ArrayList<>();
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+
+        buffer.putLong(unsigned_long_pointer);
+        buffer.flip();
+
+        buffer.get();
+        buffer.get();
+        buffer.get();
+        bytes.add(new Opcode(Byte.toUnsignedInt(buffer.get()), "uint8_t"));
+        bytes.add(new Opcode(Byte.toUnsignedInt(buffer.get()), "uint8_t"));
+        bytes.add(new Opcode(Byte.toUnsignedInt(buffer.get()), "uint8_t"));
+        bytes.add(new Opcode(Byte.toUnsignedInt(buffer.get()), "uint8_t"));
+        bytes.add(new Opcode(Byte.toUnsignedInt(buffer.get()), "uint8_t"));
+
+        return bytes;
+    }
+
     public Opcode add(Opcode opcode)
     {
         if (opcode == null) return this;

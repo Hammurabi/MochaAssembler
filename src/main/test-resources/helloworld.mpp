@@ -62,10 +62,8 @@ class HelloWorld {
     {
         for (int i; i < 5; i ++)
         {
-            potato = i * 5
+            potato = i + 2
         }
-
-        int i
 //        vector a(1, 2)
 //        vector b(50, 12)
 //        vector c = a * b

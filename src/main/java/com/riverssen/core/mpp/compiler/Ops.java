@@ -210,6 +210,7 @@ public enum Ops
     dreturn(35, "return a double from a method"),
     dfreturn(35, "return a 128bit float from a method"),
     ddreturn(35, "return a 256bit float from a method"),
+    csreturn(35, "return a String from a method"),
     returnvoid("return void"),
     returnnull("return null"),
 
