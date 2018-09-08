@@ -858,6 +858,7 @@ public class AbstractSyntaxTree
         UNARY_P,
         UNARY_M,
         FOR,
+        METHOD_ARGUMENTS,
         ;
     }
 
@@ -938,35 +939,253 @@ public class AbstractSyntaxTree
                             ops.add(new Opcode(Ops.iconstrld_u).add(Opcode.convertInteger(Long.parseLong(token.toString()))));
                             break;
                         case "long":
-                            ops.add(new Opcode(Ops.iconstrld).add(Opcode.convertLong(Integer.parseInt(token.toString()))));
+                            ops.add(new Opcode(Ops.lconstrld).add(Opcode.convertLong(Long.parseLong(token.toString()))));
                         case "ulong":
-                            ops.add(new Opcode(Ops.iconstrld_u).add(Opcode.convertLong(Long.parseLong(token.toString()))));
+                            ops.add(new Opcode(Ops.lconstrld_u).add(Opcode.convertLong(Long.parseLong(token.toString()))));
                             break;
+                        case "float":
+                            ops.add(new Opcode(Ops.fconstrld).add(Opcode.convertFloat(Float.parseFloat(token.toString()))));
+                            break;
+                        case "double":
+                            ops.add(new Opcode(Ops.dconstrld).add(Opcode.convertDouble(Double.parseDouble(token.toString()))));
+                            break;
+                        case "float128":
+                            ops.add(new Opcode(Ops.dfconstrld).add(Opcode.convertFloat(Float.parseFloat(token.toString()))));
+                            break;
+                        case "float256":
+                            ops.add(new Opcode(Ops.ddconstrld).add(Opcode.convertDouble(Double.parseDouble(token.toString()))));
+                            break;
+                            default:
+                                svrerr("cannot load this type of input into the ALU '" + token + "'.");
+                                break;
                     }
 
                     break;
                 default:
-                    switch (token.toString()) {
-                        case "0":
-                            ops.add(new Opcode(Ops.lconst_0));
+                    switch (lastOnStack)
+                    {
+                        case "ubyte":
+                        case "uchar":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.bconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.bconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.bconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.bconst_3));
+                                    break;
+                                default:
+                                    long l = Math.abs(Long.parseLong(token.toString()));
+                                    ops.add(new Opcode(Ops.bconst).add(Opcode.convertByte(l)));
+                                    break;
+                            }
+                            setLastOnStack("ubyte");
                             break;
-                        case "1":
-                            ops.add(new Opcode(Ops.lconst_1));
+                        case "byte":
+                        case "char":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.bconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.bconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.bconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.bconst_3));
+                                    break;
+                                default:
+                                    long l = Long.parseLong(token.toString());
+                                    ops.add(new Opcode(Ops.bconst).add(Opcode.convertByte(l)));
+                                    break;
+                            }
+                            setLastOnStack("byte");
                             break;
-                        case "2":
-                            ops.add(new Opcode(Ops.lconst_2));
-                            break;
-                        case "3":
-                            ops.add(new Opcode(Ops.lconst_3));
-                            break;
-                        default:
-                            long l = Long.parseLong(token.toString());
+                        case "short":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.sconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.sconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.sconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.sconst_3));
+                                    break;
+                                default:
+                                    long l = (Long.parseLong(token.toString()));
 
-                            ops.add(new Opcode(Ops.lconst).add(Opcode.convertLong(l)));
+                                    ops.add(new Opcode(Ops.sconst).add(Opcode.convertShort(l)));
+                                    break;
+                            }
+                            setLastOnStack("short");
+                            break;
+                        case "ushort":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.sconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.sconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.sconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.sconst_3));
+                                    break;
+                                default:
+                                    long l = Math.abs(Long.parseLong(token.toString()));
+
+                                    ops.add(new Opcode(Ops.sconst).add(Opcode.convertShort(l)));
+                                    break;
+                            }
+                            setLastOnStack("ushort");
+                            break;
+                        case "int":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.iconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.iconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.iconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.iconst_3));
+                                    break;
+                                default:
+                                    long l = (Long.parseLong(token.toString()));
+
+                                    ops.add(new Opcode(Ops.iconst).add(Opcode.convertInteger(l)));
+                                    break;
+                            }
+                            setLastOnStack("int");
+                            break;
+                        case "uint":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.iconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.iconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.iconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.iconst_3));
+                                    break;
+                                default:
+                                    long l = Math.abs(Long.parseLong(token.toString()));
+
+                                    ops.add(new Opcode(Ops.iconst).add(Opcode.convertInteger(l)));
+                                    break;
+                            }
+                            setLastOnStack("uint");
+                            break;
+                        case "long":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.lconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.lconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.lconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.lconst_3));
+                                    break;
+                                default:
+                                    long l = Long.parseLong(token.toString());
+
+                                    ops.add(new Opcode(Ops.lconst).add(Opcode.convertLong(l)));
+                                    break;
+                            }
+                            setLastOnStack("long");
+                            break;
+                        case "ulong":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.lconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.lconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.lconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.lconst_3));
+                                    break;
+                                default:
+                                    long l = Math.abs(Long.parseLong(token.toString()));
+
+                                    ops.add(new Opcode(Ops.lconst).add(Opcode.convertLong(l)));
+                                    break;
+                            }
+                            setLastOnStack("ulong");
+                            break;
+                        case "float":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.fconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.fconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.fconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.fconst_3));
+                                    break;
+                                default:
+                                    float l = Float.parseFloat(token.toString());
+
+                                    ops.add(new Opcode(Ops.fconst).add(Opcode.convertFloat(l)));
+                                    break;
+                            }
+                            setLastOnStack("float");
+                            break;
+                        case "double":
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.dconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.dconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.dconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.dconst_3));
+                                    break;
+                                default:
+                                    double l = Double.parseDouble(token.toString());
+
+                                    ops.add(new Opcode(Ops.dconst).add(Opcode.convertDouble(l)));
+                                    break;
+                            }
+                            setLastOnStack("double");
                             break;
                     }
-                    setLastOnStack("long");
-                    break;
+
             }
 //        } else {
 //            switch (lastOnStack)
@@ -1546,25 +1765,40 @@ public class AbstractSyntaxTree
         return pointer;
     }
 
+    private Method toCall = null;
+
     private void compile(Token token, Opcode ops, CompileType compileType)
     {
         switch (token.getType())
         {
+            case PARENTHESIS:
+                if (compileType.equals(CompileType.METHOD_ARGUMENTS))
+                {
+                    int i = 0;
+                    for (Field field : toCall.getArguments())
+                    {
+                        resetLastOnStack();
+                        setLastOnStack(field.getTypeName());
+                        compile(token.getTokens().get(i ++), ops, compileType);
+                    }
+                }
+                else for (Token t : token)
+                    compile(t, ops, compileType);
+                break;
             case METHOD_CALL:
                 if (self != null)
                 {
                     Method m = self.getMethod(token.getTokens().get(0).toString(), token.getTokens().get(1).getTokens().size());
+                    toCall = m;
 
 //                    if (!m.isStatic())
 //                    {
-                        ops.add(loadVariable("this", ops, CompileType.NONE));
+                    compile(token.getTokens().get(1), ops, CompileType.METHOD_ARGUMENTS);
+                    ops.add(loadVariable("this", ops, CompileType.NONE));
 //                    }
 
                     ops.add(new Opcode(Ops.invoke).add(Opcode.to40bitPointer(m.getLocation())));
-                    String s = null;
-                    setLastOnStack(s = m.getReturnType());
-
-                    System.out.println(s);
+                    setLastOnStack(m.getReturnType());
                 }
                 break;
             case EMPTY_DECLARATION:
@@ -1683,6 +1917,7 @@ public class AbstractSyntaxTree
             case IDENTIFIER:
                 ops.add(loadVariable(token.toString(), ops, compileType));
                 break;
+            case DECIMAL:
             case NUMBER:
                 compileNumberInput(token, ops, compileType);
                 break;
@@ -1723,6 +1958,8 @@ public class AbstractSyntaxTree
         String type = declaration.getTokens().get(0).toString();
         String name = declaration.getTokens().get(1).toString();
         Token  value = declaration.getTokens().get(2);
+
+        setLastOnStack(type);
 
         var v = storeLocalVariable(name, type, new LinkedHashSet<>(declaration.getModifiers()));
 
@@ -1806,6 +2043,7 @@ public class AbstractSyntaxTree
             case "string":
                 stor = new Opcode(Ops.astore).add(Opcode.convertLong(v.localvarlocation));
                 cast = castToString();
+                break;
                 default:
                     stor = new Opcode(Ops.astore).add(Opcode.convertLong(v.localvarlocation));
                     cast = castToLong();
@@ -1819,6 +2057,8 @@ public class AbstractSyntaxTree
     {
         String type = declaration.getTokens().get(0).toString();
         String name = declaration.getTokens().get(1).toString();
+
+        setLastOnStack(type);
 
         Opcode op   = null;
         Opcode stor = null;
@@ -2476,6 +2716,10 @@ public class AbstractSyntaxTree
         String t = null;
         switch (t = resetLastOnStack())
         {
+            case "void":
+            case "VOID":
+                implicitcasterr(t, "int8_t", "");
+                return cast;
             case "byte":
             case "char":
             case "ubyte":
@@ -2527,6 +2771,10 @@ public class AbstractSyntaxTree
         String t = null;
         switch (t = resetLastOnStack())
         {
+            case "void":
+            case "VOID":
+                implicitcasterr(t, "int8_t", "");
+                return cast;
             case "byte":
             case "char":
             case "ubyte":
@@ -2579,6 +2827,10 @@ public class AbstractSyntaxTree
         String t = null;
         switch (t = resetLastOnStack())
         {
+            case "void":
+            case "VOID":
+                implicitcasterr(t, "int8_t", "");
+                return cast;
             case "byte":
             case "char":
             case "ubyte":
@@ -2630,6 +2882,10 @@ public class AbstractSyntaxTree
         String t = null;
         switch (t = resetLastOnStack())
         {
+            case "void":
+            case "VOID":
+                implicitcasterr(t, "int8_t", "");
+                return cast;
             case "byte":
             case "char":
             case "ubyte":
@@ -2722,8 +2978,13 @@ public class AbstractSyntaxTree
     private Opcode castToString()
     {
         Opcode cast = null;//new Opcode( "");
-        switch (resetLastOnStack())
+        String t = null;
+        switch (t = resetLastOnStack())
         {
+            case "void":
+            case "VOID":
+                implicitcasterr(t, "int8_t", "");
+                return cast;
             case "byte":
             case "char":
                 return new Opcode(Ops.b2c);

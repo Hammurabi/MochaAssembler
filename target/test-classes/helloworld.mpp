@@ -58,12 +58,22 @@ class HelloWorld {
     {
     }
 
-    public function mul() : void
+    public function for_loop() : void
     {
-        for (int i; i < 5; i ++)
+        for (int i; i < 16; i ++)
         {
             potato = i + 2
         }
+    }
+
+    public function add(long a, int b) : long
+    {
+        return a + b
+    }
+
+    public function mul(int a) : void
+    {
+        int b = add(4, 6)
 //        vector a(1, 2)
 //        vector b(50, 12)
 //        vector c = a * b

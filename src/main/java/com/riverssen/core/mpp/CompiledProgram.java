@@ -108,9 +108,9 @@ public class CompiledProgram
 //        for (int i : space.getGlobalTypes().get("HelloWorld").getMethod("mul").getOpCodes())
 //            System.out.println(i);
 
-        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().humanReadable(-1, true));
-        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().toExecutable().op_codes);
-        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", new LinkedHashSet<>()).getOpcodes().toExecutable().op_codes.size());
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", 1).getOpcodes().humanReadable(-1, true));
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", 1).getOpcodes().toExecutable().op_codes);
+        System.out.println(space.getGlobalTypes().get("HelloWorld").getMethod("mul", 1).getOpcodes().toExecutable().op_codes.size());
     }
 
     private void simulate_contract_a(Token root)
