@@ -148,6 +148,9 @@ public class AbstractSyntaxTree
 
         setLastOnStack(v.type);
 
+        if (variable.equals("this") || variable.equals("self"))
+            return new Opcode(Ops.ebp);
+
         switch (compileType)
         {
             case UNARY_P:
@@ -159,36 +162,36 @@ public class AbstractSyntaxTree
                     case "uchar":
                     case "byte":
                     case "char":
-                        op = new Opcode(Ops.bmov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.binc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptb).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.bmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.binc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptb).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "short":
                     case "ushort":
-                        op = new Opcode(Ops.smov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.sinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pts).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.smov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.sinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pts).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "int":
                     case "uint":
-                        op = new Opcode(Ops.imov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.iinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pti).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.imov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.iinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pti).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "long":
                     case "ulong":
-                        op = new Opcode(Ops.lmov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.linc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptl).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.lmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.linc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptl).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "int128":
                     case "uint128":
-                        op = new Opcode(Ops.limov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.liinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptli).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.limov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.liinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptli).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "int256":
                     case "uint256":
-                        op = new Opcode(Ops.llmov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.llinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptll).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.llmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.llinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptll).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "float":
-                        op = new Opcode(Ops.fmov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.finc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptf).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.fmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.finc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptf).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "double":
-                        op = new Opcode(Ops.dmov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.dinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptd).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.dmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.dinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptd).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "float128":
-                        op = new Opcode(Ops.dfmov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.dfinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptdf).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.dfmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.dfinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptdf).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "float256":
-                        op = new Opcode(Ops.ddmov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptdd).add(Opcode.convertLong(v.localvarlocation))); break;
+                        op = new Opcode(Ops.ddmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptdd).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "String":
                     case "string":
                         svrerr("cannot increment a string.");
                     default:
                         unsvrerr("incrementing a pointer");
-                        op = new Opcode(Ops.amov).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.linc)); break;
+                        op = new Opcode(Ops.amov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.linc)); break;
                 }
 
                 op = new Opcode(Ops.ebp).add(op);
@@ -205,7 +208,7 @@ public class AbstractSyntaxTree
                             case 1: op = new Opcode(Ops.bload_1).add(new Opcode(Ops.binc)).add(new Opcode(Ops.bstore_1)); break;
                             case 2: op = new Opcode(Ops.bload_2).add(new Opcode(Ops.binc)).add(new Opcode(Ops.bstore_2)); break;
                             case 3: op = new Opcode(Ops.bload_3).add(new Opcode(Ops.binc)).add(new Opcode(Ops.bstore_3)); break;
-                            default: op = new Opcode(Ops.bload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.binc)).add(new Opcode(Ops.bstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op = new Opcode(Ops.bload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.binc)).add(new Opcode(Ops.bstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "ushort":
                     case "short":
@@ -215,7 +218,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.sload_1).add(new Opcode(Ops.sinc)).add(new Opcode(Ops.sstore_1)); break;
                             case 2: op =    new Opcode(Ops.sload_2).add(new Opcode(Ops.sinc)).add(new Opcode(Ops.sstore_2)); break;
                             case 3: op =    new Opcode(Ops.sload_3).add(new Opcode(Ops.sinc)).add(new Opcode(Ops.sstore_3)); break;
-                            default: op =   new Opcode(Ops.sload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.sinc)).add(new Opcode(Ops.sstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.sload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.sinc)).add(new Opcode(Ops.sstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "uint":
                     case "int":
@@ -225,7 +228,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.iload_1).add(new Opcode(Ops.iinc)).add(new Opcode(Ops.istore_1)); break;
                             case 2: op =    new Opcode(Ops.iload_2).add(new Opcode(Ops.iinc)).add(new Opcode(Ops.istore_2)); break;
                             case 3: op =    new Opcode(Ops.iload_3).add(new Opcode(Ops.iinc)).add(new Opcode(Ops.istore_3)); break;
-                            default: op =   new Opcode(Ops.iload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.iinc)).add(new Opcode(Ops.istore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.iload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.iinc)).add(new Opcode(Ops.istore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "ulong":
                     case "long":
@@ -235,7 +238,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.lload_1).add(new Opcode(Ops.linc)).add(new Opcode(Ops.lstore_1)); break;
                             case 2: op =    new Opcode(Ops.lload_2).add(new Opcode(Ops.linc)).add(new Opcode(Ops.lstore_2)); break;
                             case 3: op =    new Opcode(Ops.lload_3).add(new Opcode(Ops.linc)).add(new Opcode(Ops.lstore_3)); break;
-                            default: op =   new Opcode(Ops.lload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.linc)).add(new Opcode(Ops.lstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.lload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.linc)).add(new Opcode(Ops.lstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "uint128":
                     case "int128":
@@ -245,7 +248,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.liload_1).add(new Opcode(Ops.liinc)).add(new Opcode(Ops.listore_1)); break;
                             case 2: op =    new Opcode(Ops.liload_2).add(new Opcode(Ops.liinc)).add(new Opcode(Ops.listore_2)); break;
                             case 3: op =    new Opcode(Ops.liload_3).add(new Opcode(Ops.liinc)).add(new Opcode(Ops.listore_3)); break;
-                            default: op =   new Opcode(Ops.liload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.liinc)).add(new Opcode(Ops.listore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.liload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.liinc)).add(new Opcode(Ops.listore).add(Opcode.convertShort(v.localvarlocation))); break;
                         }
                     case "uint256":
                     case "int256":
@@ -255,7 +258,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.llload_1).add(new Opcode(Ops.llinc)).add(new Opcode(Ops.llstore_1)); break;
                             case 2: op =    new Opcode(Ops.llload_2).add(new Opcode(Ops.llinc)).add(new Opcode(Ops.llstore_2)); break;
                             case 3: op =    new Opcode(Ops.llload_3).add(new Opcode(Ops.llinc)).add(new Opcode(Ops.llstore_3)); break;
-                            default: op =   new Opcode(Ops.llload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.llinc)).add(new Opcode(Ops.llstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.llload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.llinc)).add(new Opcode(Ops.llstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "float":
                         switch ((int) v.localvarlocation)
@@ -264,7 +267,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.fload_1).add(new Opcode(Ops.finc)).add(new Opcode(Ops.fstore_1)); break;
                             case 2: op =    new Opcode(Ops.fload_2).add(new Opcode(Ops.finc)).add(new Opcode(Ops.fstore_2)); break;
                             case 3: op =    new Opcode(Ops.fload_3).add(new Opcode(Ops.finc)).add(new Opcode(Ops.fstore_3)); break;
-                            default: op =   new Opcode(Ops.fload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.finc)).add(new Opcode(Ops.fstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.fload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.finc)).add(new Opcode(Ops.fstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "double":
                         switch ((int) v.localvarlocation)
@@ -273,7 +276,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.dload_1).add(new Opcode(Ops.dinc)).add(new Opcode(Ops.dstore_1)); break;
                             case 2: op =    new Opcode(Ops.dload_2).add(new Opcode(Ops.dinc)).add(new Opcode(Ops.dstore_2)); break;
                             case 3: op =    new Opcode(Ops.dload_3).add(new Opcode(Ops.dinc)).add(new Opcode(Ops.dstore_3)); break;
-                            default: op =   new Opcode(Ops.dload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.dinc)).add(new Opcode(Ops.dstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.dload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.dinc)).add(new Opcode(Ops.dstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "float128":
                         switch ((int) v.localvarlocation)
@@ -282,7 +285,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.dfload_1).add(new Opcode(Ops.dfinc)).add(new Opcode(Ops.dfstore_1)); break;
                             case 2: op =    new Opcode(Ops.dfload_2).add(new Opcode(Ops.dfinc)).add(new Opcode(Ops.dfstore_2)); break;
                             case 3: op =    new Opcode(Ops.dfload_3).add(new Opcode(Ops.dfinc)).add(new Opcode(Ops.dfstore_3)); break;
-                            default: op =   new Opcode(Ops.dfload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.dfinc)).add(new Opcode(Ops.dfstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.dfload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.dfinc)).add(new Opcode(Ops.dfstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "float256":
                         switch ((int) v.localvarlocation)
@@ -291,7 +294,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.ddload_1).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ddstore_1)); break;
                             case 2: op =    new Opcode(Ops.ddload_2).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ddstore_2)); break;
                             case 3: op =    new Opcode(Ops.ddload_3).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ddstore_3)); break;
-                            default: op =   new Opcode(Ops.ddload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ddstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.ddload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ddstore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                     case "String":
                     case "string":
@@ -304,7 +307,7 @@ public class AbstractSyntaxTree
                             case 1: op =    new Opcode(Ops.aload_1).add(new Opcode(Ops.linc)).add(new Opcode(Ops.astore_1)); break;
                             case 2: op =    new Opcode(Ops.aload_2).add(new Opcode(Ops.linc)).add(new Opcode(Ops.astore_2)); break;
                             case 3: op =    new Opcode(Ops.aload_3).add(new Opcode(Ops.linc)).add(new Opcode(Ops.astore_3)); break;
-                            default: op =   new Opcode(Ops.aload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.linc)).add(new Opcode(Ops.astore).add(Opcode.convertLong(v.localvarlocation))); break;
+                            default: op =   new Opcode(Ops.aload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.linc)).add(new Opcode(Ops.astore).add(Opcode.convertShort(v.localvarlocation))); break;
                         } break;
                 }
             }
@@ -364,7 +367,7 @@ public class AbstractSyntaxTree
                                 case 1: op = new Opcode(Ops.bload_1).add(new Opcode(Ops.bdec)).add(new Opcode(Ops.bstore_1)); break;
                                 case 2: op = new Opcode(Ops.bload_2).add(new Opcode(Ops.bdec)).add(new Opcode(Ops.bstore_2)); break;
                                 case 3: op = new Opcode(Ops.bload_3).add(new Opcode(Ops.bdec)).add(new Opcode(Ops.bstore_3)); break;
-                                default: op = new Opcode(Ops.bload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.bdec)).add(new Opcode(Ops.bstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                                default: op = new Opcode(Ops.bload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.bdec)).add(new Opcode(Ops.bstore).add(Opcode.convertShort(v.localvarlocation))); break;
                             } break;
                         case "ushort":
                         case "short":
@@ -374,7 +377,7 @@ public class AbstractSyntaxTree
                                 case 1: op =    new Opcode(Ops.sload_1).add(new Opcode(Ops.sdec)).add(new Opcode(Ops.sstore_1)); break;
                                 case 2: op =    new Opcode(Ops.sload_2).add(new Opcode(Ops.sdec)).add(new Opcode(Ops.sstore_2)); break;
                                 case 3: op =    new Opcode(Ops.sload_3).add(new Opcode(Ops.sdec)).add(new Opcode(Ops.sstore_3)); break;
-                                default: op =   new Opcode(Ops.sload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.sdec)).add(new Opcode(Ops.sstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                                default: op =   new Opcode(Ops.sload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.sdec)).add(new Opcode(Ops.sstore).add(Opcode.convertShort(v.localvarlocation))); break;
                             } break;
                         case "uint":
                         case "int":
@@ -384,7 +387,7 @@ public class AbstractSyntaxTree
                                 case 1: op =    new Opcode(Ops.iload_1).add(new Opcode(Ops.idec)).add(new Opcode(Ops.istore_1)); break;
                                 case 2: op =    new Opcode(Ops.iload_2).add(new Opcode(Ops.idec)).add(new Opcode(Ops.istore_2)); break;
                                 case 3: op =    new Opcode(Ops.iload_3).add(new Opcode(Ops.idec)).add(new Opcode(Ops.istore_3)); break;
-                                default: op =   new Opcode(Ops.iload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.idec)).add(new Opcode(Ops.istore).add(Opcode.convertLong(v.localvarlocation))); break;
+                                default: op =   new Opcode(Ops.iload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.idec)).add(new Opcode(Ops.istore).add(Opcode.convertShort(v.localvarlocation))); break;
                             } break;
                         case "ulong":
                         case "long":
@@ -394,7 +397,7 @@ public class AbstractSyntaxTree
                                 case 1: op =    new Opcode(Ops.lload_1).add(new Opcode(Ops.ldec)).add(new Opcode(Ops.lstore_1)); break;
                                 case 2: op =    new Opcode(Ops.lload_2).add(new Opcode(Ops.ldec)).add(new Opcode(Ops.lstore_2)); break;
                                 case 3: op =    new Opcode(Ops.lload_3).add(new Opcode(Ops.ldec)).add(new Opcode(Ops.lstore_3)); break;
-                                default: op =   new Opcode(Ops.lload).add(Opcode.convertLong(v.localvarlocation)).add(new Opcode(Ops.ldec)).add(new Opcode(Ops.lstore).add(Opcode.convertLong(v.localvarlocation))); break;
+                                default: op =   new Opcode(Ops.lload).add(Opcode.convertShort(v.localvarlocation)).add(new Opcode(Ops.ldec)).add(new Opcode(Ops.lstore).add(Opcode.convertShort(v.localvarlocation))); break;
                             } break;
                         case "uint128":
                         case "int128":
@@ -683,43 +686,43 @@ public class AbstractSyntaxTree
                         {
                             case "byte":
                             case "char":
-                                op = new Opcode(Ops.bmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.bmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "short":
-                                op = new Opcode(Ops.smov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.smov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "int":
-                                op = new Opcode(Ops.imov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.imov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "long":
-                                op = new Opcode(Ops.lmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.lmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "int128":
-                                op = new Opcode(Ops.limov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.limov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "int256":
-                                op = new Opcode(Ops.llmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.llmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "ubyte":
                             case "uchar":
-                                op = new Opcode(Ops.bmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.bmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "ushort":
-                                op = new Opcode(Ops.smov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.smov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "uint":
-                                op = new Opcode(Ops.imov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.imov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "ulong":
-                                op = new Opcode(Ops.lmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.lmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "uint128":
-                                op = new Opcode(Ops.limov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.limov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "uint256":
-                                op = new Opcode(Ops.llmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.llmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "float":
-                                op = new Opcode(Ops.fmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.fmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "double":
-                                op = new Opcode(Ops.dmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.dmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "float128":
-                                op = new Opcode(Ops.dfmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.dfmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "float256":
-                                op = new Opcode(Ops.ddmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.ddmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             case "String":
                             case "string":
-                                op = new Opcode(Ops.csmov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.csmov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                             default:
-                                op = new Opcode(Ops.amov).add(Opcode.convertLong(v.localvarlocation)); break;
+                                op = new Opcode(Ops.amov).add(Opcode.to40bitPointer(v.localvarlocation)); break;
                         }
 
                         op = new Opcode(Ops.ebp).add(op);
@@ -736,7 +739,7 @@ public class AbstractSyntaxTree
                                     case 1: op = new Opcode(Ops.bload_1); break;
                                     case 2: op = new Opcode(Ops.bload_2); break;
                                     case 3: op = new Opcode(Ops.bload_3); break;
-                                    default: op = new Opcode(Ops.bload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op = new Opcode(Ops.bload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "ushort":
                             case "short":
@@ -746,7 +749,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.sload_1); break;
                                     case 2: op =    new Opcode(Ops.sload_2); break;
                                     case 3: op =    new Opcode(Ops.sload_3); break;
-                                    default: op =   new Opcode(Ops.sload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.sload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "uint":
                             case "int":
@@ -756,7 +759,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.iload_1); break;
                                     case 2: op =    new Opcode(Ops.iload_2); break;
                                     case 3: op =    new Opcode(Ops.iload_3); break;
-                                    default: op =   new Opcode(Ops.iload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.iload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "ulong":
                             case "long":
@@ -766,7 +769,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.lload_1); break;
                                     case 2: op =    new Opcode(Ops.lload_2); break;
                                     case 3: op =    new Opcode(Ops.lload_3); break;
-                                    default: op =   new Opcode(Ops.lload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.lload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "uint128":
                             case "int128":
@@ -776,7 +779,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.liload_1); break;
                                     case 2: op =    new Opcode(Ops.liload_2); break;
                                     case 3: op =    new Opcode(Ops.liload_3); break;
-                                    default: op =   new Opcode(Ops.liload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.liload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 }
                             case "uint256":
                             case "int256":
@@ -786,7 +789,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.llload_1); break;
                                     case 2: op =    new Opcode(Ops.llload_2); break;
                                     case 3: op =    new Opcode(Ops.llload_3); break;
-                                    default: op =   new Opcode(Ops.llload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.llload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "float":
                                 switch ((int) v.localvarlocation)
@@ -795,7 +798,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.fload_1); break;
                                     case 2: op =    new Opcode(Ops.fload_2); break;
                                     case 3: op =    new Opcode(Ops.fload_3); break;
-                                    default: op =   new Opcode(Ops.fload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.fload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "double":
                                 switch ((int) v.localvarlocation)
@@ -804,7 +807,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.dload_1); break;
                                     case 2: op =    new Opcode(Ops.dload_2); break;
                                     case 3: op =    new Opcode(Ops.dload_3); break;
-                                    default: op =   new Opcode(Ops.dload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.dload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "float128":
                                 switch ((int) v.localvarlocation)
@@ -813,7 +816,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.dfload_1); break;
                                     case 2: op =    new Opcode(Ops.dfload_2); break;
                                     case 3: op =    new Opcode(Ops.dfload_3); break;
-                                    default: op =   new Opcode(Ops.dfload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.dfload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "float256":
                                 switch ((int) v.localvarlocation)
@@ -822,7 +825,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.ddload_1); break;
                                     case 2: op =    new Opcode(Ops.ddload_2); break;
                                     case 3: op =    new Opcode(Ops.ddload_3); break;
-                                    default: op =   new Opcode(Ops.ddload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.ddload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             case "String":
                             case "string":
@@ -832,7 +835,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.csload_1); break;
                                     case 2: op =    new Opcode(Ops.csload_2); break;
                                     case 3: op =    new Opcode(Ops.csload_3); break;
-                                    default: op =   new Opcode(Ops.csload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.csload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                             default:
                                 switch ((int) v.localvarlocation)
@@ -841,7 +844,7 @@ public class AbstractSyntaxTree
                                     case 1: op =    new Opcode(Ops.aload_1); break;
                                     case 2: op =    new Opcode(Ops.aload_2); break;
                                     case 3: op =    new Opcode(Ops.aload_3); break;
-                                    default: op =   new Opcode(Ops.aload).add(Opcode.convertLong(v.localvarlocation)); break;
+                                    default: op =   new Opcode(Ops.aload).add(Opcode.convertShort(v.localvarlocation)); break;
                                 } break;
                         }
                     }
@@ -940,6 +943,7 @@ public class AbstractSyntaxTree
                             break;
                         case "long":
                             ops.add(new Opcode(Ops.lconstrld).add(Opcode.convertLong(Long.parseLong(token.toString()))));
+                            break;
                         case "ulong":
                             ops.add(new Opcode(Ops.lconstrld_u).add(Opcode.convertLong(Long.parseLong(token.toString()))));
                             break;
@@ -964,28 +968,54 @@ public class AbstractSyntaxTree
                 default:
                     switch (lastOnStack)
                     {
+                        case "":
+                            switch (token.getType())
+                            {
+                                case NUMBER:
+                                    switch (token.toString()) {
+                                        case "0":
+                                            ops.add(new Opcode(Ops.lconst_0));
+                                            break;
+                                        case "1":
+                                            ops.add(new Opcode(Ops.lconst_1));
+                                            break;
+                                        case "2":
+                                            ops.add(new Opcode(Ops.lconst_2));
+                                            break;
+                                        case "3":
+                                            ops.add(new Opcode(Ops.lconst_3));
+                                            break;
+                                        default:
+                                            long l = (Long.parseLong(token.toString()));
+                                            ops.add(new Opcode(Ops.lconst).add(Opcode.convertLong(l)));
+                                            break;
+                                    }
+                                    setLastOnStack("long");
+                                    break;
+                                case DECIMAL:
+                                    switch (token.toString()) {
+                                        case "0":
+                                            ops.add(new Opcode(Ops.dconst_0));
+                                            break;
+                                        case "1":
+                                            ops.add(new Opcode(Ops.dconst_1));
+                                            break;
+                                        case "2":
+                                            ops.add(new Opcode(Ops.dconst_2));
+                                            break;
+                                        case "3":
+                                            ops.add(new Opcode(Ops.dconst_3));
+                                            break;
+                                        default:
+                                            double l = (Double.parseDouble(token.toString()));
+                                            ops.add(new Opcode(Ops.dconst).add(Opcode.convertDouble(l)));
+                                            break;
+                                    }
+                                    setLastOnStack("double");
+                                    break;
+                            } break;
                         case "ubyte":
                         case "uchar":
-                            switch (token.toString()) {
-                                case "0":
-                                    ops.add(new Opcode(Ops.bconst_0));
-                                    break;
-                                case "1":
-                                    ops.add(new Opcode(Ops.bconst_1));
-                                    break;
-                                case "2":
-                                    ops.add(new Opcode(Ops.bconst_2));
-                                    break;
-                                case "3":
-                                    ops.add(new Opcode(Ops.bconst_3));
-                                    break;
-                                default:
-                                    long l = Math.abs(Long.parseLong(token.toString()));
-                                    ops.add(new Opcode(Ops.bconst).add(Opcode.convertByte(l)));
-                                    break;
-                            }
-                            setLastOnStack("ubyte");
-                            break;
                         case "byte":
                         case "char":
                             switch (token.toString()) {
@@ -1183,6 +1213,34 @@ public class AbstractSyntaxTree
                                     break;
                             }
                             setLastOnStack("double");
+                            break;
+                        case "string":
+                        case "String":
+                                    ops.add(new Opcode(Ops.csconst).add(Opcode.convertShort(token.toString().length())).add(Opcode.convertBytes(token.toString().getBytes())));
+                            setLastOnStack("String");
+                            break;
+                        default:
+                            switch (token.toString()) {
+                                case "0":
+                                    ops.add(new Opcode(Ops.lconst_0));
+                                    break;
+                                case "1":
+                                    ops.add(new Opcode(Ops.lconst_1));
+                                    break;
+                                case "2":
+                                    ops.add(new Opcode(Ops.lconst_2));
+                                    break;
+                                case "3":
+                                    ops.add(new Opcode(Ops.lconst_3));
+                                    break;
+                                default:
+                                    long l = Math.abs(Long.parseLong(token.toString()));
+
+                                    ops.add(new Opcode(Ops.lconst).add(Opcode.convertLong(l)));
+                                    break;
+                            }
+                            setLastOnStack("reference");
+                            ops.add(new Opcode(Ops.l2a));
                             break;
                     }
 
@@ -1793,11 +1851,12 @@ public class AbstractSyntaxTree
 
 //                    if (!m.isStatic())
 //                    {
-                    compile(token.getTokens().get(1), ops, CompileType.METHOD_ARGUMENTS);
                     ops.add(loadVariable("this", ops, CompileType.NONE));
+                    ops.add(new Opcode(Ops.sbp));
+                    compile(token.getTokens().get(1), ops, CompileType.METHOD_ARGUMENTS);
 //                    }
 
-                    ops.add(new Opcode(Ops.invoke).add(Opcode.to40bitPointer(m.getLocation())));
+                    ops.add(new Opcode(Ops.invoke).add(Opcode.to24bitPointer(m.getLocation())));
                     setLastOnStack(m.getReturnType());
                 }
                 break;
@@ -1984,7 +2043,7 @@ public class AbstractSyntaxTree
                     stor = new Opcode(Ops.bstore_2);
                 else if (v.localvarlocation == 3)
                     stor = new Opcode(Ops.bstore_3);
-                else stor = new Opcode(Ops.bstore).add(Opcode.convertLong(v.localvarlocation));
+                else stor = new Opcode(Ops.bstore).add(Opcode.convertShort(v.localvarlocation));
                 cast = castToChar();
                 break;
             case "ushort":
@@ -1997,7 +2056,7 @@ public class AbstractSyntaxTree
                     stor = new Opcode(Ops.sstore_2);
                 else if (v.localvarlocation == 3)
                     stor = new Opcode(Ops.sstore_3);
-                else stor = new Opcode(Ops.sstore).add(Opcode.convertLong(v.localvarlocation));
+                else stor = new Opcode(Ops.sstore).add(Opcode.convertShort(v.localvarlocation));
                 cast = castToShort();
                 break;
             case "int":
@@ -2010,42 +2069,51 @@ public class AbstractSyntaxTree
                     stor = new Opcode(Ops.istore_2);
                 else if (v.localvarlocation == 3)
                     stor = new Opcode(Ops.istore_3);
-                else stor = new Opcode(Ops.istore).add(Opcode.convertLong(v.localvarlocation));
+                else stor = new Opcode(Ops.istore).add(Opcode.convertShort(v.localvarlocation));
                 cast = castToInt();
                 break;
             case "long":
             case "ulong":
-                stor = new Opcode(Ops.lstore).add(Opcode.convertLong(v.localvarlocation));
+                if      (v.localvarlocation == 0)
+                    stor = new Opcode(Ops.lstore_0);
+                else if (v.localvarlocation == 1)
+                    stor = new Opcode(Ops.lstore_1);
+                else if (v.localvarlocation == 2)
+                    stor = new Opcode(Ops.lstore_2);
+                else if (v.localvarlocation == 3)
+                    stor = new Opcode(Ops.lstore_3);
+                else stor = new Opcode(Ops.lstore).add(Opcode.convertShort(v.localvarlocation));
                 cast = castToLong();
                 break;
             case "int128":
             case "uint128":
-                stor = new Opcode(Ops.listore).add(Opcode.convertLong(v.localvarlocation));
+                stor = new Opcode(Ops.listore).add(Opcode.convertShort(v.localvarlocation));
+                break;
             case "int256":
             case "uint256":
-                stor = new Opcode(Ops.llstore).add(Opcode.convertLong(v.localvarlocation));
+                stor = new Opcode(Ops.llstore).add(Opcode.convertShort(v.localvarlocation));
                 break;
             case "float":
-                stor = new Opcode(Ops.fstore).add(Opcode.convertLong(v.localvarlocation));
+                stor = new Opcode(Ops.fstore).add(Opcode.convertShort(v.localvarlocation));
                 cast = castToFloat();
                 break;
             case "double":
-                stor = new Opcode(Ops.dstore).add(Opcode.convertLong(v.localvarlocation));
+                stor = new Opcode(Ops.dstore).add(Opcode.convertShort(v.localvarlocation));
                 cast = castToDouble();
                 break;
             case "float128":
-                stor = new Opcode(Ops.dfstore).add(Opcode.convertLong(v.localvarlocation));
+                stor = new Opcode(Ops.dfstore).add(Opcode.convertShort(v.localvarlocation));
                 break;
             case "float256":
-                stor = new Opcode(Ops.ddstore).add(Opcode.convertLong(v.localvarlocation));
+                stor = new Opcode(Ops.ddstore).add(Opcode.convertShort(v.localvarlocation));
                 break;
             case "String":
             case "string":
-                stor = new Opcode(Ops.astore).add(Opcode.convertLong(v.localvarlocation));
+                stor = new Opcode(Ops.astore).add(Opcode.convertShort(v.localvarlocation));
                 cast = castToString();
                 break;
                 default:
-                    stor = new Opcode(Ops.astore).add(Opcode.convertLong(v.localvarlocation));
+                    stor = new Opcode(Ops.astore).add(Opcode.convertShort(v.localvarlocation));
                     cast = castToLong();
                     break;
         }

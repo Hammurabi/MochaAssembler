@@ -394,12 +394,24 @@ public enum Ops
     csload_2(3, "load a long onto the stack from a local variable 2"),
     csload_3(4, "load a long onto the stack from a local variable 3"),
 
-    ebp(53, "get 'this' base pointer"),
+    ebp(53, "get base pointer"),
     esp(53, "get stack pointer"),
-    sbp("set 'this' base pointer"),
+    sbp("set base pointer"),
     ssp("set stack pointer"),
     pop("pop the top value from the stack"),
     pop2("pop the top two values from the stack"),
+
+    abp("store a byte into base pointer"),
+    bbp("store a byte into base pointer"),
+    ebps("store a short into base pointer"),
+    ibp("store an integer into base pointer"),
+    lbp("store a long into base pointer"),
+    libp("store a long int into base pointer"),
+    llbp("store a long long into base pointer"),
+    fbp("store a float into base pointer"),
+    dbp("store a double into base pointer"),
+    dfbp("store a double float into base pointer"),
+    ddbp("store a double double into base pointer"),
 
     bstore  ("store a byte value into a local variable"),
     bstore_0("store a byte value into a local variable 0"),
@@ -628,6 +640,7 @@ public enum Ops
     l2d ("cast<double>(long)"),
     l2df("cast<double float>(long)"),
     l2dd("cast<double double>(long)"),
+    l2a("cast<reference>(long)"),
 
     li2i,
     li2b,
@@ -745,6 +758,6 @@ public enum Ops
     @Override
     public String toString()
     {
-        return super.toString() + " " + this.desc;
+        return super.toString();/** + " " + this.desc;**/
     }
 }

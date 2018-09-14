@@ -12,13 +12,12 @@
 
 package com.riverssen.core.mpp;
 
-import com.riverssen.core.mpp.compiler.DynamicLibraryLoader;
-import com.riverssen.core.mpp.compiler.LexedProgram;
-import com.riverssen.core.mpp.compiler.ParsedProgram;
-import com.riverssen.core.mpp.compiler.PreprocessedProgram;
+import com.riverssen.core.mpp.compiler.*;
 import com.riverssen.core.mpp.exceptions.ParseException;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class MainCompiler
 {
@@ -113,6 +112,12 @@ public class MainCompiler
                 writer.close();
             } else if (arg.equals("-c") || arg.equals("-compile"))
             {
+//                List<Ops> opcodes = Arrays.asList(Ops.values());
+//
+//                for (Ops op : opcodes)
+//                    System.out.println(op + ", /**" + op.getDesc() + "**/");
+//
+//                System.exit(0);
 //                String ops = "";
 //
 //                String split[] = ops.split(",");

@@ -66,14 +66,14 @@ class HelloWorld {
         }
     }
 
-    public function add(long a, int b) : long
+    public function add(int a, long b) : long
     {
         return a + b
     }
 
     public function mul(int a) : void
     {
-        int b = add(4, 6)
+            message = "no message!"
 //        vector a(1, 2)
 //        vector b(50, 12)
 //        vector c = a * b
