@@ -19,10 +19,8 @@ public class StackTrace
 
     public String toString()
     {
-        String string = "@space";
-
-        for (String str : trace) string += "." + str;
-
+        String string = "";
+        for (String str : trace) string += str + "\n";
         return string;
     }
 }

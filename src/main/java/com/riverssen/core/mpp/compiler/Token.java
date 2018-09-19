@@ -288,8 +288,52 @@ public class Token implements Serializable, Iterable<Token>
         StackTrace stackTrace = new StackTrace();
 
         stackTrace.add("line " + line + " offset " + offset);
+        stackTrace.add(getFullSignature());
+
+        Token parent = this.parent;
+
+        while (parent != null)
+        {
+            if (parent.getType() != Type.BRACES && parent.getType() != Type.PARENTHESIS && parent.getType() != Type.FULL_DECLARATION && parent.getType() != Type.EMPTY_DECLARATION)
+                stackTrace.add(parent.getFullSignature());
+
+            parent = parent.getParent();
+        }
 
         return stackTrace;
+    }
+
+    public String getFullSignature()
+    {
+        String info = "(line " + line + " offset " + offset + ")";
+
+        if (type.equals(Type.METHOD_DECLARATION) || type.equals(Type.METHOD_EMPTY_DECLARATION))
+        {
+            String parenthesis = "";
+
+            for (Token token : getTokens().get(2).getTokens())
+                parenthesis += ", " + token.getTokens().get(0) + " " + token.getTokens().get(1);
+
+            if (!parenthesis.isEmpty())
+                parenthesis = parenthesis.substring(2);
+
+            return getTokens().get(1) + " function(" + getTokens().get(0).toString() + "(" + parenthesis + ")) " + info;
+        } else if (type.equals(Type.CLASS_DECLARATION))
+            return "class " + getTokens().get(0) + " " + info;
+        else if (type.equals(Type.FULL_DECLARATION) || type.equals(Type.EMPTY_DECLARATION))
+            return getTokens().get(0) + " " + getTokens().get(1) + " " + info;
+        else if (!type.equals(Type.ROOT))
+        {
+            String data = "";
+
+            for (Token token : getTokens())
+                data += "(" + token.getFullSignature() + ") ";
+
+            if (data.length() > 0) return data + info;
+            else return toString() + " " + info;
+        }
+
+        return toString() + " " + info;
     }
 
     public Token append(char chr)
