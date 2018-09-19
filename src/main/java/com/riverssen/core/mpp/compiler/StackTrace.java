@@ -5,18 +5,16 @@ import java.util.List;
 
 public class StackTrace
 {
-    GlobalSpace space;
     List<String> trace;
 
-    public StackTrace(GlobalSpace space)
+    public StackTrace()
     {
-        this.space = space;
         trace = new ArrayList<>();
     }
 
-    public void add(String type, String name)
+    public void add(String place)
     {
-        trace.add(type + "__" + name);
+        trace.add("at: " + place);
     }
 
     public String toString()

@@ -721,6 +721,28 @@ public enum Ops
 
     slp("force the virtual machine to sleep"),
     halt("halt the virtual machine"),
+
+    bfld("load a byte as method argument"),
+    sfld("load a short as method argument"),
+    ifld("load an integer as method argument"),
+    lfld("load a long as method argument"),
+    lifld("load a long integer as method argument"),
+    llfld("load a long long as method argument"),
+    ffld("load a float as method argument"),
+    dfld("load a double as method argument"),
+    dffld("load a double float as method argument"),
+    ddfld("load a double double as method argument"),
+
+    bcnstfld("put a byte as method argument"),
+    scnstfld("put a short as method argument"),
+    icnstfld("put an integer as method argument"),
+    lcnstfld("put a long as method argument"),
+    licnstfld("put a long integer as method argument"),
+    llcnstfld("put a long long as method argument"),
+    fcnstfld("put a float as method argument"),
+    dcnstfld("put a double as method argument"),
+    dfcnstfld("put a double float as method argument"),
+    ddcnstfld("put a double double as method argument"),
     ;
 //    sin,
 //    cos,

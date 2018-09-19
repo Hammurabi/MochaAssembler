@@ -40,6 +40,7 @@ public class Field
     public Field(GlobalSpace space, Token token, Struct parent)
     {
         __modifiers__   = new LinkedHashSet<>();
+        __modifiers__.addAll(token.getModifiers());
         __opcodes__     = new Executable();
         __value__       = null;
         __parent__      = parent;
@@ -84,9 +85,11 @@ public class Field
 
     public long size(GlobalSpace space)
     {
-        if (__inherent__)
+        if (__modifiers__.contains(Modifier.POINTER))
+            return 8;
+        else if (__inherent__)
             return __size__.getSizeAsLong(space);
-        if (!space.getGlobalTypes().containsKey(__typename__))
+        else if (!space.getGlobalTypes().containsKey(__typename__))
         {
             System.err.println("field type '" + __typename__ + " " + getName() + "' doesn't exist.");
             System.exit(0);

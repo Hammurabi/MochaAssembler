@@ -12,13 +12,15 @@ public class AbstractSyntaxTree
     private Executable exe;
     private Opcode     ops;
     private long       lcllvts;
-    private String     lastOnStack;
-    private class var{
-        String name, type;
-        Set<Modifier> modifiers;
+    public String     lastOnStack;
+    public ErrorCallBackI errorCallBack;
+
+    public class var{
+        public String name, type;
+        public Set<Modifier> modifiers;
 //        long stacklocation;
-        long localvarlocation;
-        boolean isField;
+        public long localvarlocation;
+        public boolean isField;
 
         public var(String name, String type, Set<Modifier> modifiers)
         {
@@ -43,6 +45,7 @@ public class AbstractSyntaxTree
     {
         localVariableTable = new HashMap<>();
         precedence         = new HashMap<>();
+        errorCallBack      = new DefaultErrorCallBack();
 
         precedence.put("char", (byte)0);
         precedence.put("uchar", (byte)1);
@@ -188,7 +191,7 @@ public class AbstractSyntaxTree
                         op = new Opcode(Ops.ddmov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.ddinc)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptdd).add(Opcode.convertLong(v.localvarlocation))); break;
                     case "String":
                     case "string":
-                        svrerr("cannot increment a string.");
+                        errorCallBack.execute("cannot increment a pointer", null, ErrorCallBackI.MESSAGE);
                     default:
                         unsvrerr("incrementing a pointer");
                         op = new Opcode(Ops.amov).add(Opcode.to40bitPointer(v.localvarlocation)).add(new Opcode(Ops.linc)); break;
@@ -854,7 +857,7 @@ public class AbstractSyntaxTree
         return op;
     }
 
-    private enum CompileType
+    public enum CompileType
     {
         NONE,
         STRAIGHT_TO_REGISTER,
@@ -872,7 +875,7 @@ public class AbstractSyntaxTree
 
     private Map<String, Byte> precedence;
 
-    private void setLastOnStack(String lastOnStack)
+    public void setLastOnStack(String lastOnStack)
     {
         if (this.lastOnStack != "")
         {
@@ -885,7 +888,7 @@ public class AbstractSyntaxTree
         this.lastOnStack = lastOnStack;
     }
 
-    private String resetLastOnStack()
+    public String resetLastOnStack()
     {
         String los = lastOnStack;
         lastOnStack = "";
@@ -2044,7 +2047,7 @@ public class AbstractSyntaxTree
                 else if (v.localvarlocation == 3)
                     stor = new Opcode(Ops.bstore_3);
                 else stor = new Opcode(Ops.bstore).add(Opcode.convertShort(v.localvarlocation));
-                cast = castToChar();
+                cast = castToChar(declaration);
                 break;
             case "ushort":
             case "short":
@@ -2057,7 +2060,7 @@ public class AbstractSyntaxTree
                 else if (v.localvarlocation == 3)
                     stor = new Opcode(Ops.sstore_3);
                 else stor = new Opcode(Ops.sstore).add(Opcode.convertShort(v.localvarlocation));
-                cast = castToShort();
+                cast = castToShort(declaration);
                 break;
             case "int":
             case "uint":
@@ -2070,7 +2073,7 @@ public class AbstractSyntaxTree
                 else if (v.localvarlocation == 3)
                     stor = new Opcode(Ops.istore_3);
                 else stor = new Opcode(Ops.istore).add(Opcode.convertShort(v.localvarlocation));
-                cast = castToInt();
+                cast = castToInt(declaration);
                 break;
             case "long":
             case "ulong":
@@ -2083,7 +2086,7 @@ public class AbstractSyntaxTree
                 else if (v.localvarlocation == 3)
                     stor = new Opcode(Ops.lstore_3);
                 else stor = new Opcode(Ops.lstore).add(Opcode.convertShort(v.localvarlocation));
-                cast = castToLong();
+                cast = castToLong(declaration);
                 break;
             case "int128":
             case "uint128":
@@ -2095,11 +2098,11 @@ public class AbstractSyntaxTree
                 break;
             case "float":
                 stor = new Opcode(Ops.fstore).add(Opcode.convertShort(v.localvarlocation));
-                cast = castToFloat();
+                cast = castToFloat(declaration);
                 break;
             case "double":
                 stor = new Opcode(Ops.dstore).add(Opcode.convertShort(v.localvarlocation));
-                cast = castToDouble();
+                cast = castToDouble(declaration);
                 break;
             case "float128":
                 stor = new Opcode(Ops.dfstore).add(Opcode.convertShort(v.localvarlocation));
@@ -2110,11 +2113,11 @@ public class AbstractSyntaxTree
             case "String":
             case "string":
                 stor = new Opcode(Ops.astore).add(Opcode.convertShort(v.localvarlocation));
-                cast = castToString();
+                cast = castToString(declaration);
                 break;
                 default:
                     stor = new Opcode(Ops.astore).add(Opcode.convertShort(v.localvarlocation));
-                    cast = castToLong();
+                    cast = castToLong(declaration);
                     break;
         }
 
@@ -2212,7 +2215,7 @@ public class AbstractSyntaxTree
         return v;
     }
 
-    private var getLocalVariable(String name)
+    public var getLocalVariable(String name)
     {
         if (localVariableTable.containsKey(name))
             return localVariableTable.get(name);
@@ -2335,50 +2338,50 @@ public class AbstractSyntaxTree
             case "ubyte":
             case "uchar":
                     if (variableLocation == 0)
-                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_0));
+                        op.add(putByteInput(input, ops)).add(castToChar(input)).add(new Opcode(Ops.bstore_0));
                     else if (variableLocation == 1)
-                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_1));
+                        op.add(putByteInput(input, ops)).add(castToChar(input)).add(new Opcode(Ops.bstore_1));
                     else if (variableLocation == 2)
-                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_2));
+                        op.add(putByteInput(input, ops)).add(castToChar(input)).add(new Opcode(Ops.bstore_2));
                     else if (variableLocation == 3)
-                        op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore_3));
-                    else op.add(putByteInput(input, ops)).add(castToChar()).add(new Opcode(Ops.bstore).add(Opcode.convertLong(variableLocation)));
+                        op.add(putByteInput(input, ops)).add(castToChar(input)).add(new Opcode(Ops.bstore_3));
+                    else op.add(putByteInput(input, ops)).add(castToChar(input)).add(new Opcode(Ops.bstore).add(Opcode.convertLong(variableLocation)));
                 break;
             case "short":
             case "ushort":
                 if (variableLocation == 0)
-                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_0));
+                    op.add(putShortInput(input, ops)).add(castToShort(input)).add(new Opcode(Ops.sstore_0));
                 else if (variableLocation == 1)
-                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_1));
+                    op.add(putShortInput(input, ops)).add(castToShort(input)).add(new Opcode(Ops.sstore_1));
                 else if (variableLocation == 2)
-                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_2));
+                    op.add(putShortInput(input, ops)).add(castToShort(input)).add(new Opcode(Ops.sstore_2));
                 else if (variableLocation == 3)
-                    op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore_3));
-                else op.add(putShortInput(input, ops)).add(castToShort()).add(new Opcode(Ops.sstore).add(Opcode.convertLong(variableLocation)));
+                    op.add(putShortInput(input, ops)).add(castToShort(input)).add(new Opcode(Ops.sstore_3));
+                else op.add(putShortInput(input, ops)).add(castToShort(input)).add(new Opcode(Ops.sstore).add(Opcode.convertLong(variableLocation)));
                 break;
             case "uint":
             case "int":
                 if (variableLocation == 0)
-                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_0));
+                    op.add(putIntInput(input, ops)).add(castToInt(input)).add(new Opcode(Ops.istore_0));
                 else if (variableLocation == 1)
-                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_1));
+                    op.add(putIntInput(input, ops)).add(castToInt(input)).add(new Opcode(Ops.istore_1));
                 else if (variableLocation == 2)
-                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_2));
+                    op.add(putIntInput(input, ops)).add(castToInt(input)).add(new Opcode(Ops.istore_2));
                 else if (variableLocation == 3)
-                    op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore_3));
-                else op.add(putIntInput(input, ops)).add(castToInt()).add(new Opcode(Ops.istore).add(Opcode.convertLong(variableLocation)));
+                    op.add(putIntInput(input, ops)).add(castToInt(input)).add(new Opcode(Ops.istore_3));
+                else op.add(putIntInput(input, ops)).add(castToInt(input)).add(new Opcode(Ops.istore).add(Opcode.convertLong(variableLocation)));
                 break;
             case "ulong":
             case "long":
                 if (variableLocation == 0)
-                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_0));
+                    op.add(putLongInput(input, ops)).add(castToLong(input)).add(new Opcode(Ops.lstore_0));
                 else if (variableLocation == 1)
-                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_1));
+                    op.add(putLongInput(input, ops)).add(castToLong(input)).add(new Opcode(Ops.lstore_1));
                 else if (variableLocation == 2)
-                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_2));
+                    op.add(putLongInput(input, ops)).add(castToLong(input)).add(new Opcode(Ops.lstore_2));
                 else if (variableLocation == 3)
-                    op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore_3));
-                else op.add(putLongInput(input, ops)).add(castToLong()).add(new Opcode(Ops.lstore).add(Opcode.convertLong(variableLocation)));
+                    op.add(putLongInput(input, ops)).add(castToLong(input)).add(new Opcode(Ops.lstore_3));
+                else op.add(putLongInput(input, ops)).add(castToLong(input)).add(new Opcode(Ops.lstore).add(Opcode.convertLong(variableLocation)));
                 break;
             case "int128":
 //                op = new Opcode(Ops.liconst_e); break;
@@ -2390,25 +2393,25 @@ public class AbstractSyntaxTree
 //                op = new Opcode(Ops.llconst_e); break;
             case "float":
                 if (variableLocation == 0)
-                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_0));
+                    op.add(putFloatInput(input, ops)).add(castToFloat(input)).add(new Opcode(Ops.fstore_0));
                 else if (variableLocation == 1)
-                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_1));
+                    op.add(putFloatInput(input, ops)).add(castToFloat(input)).add(new Opcode(Ops.fstore_1));
                 else if (variableLocation == 2)
-                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_2));
+                    op.add(putFloatInput(input, ops)).add(castToFloat(input)).add(new Opcode(Ops.fstore_2));
                 else if (variableLocation == 3)
-                    op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore_3));
-                else op.add(putFloatInput(input, ops)).add(castToFloat()).add(new Opcode(Ops.fstore).add(Opcode.convertLong(variableLocation)));
+                    op.add(putFloatInput(input, ops)).add(castToFloat(input)).add(new Opcode(Ops.fstore_3));
+                else op.add(putFloatInput(input, ops)).add(castToFloat(input)).add(new Opcode(Ops.fstore).add(Opcode.convertLong(variableLocation)));
                 break;
             case "double":
                 if (variableLocation == 0)
-                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_0));
+                    op.add(putDoubleInput(input, ops)).add(castToDouble(input)).add(new Opcode(Ops.dstore_0));
                 else if (variableLocation == 1)
-                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_1));
+                    op.add(putDoubleInput(input, ops)).add(castToDouble(input)).add(new Opcode(Ops.dstore_1));
                 else if (variableLocation == 2)
-                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_2));
+                    op.add(putDoubleInput(input, ops)).add(castToDouble(input)).add(new Opcode(Ops.dstore_2));
                 else if (variableLocation == 3)
-                    op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore_3));
-                else op.add(putDoubleInput(input, ops)).add(castToDouble()).add(new Opcode(Ops.dstore).add(Opcode.convertLong(variableLocation)));
+                    op.add(putDoubleInput(input, ops)).add(castToDouble(input)).add(new Opcode(Ops.dstore_3));
+                else op.add(putDoubleInput(input, ops)).add(castToDouble(input)).add(new Opcode(Ops.dstore).add(Opcode.convertLong(variableLocation)));
                 break;
             case "float128":
 //                op = new Opcode(Ops.dfconst_e); break;
@@ -2425,7 +2428,7 @@ public class AbstractSyntaxTree
         return op;
     }
 
-    private Opcode castToDouble()
+    private Opcode castToDouble(Token token)
     {
         Opcode cast = null;//new Opcode( "");
         String t = null;
@@ -2441,19 +2444,19 @@ public class AbstractSyntaxTree
                 return cast;
             case "int":
             case "uint":
-                implicitcasterr(t, "float64_t", "");
+                implicitcasterr(t, "float64_t", "", token);
                 return new Opcode(Ops.i2d);
             case "long":
             case "ulong":
-                implicitcasterr(t, "float64_t", "");
+                implicitcasterr(t, "float64_t", "", token);
                 return new Opcode(Ops.l2d);
             case "int128":
             case "uint128":
-                implicitcasterr(t, "float64_t", "");
+                implicitcasterr(t, "float64_t", "", token);
                 return new Opcode(Ops.li2d);
             case "int256":
             case "uint256":
-                implicitcasterr(t, "float64_t", "");
+                implicitcasterr(t, "float64_t", "", token);
                 return new Opcode(Ops.ll2d);
             case "float":
                 return cast;
@@ -2466,12 +2469,12 @@ public class AbstractSyntaxTree
             case "":
                 return cast;
             default:
-                implicitcasterr(t + "(ptr_t)", "float64_t", "");
+                implicitcasterr(t + "(ptr_t)", "float64_t", "", token);
                 return new Opcode(Ops.l2d);
         }
     }
 
-    private Opcode castToFloat()
+    private Opcode castToFloat(Token token)
     {
         Opcode cast = null;//new Opcode( "");
         String t = null;
@@ -2484,39 +2487,39 @@ public class AbstractSyntaxTree
                 return cast;
             case "short":
             case "ushort":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.s2f);
             case "int":
             case "uint":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.i2f);
             case "long":
             case "ulong":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.l2f);
             case "int128":
             case "uint128":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.li2f);
             case "int256":
             case "uint256":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.ll2f);
             case "float":
                 return cast;
             case "double":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.d2f);
             case "float128":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.df2f);
             case "float256":
-                implicitcasterr(t, "float32_t", "");
+                implicitcasterr(t, "float32_t", "", token);
                 return new Opcode(Ops.dd2f);
             case "":
                 return cast;
             default:
-                implicitcasterr(t + "(ptr_t)", "float32_t", "");
+                implicitcasterr(t + "(ptr_t)", "float32_t", "", token);
                 return new Opcode(Ops.l2f);
         }
     }
@@ -2773,12 +2776,12 @@ public class AbstractSyntaxTree
         System.exit(0);
     }
 
-    private void implicitcasterr(String typea, String typeb, String extra)
+    private void implicitcasterr(String typea, String typeb, String extra, Token token)
     {
-        unsvrerr("implicit cast from '" + typea + "' to '" + typeb + "' " + extra);
+        errorCallBack.execute("implicit cast from '" + typea + "' to '" + typeb + "' " + extra, token.getStackTrace(), ErrorCallBackI.MESSAGE);
     }
 
-    private Opcode castToChar()
+    private Opcode castToChar(Token token)
     {
         Opcode cast = null;//new Opcode( "");
         String t = null;
@@ -2786,7 +2789,7 @@ public class AbstractSyntaxTree
         {
             case "void":
             case "VOID":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return cast;
             case "byte":
             case "char":
@@ -2795,45 +2798,45 @@ public class AbstractSyntaxTree
                 return cast;
             case "short":
             case "ushort":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.s2b);
             case "int":
             case "uint":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.i2b);
             case "long":
             case "ulong":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.l2b);
             case "int128":
             case "uint128":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.li2b);
             case "int256":
             case "uint256":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.ll2b);
             case "float":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.f2b);
             case "double":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.d2b);
             case "float128":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.df2b);
             case "float256":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return new Opcode(Ops.dd2b);
             case "":
                 return cast;
                 default:
-                    implicitcasterr(t + "(ptr_t)", "int8_t", "");
+                    implicitcasterr(t + "(ptr_t)", "int8_t", "", token);
                     return new Opcode(Ops.l2b);
         }
     }
 
-    private Opcode castToShort()
+    private Opcode castToShort(Token token)
     {
         Opcode cast = null;//new Opcode( "");
         String t = null;
@@ -2841,7 +2844,7 @@ public class AbstractSyntaxTree
         {
             case "void":
             case "VOID":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return cast;
             case "byte":
             case "char":
@@ -2853,43 +2856,43 @@ public class AbstractSyntaxTree
                 return cast;
             case "int":
             case "uint":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.i2s);
             case "long":
             case "ulong":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.l2s);
             case "int128":
             case "uint128":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.li2s);
             case "int256":
             case "uint256":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.ll2s);
             case "float":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.f2s);
             case "double":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.d2s);
             case "float128":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.df2s);
             case "float256":
-                implicitcasterr(t, "int16_t", "");
+                implicitcasterr(t, "int16_t", "", token);
                 return new Opcode(Ops.dd2s);
             case "":
                 return cast;
             default:
 //                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to short.");
 //                System.exit(0);
-                implicitcasterr(t + "(ptr_t)", "int16_t", "");
+                implicitcasterr(t + "(ptr_t)", "int16_t", "", token);
                 return new Opcode(Ops.l2s);
         }
     }
 
-    private Opcode castToInt()
+    private Opcode castToInt(Token token)
     {
         Opcode cast = null;//new Opcode( "");
         String t = null;
@@ -2897,7 +2900,7 @@ public class AbstractSyntaxTree
         {
             case "void":
             case "VOID":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return cast;
             case "byte":
             case "char":
@@ -2912,39 +2915,39 @@ public class AbstractSyntaxTree
                 return cast;
             case "long":
             case "ulong":
-                implicitcasterr(t, "int32_t", "");
+                implicitcasterr(t, "int32_t", "", token);
                 return new Opcode(Ops.l2i);
             case "int128":
             case "uint128":
-                implicitcasterr(t, "int32_t", "");
+                implicitcasterr(t, "int32_t", "", token);
                 return new Opcode(Ops.li2i);
             case "int256":
             case "uint256":
-                implicitcasterr(t, "int32_t", "");
+                implicitcasterr(t, "int32_t", "", token);
                 return new Opcode(Ops.ll2i);
             case "float":
-                implicitcasterr(t, "int32_t", "");
+                implicitcasterr(t, "int32_t", "", token);
                 return new Opcode(Ops.f2i);
             case "double":
-                implicitcasterr(t, "int32_t", "");
+                implicitcasterr(t, "int32_t", "", token);
                 return new Opcode(Ops.d2i);
             case "float128":
-                implicitcasterr(t, "int32_t", "");
+                implicitcasterr(t, "int32_t", "", token);
                 return new Opcode(Ops.df2i);
             case "float256":
-                implicitcasterr(t, "int32_t", "");
+                implicitcasterr(t, "int32_t", "", token);
                 return new Opcode(Ops.dd2i);
             case "":
                 return cast;
             default:
 //                System.err.println("compiler error: casting unknown type '" + lastOnStack + "' to int.");
 //                System.exit(0);
-                implicitcasterr(t + "(ptr_t)", "int32_t", "");
+                implicitcasterr(t + "(ptr_t)", "int32_t", "", token);
                 return new Opcode(Ops.l2i);
         }
     }
 
-    private Opcode castToLong()
+    private Opcode castToLong(Token token)
     {
         Opcode cast = new Opcode( "");
         String t = null;
@@ -2952,7 +2955,7 @@ public class AbstractSyntaxTree
         {
             case "void":
             case "VOID":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return cast;
             case "byte":
             case "char":
@@ -2970,28 +2973,28 @@ public class AbstractSyntaxTree
                 return cast;
             case "int128":
             case "uint128":
-                implicitcasterr(t, "int64_t", "");
+                implicitcasterr(t, "int64_t", "", token);
                 return new Opcode(Ops.li2l);
             case "int256":
             case "uint256":
-                implicitcasterr(t, "int64_t", "");
+                implicitcasterr(t, "int64_t", "", token);
                 return new Opcode(Ops.ll2l);
             case "float":
-                implicitcasterr(t, "int64_t", "");
+                implicitcasterr(t, "int64_t", "", token);
                 return new Opcode(Ops.f2l);
             case "double":
-                implicitcasterr(t, "int64_t", "");
+                implicitcasterr(t, "int64_t", "", token);
                 return new Opcode(Ops.d2l);
             case "float128":
-                implicitcasterr(t, "int64_t", "");
+                implicitcasterr(t, "int64_t", "", token);
                 return new Opcode(Ops.df2l);
             case "float256":
-                implicitcasterr(t, "int64_t", "");
+                implicitcasterr(t, "int64_t", "", token);
                 return new Opcode(Ops.dd2l);
             case "":
                 return cast;
             default:
-                implicitcasterr(t + "(ptr_t)", "int64_t", "");
+                implicitcasterr(t + "(ptr_t)", "int64_t", "", token);
                 return cast;
         }
     }
@@ -3006,16 +3009,16 @@ public class AbstractSyntaxTree
             case "char":
             case "ubyte":
             case "uchar":
-                op.add(putByteInput(input, op), op).add(castToChar()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptb)).add(Opcode.to40bitPointer(index)); break;
+                op.add(putByteInput(input, op), op).add(castToChar(input)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptb)).add(Opcode.to40bitPointer(index)); break;
             case "short":
             case "ushort":
-                op.add(putShortInput(input, op), op).add(castToShort()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pts).add(Opcode.to40bitPointer(index))); break;
+                op.add(putShortInput(input, op), op).add(castToShort(input)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pts).add(Opcode.to40bitPointer(index))); break;
             case "uint":
             case "int":
-                op.add(putIntInput(input, op)).add(castToInt()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pti).add(Opcode.to40bitPointer(index))); break;
+                op.add(putIntInput(input, op)).add(castToInt(input)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.pti).add(Opcode.to40bitPointer(index))); break;
             case "ulong":
             case "long":
-                op.add(putLongInput(input, op)).add(castToLong()).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptl).add(Opcode.to40bitPointer(index))); break;
+                op.add(putLongInput(input, op)).add(castToLong(input)).add(new Opcode(Ops.ebp)).add(new Opcode(Ops.ptl).add(Opcode.to40bitPointer(index))); break;
             case "int128":
         //                op = new Opcode(Ops.liconst_e); break;
             case "int256":
@@ -3034,7 +3037,7 @@ public class AbstractSyntaxTree
         //                op = new Opcode(Ops.ddconst_e); break;
             case "String":
             case "string":
-                op.add(putStringInput(input, op)).add(new Opcode(Ops.ebp)).add(castToString()).add(new Opcode(Ops.ptcs).add(Opcode.to40bitPointer(index)));
+                op.add(putStringInput(input, op)).add(new Opcode(Ops.ebp)).add(castToString(input)).add(new Opcode(Ops.ptcs).add(Opcode.to40bitPointer(index)));
                 break;
             default:
                 op = new Opcode(Ops.aconst_null); break;
@@ -3043,7 +3046,7 @@ public class AbstractSyntaxTree
         return op;
     }
 
-    private Opcode castToString()
+    private Opcode castToString(Token token)
     {
         Opcode cast = null;//new Opcode( "");
         String t = null;
@@ -3051,7 +3054,7 @@ public class AbstractSyntaxTree
         {
             case "void":
             case "VOID":
-                implicitcasterr(t, "int8_t", "");
+                implicitcasterr(t, "int8_t", "", token);
                 return cast;
             case "byte":
             case "char":

@@ -73,7 +73,7 @@ class HelloWorld {
 
     public function mul(int a) : void
     {
-            message = "no message!"
+        int b = add(4, 7)
 //        vector a(1, 2)
 //        vector b(50, 12)
 //        vector c = a * b

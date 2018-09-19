@@ -283,6 +283,15 @@ public class Token implements Serializable, Iterable<Token>
     {
     }
 
+    public StackTrace getStackTrace()
+    {
+        StackTrace stackTrace = new StackTrace();
+
+        stackTrace.add("line " + line + " offset " + offset);
+
+        return stackTrace;
+    }
+
     public Token append(char chr)
     {
         value.append(chr);
@@ -998,7 +1007,7 @@ public class Token implements Serializable, Iterable<Token>
 
     private boolean isKeyword()
     {
-        final String keywords[] = {"operator", "op", "function", "template", "fun", "new", "class", "static", "ref", "reference", "ptr", "pointer", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
+        final String keywords[] = {"operator", "op", "function", "template", "fun", "new", "class", "static", "ref", "reference", "ptr", "native", "pointer", "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
         for(String string : keywords) if(toString().equals(string)) return true;
         return false;
     }

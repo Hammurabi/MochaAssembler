@@ -89,4 +89,36 @@ class Datetime
     }
 }
 
+//class File{
+//    private const string fileName
+//
+//    public function File(string fileName) : void
+//    {
+//        this.fileName = fileName
+//    }
+//}
+
+class SmartPointer{
+    private ulong mSize
+    private ptr byte mPointer
+
+    public function SmartPointer(ulong size, ptr byte p) : void
+    {
+        mSize = size
+        mPointer = p
+    }
+
+    public function getSize() : ulong
+    {
+        return mSize
+    }
+
+    public function getPointer() : ptr
+    {
+        return mPointer
+    }
+}
+
+public native function fileReadBytes(const string fileName) : SmartPointer
+
 #reset
