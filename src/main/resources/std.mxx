@@ -10,6 +10,18 @@
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#define bool uchar
+#define boolean uchar
+#define u_int8 uchar
+#define int8 char
+#define byte char
+#define ubyte uchar
+#define int16 short
+#define u_int16 ushort
+#define int32 int
+#define u_int32 uint
+#define String string
+
 public function malloc(ulong size) : ulong
 public function calloc(ulong size) : ulong
 public function delete(ulong o) : void
@@ -120,5 +132,10 @@ class SmartPointer{
 }
 
 public native function fileReadBytes(const string fileName) : SmartPointer
+public native function fileWriteBytes(const string fileName, SmartPointer p) : bool
+public native function fileExists(const string fileName) : bool
+
+template(typename T)
+public native function sin(T) : T
 
 #reset
