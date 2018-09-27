@@ -1,0 +1,8 @@
+#ifndef MATH_LIB_H
+#define MATH_LIB_H
+
+public function sin(double d) : double
+public function cos(double d) : double
+public function tan(double d) : double
+
+#endif  MATH_LIB_H

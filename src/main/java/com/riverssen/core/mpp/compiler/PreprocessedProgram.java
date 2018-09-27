@@ -5,20 +5,28 @@ import com.riverssen.core.utils.Tuple;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PreprocessedProgram
 {
     private String finalProgram;
+    private File   myFile;
 
     public PreprocessedProgram(String program, File location, DynamicLibraryLoader dynamicLibraryLoader)
     {
+        this(program, location, dynamicLibraryLoader, new HashMap<>());
+    }
+
+    public PreprocessedProgram(String program, File location, DynamicLibraryLoader dynamicLibraryLoader, Map<String, String> master)
+    {
         finalProgram = program;
         program = removeComments(program);
-        program = checkIncludes(program, dynamicLibraryLoader);
+        program = checkIncludes(program, dynamicLibraryLoader, master);
         String lines[] = program.split("\n");
-        program = checkIfndIfndefs(lines, -1, new HashMap<>(), true).getI();
+        program = checkIfndIfndefs(lines, -1, master, true).getI();
+        this.myFile = location;
 
         finalProgram = program;
     }
@@ -122,7 +130,7 @@ public class PreprocessedProgram
         return new Tuple<>(betweenIfs, text.getJ());
     }
 
-    private String checkIncludes(final String control, DynamicLibraryLoader dynamicLibraryLoader)
+    private String checkIncludes(final String control, DynamicLibraryLoader dynamicLibraryLoader, Map<String, String> master)
     {
         String test = control;
 
@@ -130,6 +138,8 @@ public class PreprocessedProgram
         String external_include_regex = "\\#\\b(include)\\b\\s*\"\\w(\\w|\\.|\\-|\\/)*\"";
 
         Matcher internal_include = Pattern.compile(internal_include_regex).matcher(test);
+
+        Stack<String> internals = new Stack<>();
 
         while (internal_include.find())
         {
@@ -161,7 +171,8 @@ public class PreprocessedProgram
             String d = external_include.group();
             d        = d.substring(d.indexOf('"') + 1, d.lastIndexOf('"'));
 
-            String c = dynamicLibraryLoader.loadFile(d);
+            Tuple<File, String> file = dynamicLibraryLoader.loadFile(d);
+            String c = new PreprocessedProgram(file.getJ(), file.getI(), dynamicLibraryLoader, master).getFinalProgram();
 
             test = A + c + B;
 

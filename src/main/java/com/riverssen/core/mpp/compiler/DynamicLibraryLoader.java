@@ -1,6 +1,7 @@
 package com.riverssen.core.mpp.compiler;
 
 import com.riverssen.core.mpp.MainCompiler;
+import com.riverssen.core.utils.Tuple;
 
 import java.io.*;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class DynamicLibraryLoader
         return null;
     }
 
-    public String loadFile(String name)
+    public Tuple<File, String> loadFile(String name)
     {
         String utf_program = "";
 
@@ -45,7 +46,7 @@ public class DynamicLibraryLoader
             System.exit(0);
         }
 
-        return utf_program;
+        return new Tuple<>(new File(main + File.separator + name), utf_program);
     }
 
     private static String stdlib()

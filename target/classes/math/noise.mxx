@@ -4,6 +4,7 @@
 class std{
     public native function noise(ulong seed) : ptr
     public native function noise_at(ptr char self, double x, double y) : double
+    public native function noise3D(ptr char self, double x, double y, double z) : double
 }
 
 #endif
