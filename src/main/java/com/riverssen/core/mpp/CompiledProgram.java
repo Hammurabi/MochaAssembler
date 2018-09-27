@@ -98,6 +98,16 @@ public class CompiledProgram
 
                     Struct tstruct = new Struct(space, t);
                     break;
+                case NAMESPACE:
+                    Struct namespace = new Struct(space, t);
+                    if (space.getGlobalTypes().containsKey(t.getTokens().get(0).toString()))
+                    {
+                        System.err.println("struct __" + space.getGlobalTypes().containsKey(t.getTokens().get(0).toString()) + "__ already exists in __global__.");
+                        System.exit(0);
+                    }
+
+//                    space.getNameSpace(namespace.getName());
+                    break;
                 default:
                     System.out.println("An error occured in compiler setup. '" + t.getType() + "'.");
                     System.exit(0);

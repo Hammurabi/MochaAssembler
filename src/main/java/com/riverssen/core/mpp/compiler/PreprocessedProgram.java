@@ -23,7 +23,7 @@ public class PreprocessedProgram
         finalProgram = program;
     }
 
-    private Tuple<String, Integer> checkIfndIfndefs(final String lines[], int start, Map<String, String> master, boolean allow)
+    private Tuple<String, Integer> checkIfndIfndefs(final String lines[], final int start, Map<String, String> master, boolean allow)
     {
         String test = "";
 
@@ -81,7 +81,7 @@ public class PreprocessedProgram
                 i = if_case.getJ();
             } else if (line.matches("\\#(endif)"))
             {
-                if (start == -1)
+                if (i == 0)
                 {
                     System.err.println("No if case for endif.");
                     System.exit(0);
@@ -91,7 +91,7 @@ public class PreprocessedProgram
                 String adjusted = line;
 
                 for (String def : defines.keySet())
-                    adjusted = adjusted.replaceAll("\\b" + def + "\\b", defines.get(def));
+                    adjusted = adjusted.replaceAll("\\b(" + def + ")\\b", defines.get(def));
 
                 test += adjusted + "\n";
             }
@@ -126,8 +126,8 @@ public class PreprocessedProgram
     {
         String test = control;
 
-        String internal_include_regex = "\\#(include)\\s*\\<\\w(\\w|\\.|\\-|\\/)*\\>";
-        String external_include_regex = "\\#(include)\\s*\"\\w(\\w|\\.|\\-|\\/)*\"";
+        String internal_include_regex = "\\#\\b(include)\\b\\s*\\<\\w(\\w|\\.|\\-|\\/)*\\>";
+        String external_include_regex = "\\#\\b(include)\\b\\s*\"\\w(\\w|\\.|\\-|\\/)*\"";
 
         Matcher internal_include = Pattern.compile(internal_include_regex).matcher(test);
 
@@ -145,6 +145,7 @@ public class PreprocessedProgram
             String c = dynamicLibraryLoader.get(d);
 
             test = A + c + B;
+            internal_include = Pattern.compile(internal_include_regex).matcher(test);
         }
 
         Matcher external_include = Pattern.compile(external_include_regex).matcher(test);
@@ -163,6 +164,8 @@ public class PreprocessedProgram
             String c = dynamicLibraryLoader.loadFile(d);
 
             test = A + c + B;
+
+            external_include = Pattern.compile(external_include_regex).matcher(test);
         }
 
         return test;

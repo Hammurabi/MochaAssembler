@@ -16,6 +16,7 @@ import java.util.*;
 
 public class GlobalSpace
 {
+    private Map<String, Namespace>  __namespaces__;
     private Map<String, Struct>     __globaltypes__;
     private Set<Method>             __globalmethods__;
     private Map<String, Field>      __globalfields__;
@@ -24,6 +25,7 @@ public class GlobalSpace
 
     public GlobalSpace()
     {
+        __namespaces__ = new HashMap<>();
         __globaltypes__ =               new HashMap<>();
         __globalmethods__ =             new LinkedHashSet<>();
         __globalfields__ =              new HashMap<>();
@@ -318,5 +320,10 @@ public class GlobalSpace
         }
 
         return false;
+    }
+
+    public Namespace getNameSpace(String namespace)
+    {
+        return __namespaces__.get(namespace);
     }
 }

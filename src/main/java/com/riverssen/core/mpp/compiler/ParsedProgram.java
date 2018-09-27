@@ -247,28 +247,40 @@ public class ParsedProgram
         Token returnType = getNextNotInNewLine(tokens, currentToken, "function must have a return type.");
         Token body = getNextInBraces(tokens, currentToken, "function must have a body");
 
+        Token function = null;
+
         /** unimplemented method **/
         if (body == null)
         {
-            Token function = new Token(Token.Type.METHOD_EMPTY_DECLARATION);
+            function = new Token(Token.Type.METHOD_EMPTY_DECLARATION);
             function.getModifiers().addAll(modifiers);
 
 
             function.add(name);
             function.add(returnType);
             function.add(parenthesis);
-            rootm.add(function);
         } else
         {
-            Token function = new Token(Token.Type.METHOD_DECLARATION);
+            function = new Token(Token.Type.METHOD_DECLARATION);
             function.getModifiers().addAll(modifiers);
 
             function.add(name);
             function.add(returnType);
             function.add(parenthesis);
             function.add(body);
-            rootm.add(function);
         }
+
+//        if (isTemplate)
+//        {
+//            Token templateClass = new Token(TEMPLATE_METHOD_DECLARATION);
+//            templateClass.add(template);
+//            templateClass.getTokens().add(function);
+//            rootm.add(templateClass);
+//        } else
+
+            rootm.add(function);
+
+//        isTemplate = false;
 
         modifiers.clear();
     }

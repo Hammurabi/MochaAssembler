@@ -211,6 +211,7 @@ public class Token implements Serializable, Iterable<Token>
         METHOD_EMPTY_DECLARATION,
         CLASS_DECLARATION,
         TEMPLATE_CLASS_DECLARATION,
+        TEMPLATE_METHOD_DECLARATION,
         EMPTY_CLASS_DECLARATION,
         PARENTHESIS,
         BRACES,
