@@ -1,0 +1,19 @@
+#ifndef FILE_UTILS_H
+#define FILE_UTILS_H
+
+#define FILE_OP_SUCCESS 0
+#define FILE_EXISTS 1
+#define FILE_DOESNT_EXIST 2
+#define FILE_NO_PERMISSION 3
+#define FILE_OP_FAILED 4
+
+public native function native_filereadf(ptr char out, ulong size, string name) : int
+public native function native_filewrite(ptr char out, ulong size, string name, boolean append) : int
+public native function native_filedelete(string name) : int
+public native function native_fileexists(string name) : int
+public native function native_filecreate(string name) : int
+
+class File{
+}
+
+#endif  FILE_UTILS_H

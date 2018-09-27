@@ -139,6 +139,6 @@ public native function sin(double t) : double
 public native function cos(double t) : double
 public native function tan(double t) : double
 
-#include <noise>
+#include <math/noise>
 
 #reset
