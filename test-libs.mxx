@@ -1,0 +1,39 @@
+//Templates are parsed per-element.
+template <typename A, typename B>
+
+class TestB
+: public TestA
+  {
+    public static TestB<int, long>* gTestLocal
+    public int* int_array() {}
+
+    public TestB()
+    {
+      int i = int[50]
+    }
+  }
+
+// #ifndef H
+// #define H
+//
+// // int i = (*pointer) * (* potatoland)
+// // int i = 4 * 5 * 6
+//
+// // object.a.b.c = g.h.i * v
+//
+// class HelloWorld : public potato {
+// //     private int num_letters = potatoland
+// //     private char* pointer
+// //
+// //     public void helloworld(int a)
+// //     {
+// //     }
+// //
+// //     public native void nativeTest()
+// //     {
+// //         int i = (*pointer) * (* potatoland)
+// //         helloworld()
+// //     }
+// }
+//
+// #endif

@@ -23,6 +23,11 @@
 hs_err_pid*
 
 .idea/*
+Out/*
 Rivercoin.iml
 .DS_Store
 Rivercoin.iml
+MochaAssembler.iml
+mochaassembler.properties
+mochaassembler.xml
+module_mochaassembler.xml
