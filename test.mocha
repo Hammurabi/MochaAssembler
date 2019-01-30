@@ -1,0 +1,37 @@
+class passport
+{
+    String name
+    String lastname
+    String dateofbirth
+    String nationality
+    String countryofbirth
+
+    passport()
+    {
+    }
+
+    void GetName()
+    {
+        return name + nationality * i
+    }
+
+    String GetLastName()
+    {
+        return lastname;
+    }
+
+    String GetDateOfBirth()
+    {
+        return dateofbirth
+    }
+
+    String GetNationality()
+    {
+        return nationality
+    }
+
+    String GetCountryOfBirth()
+    {
+        return countryofbirth.length
+    }
+}

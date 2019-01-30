@@ -116,108 +116,6 @@ public class ParsedProgram
         return new LinkedList<>(convertToPostfix(tokens.toArray(new Token[tokens.size()])));
     }
 
-    private static Queue<Token> add_recursive(TokenStream in, boolean once)
-    {
-        for (Token token : in.tokens)
-        {
-            Queue<Token> tokens = add_recursive(new TokenStream(token.children), once);
-            token.children.clear();
-
-            token.add(tokens);
-        }
-
-        return add(in, once);
-    }
-
-    private static Queue<Token> recursiveDecompose(TokenStream in, boolean once)
-    {
-        for (Token token : in.tokens)
-        {
-            Queue<Token> tokens = recursiveDecompose(new TokenStream(token.children), once);
-            token.children.clear();
-
-            token.add(tokens);
-        }
-
-        Queue<Token> tokens = mul(in, once);
-        tokens              = dec_sub(new TokenStream(tokens), once);
-
-        return tokens;
-    }
-
-    private static Queue<Token> mul_recursive(TokenStream in, boolean once)
-    {
-        for (Token token : in.tokens)
-        {
-            Queue<Token> tokens = mul_recursive(new TokenStream(token.children), once);
-            token.children.clear();
-
-            token.add(tokens);
-        }
-
-//        Queue<Token> tokens = mul(in, once);
-
-        return mul(in, once);//math_mul(new TokenStream(mul(new TokenStream(tokens), once)), once);
-    }
-
-    private static Queue<Token> math_mul(TokenStream in, boolean once)
-    {
-        Queue<Token>    out     = new LinkedList<>();
-        Set<Modifier>   mod     = new LinkedHashSet<>();
-
-        int round = 0;
-
-        while (in.tokens.size() > 0)
-        {
-            if (round ++ > 0 && once)
-                return out;
-
-            while (in.peek() != null && in.peek().isModifier())
-                mod.add(in.poll().asModifier());
-
-            /**
-             * Standard field declaration (must be on one line).
-             */
-
-            if (in.matches(END))
-                in.poll();
-
-            /**
-             * a * b
-             */
-            else if (in.matches(ANY, MULTIPLICATION, ANY_NOT_END))
-            {
-                Token a = in.poll();
-                in.poll();
-                Token b = in.poll().setType(STATEMENT);
-
-                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION).add(a).add(b));
-            }
-
-            else if (in.matches(MULTIPLICATION, ANY_NOT_END))
-            {
-                in.poll();
-                Token a = in.poll();
-
-                try{
-                    Token b = ((LinkedList<Token>) out).getLast();
-
-                    ((LinkedList<Token>) out).add(new Token(SUBTRACTION).add(a).add(b));
-                } catch (NoSuchElementException e)
-                {
-//                    ((LinkedList<Token>) out).add(a);
-                    errstr(a, "statement started with multiplication");
-                }
-            }
-            else if (in.peek() != null)
-                ((LinkedList<Token>) out).add(in.poll());
-            else
-                errstr(in, "errors in stream");
-        }
-
-        return out;
-    }
-
     private static Queue<Token> dec_sub(TokenStream in, boolean once)
     {
         Queue<Token>    out     = new LinkedList<>();
@@ -246,217 +144,6 @@ public class ParsedProgram
                 }
             }
 
-            else if (in.peek() != null)
-                ((LinkedList<Token>) out).add(in.poll());
-            else
-                errstr(in, "errors in stream");
-        }
-
-        return out;
-    }
-
-    private static Queue<Token> add(TokenStream in, boolean once)
-    {
-        Queue<Token>    out     = new LinkedList<>();
-        Set<Modifier>   mod     = new LinkedHashSet<>();
-
-        int round = 0;
-
-        while (in.tokens.size() > 0)
-        {
-            if (round ++ > 0 && once)
-                return out;
-
-            while (in.peek() != null && in.peek().isModifier())
-                mod.add(in.poll().asModifier());
-
-            if (in.matches(END))
-                in.poll();
-
-            else if (in.matches(ANY_NOT_END, ADDITION, ADDITION))
-            {
-                ((LinkedList<Token>) out).add(new Token(UNARY_PLUSPREFIX).add(in.poll()));
-
-                in.poll();
-                in.poll();
-            }
-
-            else if (in.matches(SUBTRACTION, SUBTRACTION, ANY_NOT_END))
-            {
-                Token unaryOp = new Token(UNARY_MINUSPOSTFIX);
-
-                in.poll();
-                in.poll();
-
-                ((LinkedList<Token>) out).add(unaryOp.add(in.poll()));
-            }
-
-            else if (in.matches(ANY_NOT_END, SUBTRACTION, SUBTRACTION))
-            {
-                ((LinkedList<Token>) out).add(new Token(UNARY_MINUSPREFIX).add(in.poll()));
-
-                in.poll();
-                in.poll();
-            }
-
-            else if (in.matches(ADDITION, ADDITION, ANY_NOT_END))
-            {
-                Token unaryOp = new Token(UNARY_PLUSPOSTFIX);
-
-                in.poll();
-                in.poll();
-
-                ((LinkedList<Token>) out).add(unaryOp.add(in.poll()));
-            }
-
-            /**
-             * + ANYTHING
-             */
-            else if (in.matches(ADDITION, ANY_NOT_END))
-            {
-                in.poll();
-                Token a = in.poll();
-
-                try{
-                    Token b = ((LinkedList<Token>) out).getLast();
-
-                    ((LinkedList<Token>) out).add(new Token(ADDITION).add(a).add(b));
-                } catch (NoSuchElementException e)
-                {
-                    errstr(a, "cannot start a statement with addition.");
-                }
-            }
-
-            /**
-             * - ANYTHING
-             */
-            else if (in.matches(SUBTRACTION, ANY_NOT_END))
-            {
-                in.poll();
-                Token a = in.poll();
-
-                try{
-                    Token b = ((LinkedList<Token>) out).getLast();
-
-                    ((LinkedList<Token>) out).add(new Token(SUBTRACTION).add(a).add(b));
-                } catch (NoSuchElementException e)
-                {
-                    ((LinkedList<Token>) out).add(new Token(UNARY_MINUS).add(a));
-                }
-            }
-
-
-            /**
-             * ANYTHING - ANYTHING
-             */
-            else if (in.matches(ANY_NOT_END, SUBTRACTION, ANY_NOT_END))
-            {
-                Token a = in.poll();
-                in.poll();
-                Token b = in.poll();
-
-                ((LinkedList<Token>) out).add(new Token(SUBTRACTION).add(a).add(b));
-            }
-
-            /**
-             * ANYTHING + ANYTHING
-             */
-            else if (in.matches(ANY_NOT_END, ADDITION, ANY_NOT_END))
-            {
-                Token a = in.poll();
-                in.poll();
-                Token b = in.poll();
-
-                ((LinkedList<Token>) out).add(new Token(ADDITION).add(a).add(b));
-            }
-            else if (in.peek() != null)
-                ((LinkedList<Token>) out).add(in.poll());
-            else
-                errstr(in, "errors in stream");
-        }
-
-        return out;
-    }
-
-    private static Queue<Token> mul(TokenStream in, boolean once)
-    {
-        Queue<Token>    out     = new LinkedList<>();
-        Set<Modifier>   mod     = new LinkedHashSet<>();
-
-        int round = 0;
-
-        while (in.tokens.size() > 0)
-        {
-            if (round ++ > 0 && once)
-                return out;
-
-            while (in.peek() != null && in.peek().isModifier())
-                mod.add(in.poll().asModifier());
-
-            /**
-             * Standard field declaration (must be on one line).
-             */
-
-            if (in.matches(END))
-                in.poll();
-
-            /**
-             * Dereference * Token
-             */
-            else if (in.matches(DEREFERENCE, DEREFERENCE))
-            {
-                Token a = in.poll();
-                Token b = in.poll().setType(STATEMENT);
-
-                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION).add(a).add(b.children));
-//
-//
-//                ((LinkedList<Token>) out).add(a);
-//                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION));
-//                ((LinkedList<Token>) out).addAll(b.children);
-            }
-
-//            if (sub_match(in, DEREFERENCE))
-//            {
-//                in.poll();
-//                ((LinkedList<Token>) out).add(new Token(UNARY_MINUS).add(in.poll()));
-//            }
-//
-//            else if (sub_match(in) && in.matches(ANY, ANY, DEREFERENCE))
-//            {
-//                in.poll();
-//                ((LinkedList<Token>) out).add(new Token(UNARY_MINUS).add(in.poll()));
-//
-//                Token a = in.poll();
-//
-////                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION).add(a).add(b.children));
-//                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION));
-//
-//                ((LinkedList<Token>) out).add(a);
-//            }
-
-            else if (in.matches(DEREFERENCE, ANY_NOT_END) && !in.matches(DEREFERENCE, SUBTRACTION))
-            {
-                Token a = in.poll();
-                Token b = in.poll().setType(STATEMENT);
-
-                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION).add(a).add(b.children));
-//
-//                ((LinkedList<Token>) out).add(a);
-//                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION));
-//                ((LinkedList<Token>) out).addAll(b.children);
-            }
-            else if (in.matches(ANY, DEREFERENCE))
-            {
-                Token a = in.poll();
-                Token b = in.poll().setType(STATEMENT);
-
-                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION).add(a).add(b.children));
-//
-//                ((LinkedList<Token>) out).add(a);
-//                ((LinkedList<Token>) out).add(new Token(MULTIPLICATION));
-//                ((LinkedList<Token>) out).addAll(b.children);
-            }
             else if (in.peek() != null)
                 ((LinkedList<Token>) out).add(in.poll());
             else
@@ -498,16 +185,6 @@ public class ParsedProgram
 
     private static Queue<Token> organize(TokenStream in, boolean once, boolean tilLignsEnd)
     {
-        return organize(in, once, tilLignsEnd, false);
-    }
-
-    private static Queue<Token> organize(TokenStream in, boolean once, boolean tilLignsEnd, boolean dereference)
-    {
-        return organize(in, once, tilLignsEnd, dereference, false);
-    }
-
-    private static Queue<Token> organize(TokenStream in, boolean once, boolean tilLignsEnd, boolean dereference, boolean address)
-    {
         Queue<Token>    out     = new LinkedList<>();
         Set<Modifier>   mod     = new LinkedHashSet<>();
 
@@ -530,9 +207,50 @@ public class ParsedProgram
 
             if (in.matches(END))
             {
-                in.poll();
                 if (tilLignsEnd)
                     return out;
+
+                in.poll();
+            }
+
+            else if (in.matches(RETURN))
+            {
+                Token t = in.poll();
+                t.add(organize(in, false, true));
+
+                ((LinkedList<Token>) out).add(t);
+            }
+
+            else if (in.matches(ADDITION, EQUALS))
+            {
+                Token a = in.poll();
+                in.poll();
+
+                ((LinkedList<Token>) out).add(new Token(PLUSEQUALS).dataFrom(a));
+            }
+
+            else if (in.matches(MULTIPLICATION, EQUALS))
+            {
+                Token a = in.poll();
+                in.poll();
+
+                ((LinkedList<Token>) out).add(new Token(MULTIPLYEQUALS).dataFrom(a));
+            }
+
+            else if (in.matches(SUBTRACTION, EQUALS))
+            {
+                Token a = in.poll();
+                in.poll();
+
+                ((LinkedList<Token>) out).add(new Token(MINUSEQUALS).dataFrom(a));
+            }
+
+            else if (in.matches(SUBDIVISION, EQUALS))
+            {
+                Token a = in.poll();
+                in.poll();
+
+                ((LinkedList<Token>) out).add(new Token(DIVIDEEQUALS).dataFrom(a));
             }
 
             else if (in.matches(TRY))
@@ -825,78 +543,12 @@ public class ParsedProgram
                 ((LinkedList<Token>) out).add(new Token(AND_EQUALS));
             }
 
-            /**
-             * This is a dereference
-             */
-            else if (in.matches(MULTIPLICATION, MULTIPLICATION))
-            {
-                if (dereference)
-                {
-                    in.poll();
-                    in.poll();
-                    Token D     = new Token(DEREFERENCE);
-                    Token deref = new Token(DEREFERENCE);
-                    D.add(deref.add(organize(in, true, false, true)));
-                    ((LinkedList<Token>) out).add(D);
-                }
-                else {
-                    if (out.size() > 0)
-                    {
-                        ((LinkedList<Token>) out).add(in.poll());
-
-
-                        in.poll();
-                        Token deref = new Token(DEREFERENCE);
-
-                        ((LinkedList<Token>) out).add(deref.add(organize(in, true, false, true)));
-                    }
-                    else
-                    {
-                        in.poll();
-
-
-                        in.poll();
-                        Token d     = new Token(DEREFERENCE);
-                        Token deref = new Token(DEREFERENCE);
-
-                        ((LinkedList<Token>) out).add(d.add(deref.add(organize(in, true, false, true))));
-                    }
-                }
-            }
-
-            else if (out.size() == 0 && in.matches(MULTIPLICATION, ANY_NOT_END))
-            {
-                Token dereferens = new Token(DEREFERENCE);
-                in.poll();
-                ((LinkedList<Token>) out).add(dereferens.add(organize(in, true, false, true)));
-            }
-
-            else if (out.size() == 0 && in.matches(AND, ANY_NOT_END) && !in.matches(AND, AND))
-            {
-                Token dereferens = new Token(ADDRESS);
-                in.poll();
-                ((LinkedList<Token>) out).add(dereferens.add(organize(in, true, false, false, true)));
-            }
-
             else if (out.size() == 0 && in.matches(AND, AND))
             {
                 in.poll();
                 in.poll();
                 ((LinkedList<Token>) out).add(new Token(LAND));
             }
-
-//            else if (in.matches(AND, ANY_NOT_END))
-//            {
-//                in.poll();
-//
-//                ((LinkedList<Token>) out).add(new Token(ADDRESS).add(organize(in, true, false, false, true)));
-//            }
-
-//            else if (out.size() == 0 && in.matches(SUBTRACTION, ANY_NOT_END))
-//            {
-//                in.poll();
-//                ((LinkedList<Token>) out).add(new Token(LAND).add(organize(in, true)));
-//            }
 
             else if (math_match(in) && in.matches(ANY, SUBTRACTION, ANY_NOT_END))
             {
@@ -905,39 +557,20 @@ public class ParsedProgram
                 ((LinkedList<Token>) out).add(new Token(UNARY_MINUS).add(organize(in, true)));
             }
 
-            //TODO: removed as a test.
-
-//            else if (in.matches(MULTIPLICATION))
-//            {
-//                while (in.matches(MULTIPLICATION))
-//                {
-//                    Token dereference = new Token(DEREFERENCE);
-//                    in.poll();
-//
-//                    dereference.add(organize(in, true));
-//
-//                    ((LinkedList<Token>) out).add(dereference);
-//                }
-//            }
-
-//            else if (in.matches(SUBTRACTION))
-//            {
-//                Token dereference = new Token(UNARY_MINUS);
-//                in.poll();
-//
-//                dereference.add(organize(in, true));
-//
-//                ((LinkedList<Token>) out).add(dereference);
-//            }
-
             else if (in.matches(EQUALS, EQUALS))
             {
-//                ((LinkedList<Token>) out).add(in.poll());
-//                ((LinkedList<Token>) out).add(in.poll());
                 in.poll();
                 in.poll();
 
                 ((LinkedList<Token>) out).add(new Token(ASSERT));
+            }
+
+            else if (in.matches(LOGICAL_NOT, EQUALS))
+            {
+                in.poll();
+                in.poll();
+
+                ((LinkedList<Token>) out).add(new Token(LOGICAL_NOTEQUALS));
             }
 
             else if (in.matches(EQUALS))
@@ -948,17 +581,6 @@ public class ParsedProgram
 
                 ((LinkedList<Token>) out).add(assignment.add(organize(in, false, true)));
             }
-
-            //TODO: removed as a test.
-//            else if (in.matches(AND))
-//            {
-//                Token address = new Token(ADDRESS);
-//                in.poll();
-//
-//                address.add(organize(in, true));
-//
-//                ((LinkedList<Token>) out).add(address);
-//            }
 
             else if (in.matches(PARENTHESIS_OPEN))
             {
@@ -1011,12 +633,6 @@ public class ParsedProgram
                             errstr(in, "invalid generic specifier (never closed)");
                     }
                 }
-
-//                while (in.matches(MULTIPLICATION) || in.matches(AND))
-//                    mod.add(in.poll().asModifier());
-
-//                if (mod.contains(Modifier.POINTER) && mod.contains(Modifier.REFERENCE))
-//                    errstr(in, "fields cannot be both pointers and references");
 
                 /**
                  * This is a declaration of <?></?></?>
@@ -1239,12 +855,6 @@ public class ParsedProgram
                 if (!templatet.getType().equals(UNDEFINED) && !generictt.getType().equals(UNDEFINED))
                     errstr(typenamet, "fields cannot have both a template and a generic spec");
 
-                while (in.matches(MULTIPLICATION) || in.matches(AND))
-                    mod.add(in.poll().asModifier());
-
-                if (mod.contains(Modifier.POINTER) && mod.contains(Modifier.REFERENCE))
-                    errstr(in, "fields cannot be both pointers and references");
-
                 /**
                  * This is a declaration of <?></?></?>
                  */
@@ -1255,7 +865,7 @@ public class ParsedProgram
                     ws(in);
 
                     /**
-                     * Method declaration
+                     * function declaration
                      */
                     if (in.matches(PARENTHESIS_OPEN))
                     {
@@ -1617,11 +1227,6 @@ public class ParsedProgram
                 }
             }
 
-
-//            else if (inout.matches(ANY, MULTIPLICATION))
-//            {
-//            }
-
             /**
              * cast
              */
@@ -1692,24 +1297,6 @@ public class ParsedProgram
                 ((LinkedList<Token>) out).add(inout.poll());
             }
 
-//            /**
-//             * The right hand side is a &method call
-//             */
-//            else if (inout.matches(Token.Type.AND, Token.Type.IDENTIFIER, Token.Type.PARENTHESIS_OPEN))
-//            {
-//                mod.add(Modifier.REFERENCE);
-//                Token invocation = new Token(Token.Type.METHOD_CALL).setModifiers(mod);
-//
-//                inout.poll();
-//                Token methodName = inout.poll();
-//                Token parenthesis = closeParenthesis(inout.tokens);
-//
-//                normalize(parenthesis);
-//
-//                ((LinkedList<Token>) out).add(invocation.add(methodName).add(parenthesis));
-//            }
-
-
             /**
              * Standard method declaration
              *
@@ -1762,49 +1349,6 @@ public class ParsedProgram
 
 
             /**
-             * Standard field declaration (pointer)
-             * type * name
-             */
-            else if (inout.matches(Token.Type.IDENTIFIER, Token.Type.MULTIPLICATION, Token.Type.IDENTIFIER))
-            {
-                Token fieldtpe = new Token(EMPTY_DECLARATION);
-                Token typename = inout.poll();
-                fieldtpe.dataFrom(typename);
-                    Token pointer  = inout.poll();
-                Token defdname = inout.poll();
-
-                mod.add(Modifier.POINTER);
-
-                fieldtpe.add(typename).add(defdname).setType(Token.Type.EMPTY_DECLARATION).setModifiers(mod);
-                typename.modErrors();
-
-                ((LinkedList<Token>) out).add(fieldtpe);
-            }
-
-
-//            /**
-//             * Standard full declaration
-//             */
-//            else if (inout.matches(Token.Type.IDENTIFIER, Token.Type.IDENTIFIER, Token.Type.EQUALS))
-//            {
-//                Token declaration = new Token(FULL_DECLARATION);
-//                Token typename = inout.poll();
-//                Token defdname = inout.poll();
-//                Token dfequals = inout.poll();
-//                Token value    = new Token(Token.Type.VALUE);
-//
-//                value.children.addAll(normalize(inout, true));
-//
-//                declaration.add(typename).add(defdname).add(value).setType(Token.Type.FULL_DECLARATION).setModifiers(mod);
-//                declaration.modErrors();
-//
-//                ((LinkedList<Token>) out).add(declaration);
-//            }
-
-
-
-
-            /**
              * All that is left is an identifier (right hand side argument)
              */
             else if (inout.matches(Token.Type.IDENTIFIER))
@@ -1835,8 +1379,6 @@ public class ParsedProgram
             {
                 ((LinkedList<Token>) out).add(inout.poll());
             }
-
-
 
 
             /**

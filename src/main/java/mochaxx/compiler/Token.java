@@ -159,15 +159,18 @@ public class Token implements Iterable<Token>
         LESSTHAN_EQUAL,
         MORETHAN_EQUAL,
         ASSERT,
+        LOGICAL_NOT,
         ASSIGNMENT,
         AND,
         OR,
         LAND,
         LOR,
 
+        LOGICAL_NOTEQUALS,
+
         PLUSEQUALS,
         MINUSEQUALS,
-        MULTIPLUEQUALS,
+        MULTIPLYEQUALS,
         DIVIDEEQUALS,
 
         LEFT_SHIFTEQUALS,
@@ -292,6 +295,7 @@ public class Token implements Iterable<Token>
         else if (toString().equals("new")) type = NEW;
         else if (toString().equals("each")) type = EACH;
         else if (toString().equals("foreach")) type = FOREACH;
+        else if (toString().equals("return")) type = RETURN;
         else type = Type.KEYWORD;
     }
 
@@ -323,7 +327,7 @@ public class Token implements Iterable<Token>
                     return type;
                 } else if (toString().charAt(0) == '!')
                 {
-                    type = Type.BOOL_NOT;
+                    type = Type.LOGICAL_NOT;
                     return type;
                 } else if (toString().charAt(0) == '(')
                 {

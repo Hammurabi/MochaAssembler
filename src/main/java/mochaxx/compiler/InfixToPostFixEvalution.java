@@ -38,6 +38,9 @@ public class InfixToPostFixEvalution
         precedence.put(XOR, 5);
         precedence.put(AND, 6);
 
+        precedence.put(ASSERT, 7);
+        precedence.put(LOGICAL_NOTEQUALS, 7);
+
         precedence.put(LESS_THAN, 8);
         precedence.put(MORE_THAN, 8);
 
@@ -66,6 +69,8 @@ public class InfixToPostFixEvalution
 
         precedence.put(UNARY_MINUSPREFIX, 14);
         precedence.put(UNARY_PLUSPREFIX, 14);
+
+        precedence.put(LOGICAL_NOT, 14);
 
 
         precedence.put(UNARY_MINUSPOSTFIX, 15);
