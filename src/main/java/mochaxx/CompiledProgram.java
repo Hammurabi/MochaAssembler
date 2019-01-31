@@ -487,8 +487,7 @@ public class CompiledProgram
                 if (classes.containsKey(stack_sim.peek().type))
                 {
                     if (classes.get(stack_sim.peek().type).hasoperator("subscript"))
-                    {
-                    }
+                        callmethod(stream, "subscript", classes.get(stack_sim.peek().type), stack_sim);
                     else
                         err(token, "subscript modifier not allowed on class type '" + stack_sim.peek().type + "'.");
                 }
@@ -530,6 +529,12 @@ public class CompiledProgram
 
         if (ismaininvoke)
             stream.op_ret("return from function.");
+    }
+
+    private void
+    callmethod(OpcodeStream stream, String subscript, CLASS aClass, Stack<STACKFIELD> stack_sim)
+    {
+        stream.op_ivk(-1, "call " + subscript + ".");
     }
 
     private
