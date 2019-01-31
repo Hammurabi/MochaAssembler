@@ -1,8 +1,6 @@
 package mochaxx;
 
-import mochaxx.compiler.DynamicLibraryLoader;
-import mochaxx.compiler.LexedProgram;
-import mochaxx.compiler.PreprocessedProgram;
+import mochaxx.compiler.*;
 
 import java.io.*;
 import java.util.Collections;
@@ -90,5 +88,6 @@ public class Start
         PreprocessedProgram program = new PreprocessedProgram(data, new File(poll), new DynamicLibraryLoader(new File(poll)));
         LexedProgram lexedProgram = new LexedProgram(program.getFinalProgram());
         ParsedProgram parsedProgram = new ParsedProgram(lexedProgram);
+        CompiledProgram finalProgram = new CompiledProgram(parsedProgram);
     }
 }

@@ -197,4 +197,19 @@ public class OpcodeStream
     {
         _op(m_alloc, String.valueOf(i), "");
     }
+
+    public void op_ret(final String comment)
+    {
+        _op(ret, "", comment);
+    }
+
+    public void op_load(int field, String s)
+    {
+        _op(load, field + "", s);
+    }
+
+    public void op_retm(String s)
+    {
+        _op(mret, "", s);
+    }
 }

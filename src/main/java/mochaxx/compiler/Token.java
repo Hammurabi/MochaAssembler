@@ -17,13 +17,13 @@ public class Token implements Iterable<Token>
                 System.err.println("\tinfostr: " + infoString());
                 System.exit(0);
             }
-            else if (type.equals(Type.METHOD_CALL) && modifier.equals(Modifier.POINTER))
-            {
-                System.err.println("classes can not have modifier: " + modifier);
-                System.err.println("\tclass: " + children.iterator().next().data);
-                System.err.println("\tinfostr: " + infoString());
-                System.exit(0);
-            }
+//            else if (type.equals(Type.METHOD_CALL) && modifier.equals(Modifier.POINTER))
+//            {
+//                System.err.println("classes can not have modifier: " + modifier);
+//                System.err.println("\tclass: " + children.iterator().next().data);
+//                System.err.println("\tinfostr: " + infoString());
+//                System.exit(0);
+//            }
         }
 
         return this;
@@ -270,7 +270,7 @@ public class Token implements Iterable<Token>
 
     private boolean isKeyword()
     {
-        final String keywords[] = {"if", "else", "struct", "try", "catch", "goto", "in", "for", "namespace", "package", "typedef", "operator", "op", "function", "template", "fun", "new", "class", "static", "ref", "reference", "ptr", "native"/**, "pointer"**/, "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
+        final String keywords[] = {"if", "else", "struct", "try", "catch", "goto", "in", "for", "namespace", "package", "typedef"/**, "operator"**/, "op", "function", "template", "fun", "new", "class", "static", "ref", "reference", "ptr", "native"/**, "pointer"**/, "public", "private", "protected", "const", "final", "extend", "header", "if", "for", "while", "foreach", "then", "namespace", "return"};
         for(String string : keywords) if(toString().equals(string)) return true;
         return false;
     }
@@ -282,7 +282,7 @@ public class Token implements Iterable<Token>
         else if (toString().equals("template")) type = Type.TEMPLATE;
         else if (toString().equals("typedef")) type = Type.TYPEDEF;
         else if (toString().equals("union")) type = Type.UNION;
-        else if (toString().equals("operator")) type = Type.OPERATOR;
+//        else if (toString().equals("operator")) type = Type.OPERATOR;
         else if (toString().equals("namespace") || toString().equals("package")) type = Type.NAMESPACE;
         else if (toString().equals("for")) type = Type.FOR;
         else if (toString().equals("auto")) type = AUTO;
@@ -507,11 +507,6 @@ public class Token implements Iterable<Token>
 
     public Modifier asModifier()
     {
-        if (type.equals(Type.MULTIPLICATION))
-            return Modifier.POINTER;
-        else if (type.equals(Type.AND))
-            return Modifier.REFERENCE;
-
         for (Modifier modifier : Modifier.values())
             if (modifier.toString().toLowerCase().equals(data))
                 return modifier;
@@ -522,9 +517,10 @@ public class Token implements Iterable<Token>
     public Token setModifiers(Set<Modifier> mod)
     {
         for (Modifier modifier : mod)
-            if (type.equals(Type.NAME) && modifier.equals(Modifier.POINTER))
-                this.modifiers.add(Modifier.DEREFERENCE);
-            else this.modifiers.add(modifier);
+//            if (type.equals(Type.NAME) && modifier.equals(Modifier.POINTER))
+//                this.modifiers.add(Modifier.DEREFERENCE);
+//            else
+                this.modifiers.add(modifier);
         mod.clear();
 
         return this;

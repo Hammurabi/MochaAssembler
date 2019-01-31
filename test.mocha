@@ -1,4 +1,24 @@
-class passport
+
+SuppressWarnings(MEMORY)
+
+class barray
+{
+    const int length
+    const MemObject pointer
+
+    operator subscript(int i)
+    {
+        return pointer[i]
+    }
+}
+
+class String
+{
+    const int length
+    const barray string;
+}
+
+class Passport
 {
     String name
     String lastname
@@ -6,7 +26,7 @@ class passport
     String nationality
     String countryofbirth
 
-    passport()
+    Passport()
     {
     }
 

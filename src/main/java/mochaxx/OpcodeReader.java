@@ -265,6 +265,10 @@ public class OpcodeReader
         }
     }
 
+    public static void op_load(int i)
+    {
+    }
+
     public void read(Queue<String> in, boolean first)
     {
         String func = "";

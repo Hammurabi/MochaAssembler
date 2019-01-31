@@ -9,11 +9,13 @@ import static mochaxx.compiler.Token.Type.*;
 
 public class ParsedProgram
 {
+    private static Set<CompilerFlag> mCompilerFlags;
     private Queue<Token> mTokens;
 
     public ParsedProgram(LexedProgram lexedProgram)
     {
         mTokens = new LinkedList<>();
+        mCompilerFlags = new LinkedHashSet<>();
 
         mTokens.addAll(packClasses(new TokenStream(lexedProgram.getCleanTokens())));
 
@@ -872,6 +874,10 @@ public class ParsedProgram
                         Token parenthesis = closeParenthesis(in.tokens);
                         Token body        = new Token(UNDEFINED);
 
+                        Queue<Token> tokens = organize(new TokenStream(parenthesis.getChildren()), false);
+                        parenthesis.children.clear();
+                        parenthesis.add(tokens);
+
                         ws(in);
 
                         if (in.matches(BRACES_OPEN))
@@ -974,7 +980,13 @@ public class ParsedProgram
                 inout.poll();
             }
 
-
+            else if (inout.peek().toString().equals("SuppressWarnings"))
+            {
+                inout.poll();
+                inout.poll();
+                mCompilerFlags.add(CompilerFlag.valueOf(inout.poll().toString()));
+                inout.poll();
+            }
 
             else if (inout.matches(TEMPLATE))
             {
@@ -1474,5 +1486,10 @@ public class ParsedProgram
     public Queue<Token> getTokens()
     {
         return mTokens;
+    }
+
+    public Iterable<? extends CompilerFlag> GetCompilerFlags()
+    {
+        return mCompilerFlags;
     }
 }
