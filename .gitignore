@@ -25,13 +25,14 @@ target/*
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+#IDE
 .idea/*
+*.iml
+
+
+#Assorted other #
 Out/*
-Rivercoin.iml
 .DS_Store
-Rivercoin.iml
-MochaAssembler.iml
 mochaassembler.properties
 mochaassembler.xml
 module_mochaassembler.xml
-Target/*
