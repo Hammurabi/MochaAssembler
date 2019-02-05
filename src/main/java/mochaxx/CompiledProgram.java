@@ -34,6 +34,37 @@ public class CompiledProgram
             return false;
         }
 
+        public boolean IsSubclass(CLASS b)
+        {
+            while (b != null)
+            {
+                if (b.parent != null)
+                {
+                    if (b.parent.name.equals(this))
+                        return true;
+                }
+
+                return IsSubclass(b.parent);
+            }
+
+            return false;
+        }
+
+        public void AccessField(CLASS accessor, String field)
+        {
+            FIELD field1 = fields[getField(field)];
+
+            if (!accessor.name.equals(name) && field1.accesslevel == 2)
+            {
+                System.err.println("public access not allowed for field '" + field + "' in class '" + name + "'.");
+                System.exit(0);
+            } else if (accessor.IsSubclass(this) && field1.accesslevel == 1)
+            {
+                System.err.println("protected access not allowed for field '" + field + "' in class '" + name + "'.");
+                System.exit(0);
+            }
+        }
+
         public int getField(String toString)
         {
             for (int i = 0; i < fields.length; i ++)
@@ -42,6 +73,23 @@ public class CompiledProgram
 
                 if (field.name.equals(toString))
                     return i;
+            }
+
+            return -1;
+        }
+
+        public int getFieldPosition(String toString)
+        {
+            int fieldid = 0;
+
+            for (int i = 0; i < fields.length; i ++)
+            {
+                FIELD field = fields[i];
+
+                if (field.name.equals(toString))
+                    return fieldid;
+
+                fieldid += field.size;
             }
 
             return -1;
@@ -470,8 +518,7 @@ public class CompiledProgram
                     stack_movetotop(stream, stack_sim, "this");
                     stream.op_dup("duplicate this.");
 //                    stack_sim.push(stack_sim.peek());
-                    stream.op_load(__this__.getField(token.toString()), "load " + token.toString() + " from object (" + __this__.name + ").");
-
+                    stream.op_load(__this__.getFieldPosition(token.toString()), "load " + token.toString() + " from object (" + __this__.name + ").");
 
                     STACKFIELD field = new STACKFIELD();
                     stack_push(stack_sim, field);
@@ -513,6 +560,7 @@ public class CompiledProgram
 
             case PROCEDURAL_ACCESS:
                 interpret(stream, token.getChild(0), __this__, stack_sim, false);
+
                 if (token.getChild(1).equals(Token.Type.PROCEDURAL_ACCESS));
                 else if (token.getChild(1).equals(Token.Type.STATIC_ACCESS))
                     err(token, "static access is nested.");
@@ -521,7 +569,7 @@ public class CompiledProgram
                     if (!classes.containsKey(stack_sim.peek().type))
                         err(token.getChild(1), "'" + strip(token.getChild(0)) + "' is not an object.");
 
-                    proc_interpret(stream, token.getChild(1), classes.get(stack_sim.peek().type), stack_sim);
+                    proc_interpret(__this__, stream, token.getChild(1), classes.get(stack_sim.peek().type), stack_sim);
                 }
 
                 break;
@@ -547,7 +595,7 @@ public class CompiledProgram
     }
 
     private
-    void proc_interpret(OpcodeStream stream, Token token, CLASS __typeoflastproc__, Stack<STACKFIELD> stack_sim)
+    void proc_interpret(CLASS __this__, OpcodeStream stream, Token token, CLASS __typeoflastproc__, Stack<STACKFIELD> stack_sim)
     {
         switch (token.getType())
         {
@@ -557,20 +605,23 @@ public class CompiledProgram
                     STACKFIELD field = new STACKFIELD();
                     stack_sim.pop();
                     stack_push(stack_sim, field);
+
+                    __typeoflastproc__.AccessField(__this__, token.toString());
+
                     field.type = __typeoflastproc__.fields[__typeoflastproc__.getField(token.toString())].typename;
                     field.name = "tempproc_" + __typeoflastproc__.name + "_" + __typeoflastproc__.fields[__typeoflastproc__.getField(token.toString())].name;
-                    stream.op_load(__typeoflastproc__.getField(token.toString()), "load " + token.toString() + " from object (" + __typeoflastproc__.name + ").");
+                    stream.op_load(__typeoflastproc__.getFieldPosition(token.toString()), "load " + token.toString() + " from object (" + __typeoflastproc__.name + ").");
                 } else
                     err(token, "use of undeclared identifier '" + token.toString() + "'");
                 break;
 
             case STATEMENT:
                 for (Token toke : token)
-                    proc_interpret(stream, toke, __typeoflastproc__, stack_sim);
+                    proc_interpret(__this__, stream, toke, __typeoflastproc__, stack_sim);
                 break;
 
             case PROCEDURAL_ACCESS:
-                proc_interpret(stream, token.getChild(0), __typeoflastproc__, stack_sim);
+                proc_interpret(__typeoflastproc__, stream, token.getChild(0), __typeoflastproc__, stack_sim);
 
                 if (token.getChild(1).equals(Token.Type.PROCEDURAL_ACCESS));
                 else if (token.getChild(1).equals(Token.Type.STATIC_ACCESS))
@@ -580,7 +631,7 @@ public class CompiledProgram
                     if (!classes.containsKey(stack_sim.peek().type))
                         err(token.getChild(1), "'" + strip(token.getChild(0)) + "' is not an object.");
 
-                    proc_interpret(stream, token.getChild(1), classes.get(stack_sim.peek().type), stack_sim);
+                    proc_interpret(__typeoflastproc__, stream, token.getChild(1), classes.get(stack_sim.peek().type), stack_sim);
                 }
 
                 break;

@@ -1,21 +1,57 @@
 
 SuppressWarnings(MEMORY)
+#define NULL 0
+#define null 0
+
+//class Object
+//{
+//    public static const unsigned long HashCode(Object this)
+//    {
+//        unsigned long result
+//
+//        for (int i = 0; i < real_size(this); i ++)
+//            result = result * i % this[unsigned long][i]
+//
+//        return result.asUnsignedLong()
+//    }
+//}
 
 class barray
 {
-    const int length
     const MemObject pointer
+    const int       length
 
     operator subscript(int i)
     {
         return pointer[i]
     }
+
+    const unsigned long AsUnsignedLong()
+    {
+        return 0
+    }
+}
+
+class MapElement{
+    MemObject element
+
+    MapElement left
+    MapElement right
+}
+
+class map
+{
+    MapElement root
 }
 
 class String
 {
-    const int length
-    const barray string;
+    protected const barray      string
+    public const int            length
+
+    operator equals(const void string)
+    {
+    }
 }
 
 class Passport

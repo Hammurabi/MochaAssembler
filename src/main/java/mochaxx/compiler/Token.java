@@ -75,6 +75,30 @@ public class Token implements Iterable<Token>
         return 0;
     }
 
+    public Token push_back(Token whatever)
+    {
+        List<Token> tokens = new ArrayList<>();
+        tokens.add(whatever);
+        tokens.addAll(children);
+
+        this.children = tokens;
+
+        return this;
+    }
+
+    public Token clean()
+    {
+        List<Token> children = new ArrayList<>();
+
+        for (Token token : this.children)
+            if (!token.equals(UNDEFINED))
+                children.add(token);
+
+        this.children = children;
+
+        return this;
+    }
+
     public enum Type{
         NAMESPACE,
         KEYWORD,

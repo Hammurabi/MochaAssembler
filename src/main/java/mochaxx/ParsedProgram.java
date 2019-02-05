@@ -53,14 +53,76 @@ public class ParsedProgram
 //        out                 = recursiveDecompose(new TokenStream(out), false);
 
         out = fixMath(out);
-        out = lastStep(new TokenStream(out));
-        out = optimize(new TokenStream(out));
+        out = lastStep1(new TokenStream(out));
+        out = lastStep2(new TokenStream(out));
+        out = lastStep3(new TokenStream(out));
+//        out = optimize(new TokenStream(out));
 
         method.children.clear();
         method.children.addAll(out);
     }
 
-    private static final Queue<Token> lastStep(TokenStream in)
+    private static final Queue<Token> lastStep1(TokenStream in)
+    {
+        Queue<Token>    out     = new LinkedList<>();
+        Set<Modifier>   mod     = new LinkedHashSet<>();
+
+        while (in.tokens.size() > 0)
+        {
+            while (in.peek() != null && in.peek().isModifier())
+                mod.add(in.poll().asModifier());
+
+            if (in.matches(STATEMENT, SUBSCRIPT))
+            {
+                Token whatever = in.poll().clean();
+                Token subscript = in.poll();
+
+                if (whatever.children.size() > 1)
+                    errstr(whatever, "subscript modifier not allowed in this context.");
+
+                ((LinkedList<Token>) out).add(subscript.push_back(whatever.getChild(0)));
+            }
+            else
+                ((LinkedList<Token>) out).add(in.poll());
+        }
+
+        for (Token token : out)
+        {
+            Queue<Token> o = lastStep1(new TokenStream(token.children));
+            token.children.clear();
+            token.add(o);
+        }
+
+        return out;
+    }
+
+    private static final Queue<Token> lastStep2(TokenStream in)
+    {
+        Queue<Token>    out     = new LinkedList<>();
+        Set<Modifier>   mod     = new LinkedHashSet<>();
+
+        while (in.tokens.size() > 0)
+        {
+            while (in.peek() != null && in.peek().isModifier())
+                mod.add(in.poll().asModifier());
+
+            if (in.matches(SUBSCRIPT, ASSIGNMENT))
+                ((LinkedList<Token>) out).add(in.poll().setType(SUBSCRIPT_ASSIGNMENT).add(in.poll().setType(EQUALS)));
+            else
+                ((LinkedList<Token>) out).add(in.poll());
+        }
+
+        for (Token token : out)
+        {
+            Queue<Token> o = lastStep2(new TokenStream(token.children));
+            token.children.clear();
+            token.add(o);
+        }
+
+        return out;
+    }
+
+    private static final Queue<Token> lastStep3(TokenStream in)
     {
         Queue<Token>    out     = new LinkedList<>();
         Set<Modifier>   mod     = new LinkedHashSet<>();
@@ -72,8 +134,6 @@ public class ParsedProgram
 
             if (in.matches(EMPTY_DECLARATION, ASSIGNMENT))
                 ((LinkedList<Token>) out).add(in.poll().add(in.poll().setType(EQUALS)).setType(FULL_DECLARATION));
-            else if (in.matches(SUBSCRIPT, ASSIGNMENT))
-                ((LinkedList<Token>) out).add(in.poll().setType(SUBSCRIPT_ASSIGNMENT).add(in.poll().setType(EQUALS)));
             else if (in.matches(ANY, ASSIGNMENT))
                 ((LinkedList<Token>) out).add(in.poll().add(in.poll().setType(EQUALS)).setType(ASSIGNMENT));
             else
@@ -200,8 +260,8 @@ public class ParsedProgram
             while (in.peek() != null && in.peek().isModifier())
                 mod.add(in.poll().asModifier());
 
-            if (mod.size() > 0)
-                errstr(in.peek(), "modifiers not allowed inside method bodies");
+//            if (mod.size() > 0)
+//                errstr(in.peek(), "modifiers not allowed inside method bodies");
 
             /**
              * Standard field declaration (must be on one line).
@@ -338,25 +398,30 @@ public class ParsedProgram
                 ((LinkedList<Token>) out).add(new Token(TRYCATCH).add(trie).add(catche));
             }
 
-            else if (in.matches(IDENTIFIER, BRACKETS_OPEN) || in.matches(IDENTIFIER, BRACKETS))
+            else if (in.matches(BRACKETS_OPEN) || in.matches(BRACKETS))
             {
                 Token subscript = new Token(SUBSCRIPT);
 
-                subscript.add(in.poll());
+//                subscript.add(in.poll());
 
                 Token brackets = null;
 
-                if (in.peek().equals(BRACKETS_OPEN))
-                    brackets = closeBrackets(in.tokens);
-                else if (in.peek().equals(BRACKETS))
-                    brackets = in.poll();
+                while (in.matches(BRACKETS_OPEN) || in.matches(BRACKETS))
+                {
+                    if (in.peek().equals(BRACKETS_OPEN))
+                        brackets = closeBrackets(in.tokens);
+                    else if (in.peek().equals(BRACKETS))
+                        brackets = in.poll();
+
+                    subscript.add(brackets);
+                }
 
                 Queue<Token> q = organize(new TokenStream(brackets.children), false);
 
                 brackets.children.clear();
                 brackets.add(q);
 
-                ((LinkedList<Token>) out).add(subscript.add(brackets));
+                ((LinkedList<Token>) out).add(subscript);
             }
 
             else if (in.matches(IDENTIFIER, COLON) && !in.matches(IDENTIFIER, COLON, COLON))
