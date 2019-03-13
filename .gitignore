@@ -32,3 +32,4 @@ mochaassembler.properties
 mochaassembler.xml
 module_mochaassembler.xml
 Target/*
+*.iml
